@@ -1,0 +1,41 @@
+@import url(http://fonts.googleapis.com/css?family=Scada);
+@import "../../../vendor/assets/bootstrap/less/variables.less";
+@import "../../../vendor/assets/bootstrap/less/mixins.less";
+@import "../../../vendor/assets/bootstrap/less/reset.less";
+
+body {
+  margin: 0;
+}
+
+.b-content {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  background: url(http://www.sports.ru/images/object_65.1334094978.29944.png) repeat;
+
+  .b-content__device {
+    background: url(/assets/images/device.png);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -64px;
+    margin-left: -64px;
+    width: 128px;
+    height: 128px;
+  }
+
+  .b-content__opening-soon {
+    position: absolute;
+    width: 200px;
+    top: 50%;
+    left: 50%;
+    margin-left: -100px;
+    margin-top: 64px;
+    color: black;
+    text-align: center;
+    text-shadow: 1px 1px 2px #000;
+    font-family: 'Scada', sans-serif;
+    font-weight: bold;
+    font-size: 13pt;
+  }
+}
