@@ -9,6 +9,12 @@
     "coffee-script": "*",
     "underscore": "*",
     "express-namespace": "*",
+    "passport": "*",
+    "passport-local": "*",
+    "connect-mongo": "*",
+    "connect": "*",
+    "mongodb": "*",
+    "mongoose": "*",
     "express": "3.0.1",
     "jade": "*",
     "less-middleware": "*"
