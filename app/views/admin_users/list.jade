@@ -1,28 +1,31 @@
 extends ../layouts/admin
 
-//- block content
-//-   .navbar.navbar-inverse.navbar-fixed-top
-//-     .navbar-inner
-//-       .container-fluid
-//-         a.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
-//-           span.icon-bar
-//-           span.icon-bar
-//-           span.icon-bar
-//-         a.brand(href='#') Gadgets House
-//-         .nav-collapse.collapse
-//-           p.navbar-text.pull-right
-//-             a.navbar-link(href='/logout') admin@gadgets-house.net
-//-           ul.nav
-//-             li.active
-//-               a(href='#') Панель управления
-//-             li.active
-//-               a(href='users') Пользователи
-//-             li
-//-               a(href='#') Категории
-//-             li
-//-               a(href='#') Товары
+block append content
+  div.container
 
-//-     <div class="container-fluid">
+    h1 Пользователи
+
+    .row
+      table.table.table-bordered.table-striped
+        thead
+          tr
+            th id
+            th email
+            th роли
+        tbody
+          each user in users
+            tr
+              td
+                a(href="/admin/users/#{ user._id }")
+                  i.icon-user
+                  &nbsp;
+                  = user._id
+              td= user.email
+              td
+                span.label.label-important Пользователь
+                each role in user.roles
+                  &nbsp;
+                  span.label.label-important= ({1: "Администратор"})[ role ]
 //-       <div class="row-fluid">
 //-         <div class="span3">
 //-           <div class="well sidebar-nav">

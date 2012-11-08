@@ -6,17 +6,22 @@ module.exports = (app) ->
     actionName = route.split("#")[1]
 
     controller = require("../controllers/#{controllerName}")
-    action = controller[actionName]
+    # action = controller[actionName]
 
     # define route handler
     app[method] path, (req, res) =>
+      controllerInstance = new controller( req, res )
+
       _origRender = res.render
 
       # override original render method
       res.render = (params = {}, callback) ->
-        _origRender.call @, "#{controllerName}/#{actionName}", _.extend({}, params, request: req), callback
+        _origRender.call @, "#{controllerName}/#{actionName}", _.extend({}, params, { request: req, _: _}), callback
 
-      if action?
-        action.apply(@, arguments)
-      else
-        res.render()
+      unless controllerInstance.stop
+        if controllerInstance[actionName]?
+          controllerInstance[actionName].apply(@, arguments)
+        else
+          res.render()
+
+      controllerInstance = null

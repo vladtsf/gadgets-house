@@ -1,6 +1,6 @@
 module.exports = class
-  @index: (req, res) ->
-    if req.user?
-      res.render()
-    else
+
+  constructor: ( req, res ) ->
+    unless req.user
+      @stop = on
       res.redirect("/login")

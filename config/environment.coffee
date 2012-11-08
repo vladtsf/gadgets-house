@@ -8,13 +8,14 @@ module.exports = (app) ->
 
   app.configure "development", ->
     app.use express.errorHandler()
-    app.set 'mongodb', "mongodb://localhost/#{pkg.name}"
+    app.set 'mongodb', "mongodb://vovan:123@alex.mongohq.com:10058/gadgets-test"
 
   app.configure "production", ->
     app.use require("less-middleware")( src: fs.realpathSync(path.join __dirname, "..", "public"), compress: on )
     app.set 'mongodb', process.env.MONGODB
 
   app.configure ->
+    app.set "db", require( "../app/middleware/db" )
     app.set "port", process.env.PORT or 3000
     app.set "views", fs.realpathSync(path.join __dirname, "..", "app", "views")
     app.set "view engine", "jade"
@@ -26,7 +27,7 @@ module.exports = (app) ->
     app.use express.cookieSession
         secret: "5a260b696d83f103c13a80a31b04f2b4"
         key: "sid"
-        store: require("../app/middleware/session")( app )
+        store: require("../app/middleware/session")
     app.use passport.initialize()
     app.use passport.session()
     app.use express.methodOverride()

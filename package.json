@@ -1,5 +1,5 @@
 {
-  "name": "application-name",
+  "name": "gadgets-house",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -11,13 +11,15 @@
     "express-namespace": "*",
     "passport": "*",
     "passport-local": "*",
-    "connect-mongo": "*",
+    "express-mongodb": "*",
+    "connect-mongodb": "*",
     "connect": "*",
     "mongodb": "*",
-    "mongoose": "*",
+    "mongoose": "3.1.2",
     "express": "3.0.1",
     "jade": "*",
-    "less-middleware": "*"
+    "less-middleware": "*",
+    "passport-mongoose": "*"
   },
   "engines": {
     "node": "0.8.x",

@@ -1,2 +1,1 @@
-module.exports = require("mongoose").connect
-console.log require("../../app").settings.mongodb
+module.exports = require("mongoose").connect require("../bootstrap").settings.mongodb
