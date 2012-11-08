@@ -26,7 +26,7 @@ module.exports = (app) ->
     app.use express.cookieParser()
     app.use express.cookieSession
         secret: "5a260b696d83f103c13a80a31b04f2b4"
-        key: "sid"
+        key: "ssid"
         store: require("../app/middleware/session")
     app.use passport.initialize()
     app.use passport.session()
