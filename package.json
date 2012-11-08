@@ -11,15 +11,12 @@
     "express-namespace": "*",
     "passport": "*",
     "passport-local": "*",
-    "express-mongodb": "*",
-    "connect-mongodb": "*",
     "connect": "*",
-    "mongodb": "*",
+    "connect-mongo": "*",
     "mongoose": "3.1.2",
     "express": "3.0.1",
     "jade": "*",
-    "less-middleware": "*",
-    "passport-mongoose": "*"
+    "less-middleware": "*"
   },
   "engines": {
     "node": "0.8.x",
