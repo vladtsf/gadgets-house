@@ -19,7 +19,8 @@ module.exports = (app) ->
     app.set "views", fs.realpathSync(path.join __dirname, "..", "app", "views")
     app.set "view engine", "jade"
 
-    app.use express.favicon fs.realpathSync(path.join __dirname, "..", "public", "assets", "images", "favicon.ico")
+    app.use express.favicon fs.realpathSync(path.join __dirname, "..", "static", "assets", "images", "favicon.ico")
+    app.use "/admin/", express.favicon fs.realpathSync(path.join __dirname, "..", "static", "assets", "images", "favicon.ico")
     app.use express.logger("dev")
     app.use express.bodyParser()
     app.use express.cookieParser()
@@ -31,5 +32,5 @@ module.exports = (app) ->
     app.use passport.session()
     app.use express.methodOverride()
     app.use app.router
-    app.use express.static fs.realpathSync(path.join __dirname, "..", "public")
+    app.use express.static fs.realpathSync(path.join __dirname, "..", "static")
     app.use express.static fs.realpathSync(path.join __dirname, "..", "vendor")

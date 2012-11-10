@@ -12293,3 +12293,334 @@ exports.rethrow = function rethrow(err, filename, lineno){
   })(Backbone.View);
 
 }).call(this);
+
+jade.templates = jade.templates || {};
+jade.templates['user'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+var knownRoles = ({1: "Администратор"});
+buf.push('<td><a');
+buf.push(attrs({ 'href':("#users/" + ( _id ) + "") }, {"href":true}));
+buf.push('><i class="icon-user"></i>&nbsp;');
+var __val__ = _id
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</a></td><td>');
+var __val__ = email
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</td><td><span class="label label-important">Пользователь</span>');
+// iterate roles
+;(function(){
+  if ('number' == typeof roles.length) {
+
+    for (var $index = 0, $$l = roles.length; $index < $$l; $index++) {
+      var role = roles[$index];
+
+if ( knownRoles[ role ])
+{
+buf.push('&nbsp;<span class="label label-important">');
+var __val__ = knownRoles[ role ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</span>');
+}
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in roles) {
+      $$l++;      var role = roles[$index];
+
+if ( knownRoles[ role ])
+{
+buf.push('&nbsp;<span class="label label-important">');
+var __val__ = knownRoles[ role ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</span>');
+}
+    }
+
+  }
+}).call(this);
+
+buf.push('</td>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['users-pager'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<ul class="pager b-users-pager">');
+var page = (~~(offset / 10));
+var previousDisabled = (offset === 0);
+var nextDisabled = (count - offset < 10);
+buf.push('<li');
+buf.push(attrs({ "class": ('previous') + ' ' + (previousDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':(page > 0 ? "#users/page/" + ( previousDisabled ? page : page - 1 ) + "" : "#users") }, {"href":true}));
+buf.push('>&larr; Prev</a></li><li');
+buf.push(attrs({ "class": ('next') + ' ' + (nextDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':("#users/page/" + ( nextDisabled ? page : page + 1 ) + "") }, {"href":true}));
+buf.push('>Next &rarr;</a></li></ul>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['users'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div class="container b-users"><h1>Пользователи</h1><div class="row b-users__list"><table class="table table-bordered table-striped b-users-table"><thead><tr><th>id</th><th>email</th><th>роли</th></tr></thead><tbody class="b-users-table__body"></tbody></table></div><div class="row b-users__pagination"></div></div>');
+}
+return buf.join("");
+};
+})();
+(function() {
+  var AdminApplication,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  AdminApplication = (function(_super) {
+
+    __extends(AdminApplication, _super);
+
+    function AdminApplication() {
+      return AdminApplication.__super__.constructor.apply(this, arguments);
+    }
+
+    AdminApplication.prototype.initialize = function() {};
+
+    AdminApplication.prototype.switchNavBar = function(tab) {
+      return $(".b-admin-navbar li:has(a[data-action])").removeClass("active").filter(":has([data-action=\"" + tab + "\"])").addClass("active");
+    };
+
+    AdminApplication.prototype.setLayout = function(view) {
+      return $("#layout").empty().append(view.el);
+    };
+
+    AdminApplication.prototype.dashboard = function() {
+      var _ref;
+      this.switchNavBar("dashboard");
+      return (_ref = this.currentEntity) != null ? _ref.destroy() : void 0;
+    };
+
+    AdminApplication.prototype.users = function(page) {
+      var oldEntity, users,
+        _this = this;
+      if (page == null) {
+        page = 0;
+      }
+      this.switchNavBar("users");
+      oldEntity = this.currentEntity;
+      users = this.currentEntity = new Witness.models.Users();
+      return users.fetch({
+        add: true,
+        data: {
+          offset: page * 10
+        }
+      }).then(function() {
+        if (oldEntity != null) {
+          oldEntity.destroy();
+        }
+        users.render();
+        return _this.setLayout(users.view);
+      });
+    };
+
+    AdminApplication.prototype.root = function() {};
+
+    AdminApplication.prototype.routes = {
+      "": "dashboard",
+      "users": "users",
+      "users/page/:page": "users"
+    };
+
+    return AdminApplication;
+
+  })(Backbone.Router);
+
+  window.admin = new AdminApplication();
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.models.User = (function(_super) {
+
+    __extends(User, _super);
+
+    function User() {
+      return User.__super__.constructor.apply(this, arguments);
+    }
+
+    User.prototype.initialize = function() {
+      this.view = new Witness.views.User();
+      return this.view.model = this;
+    };
+
+    return User;
+
+  })(Backbone.Model);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.models.Users = (function(_super) {
+
+    __extends(Users, _super);
+
+    function Users() {
+      return Users.__super__.constructor.apply(this, arguments);
+    }
+
+    Users.prototype.initialize = function(users) {
+      this.on("remove", function(model, collection) {
+        model.view.remove();
+        return model.destroy();
+      });
+      return this.on("add", function(model, collection) {
+        return model.view.render();
+      });
+    };
+
+    Users.prototype.destroy = function() {
+      var _ref;
+      this.remove(this.models);
+      return (_ref = this.view) != null ? _ref.remove() : void 0;
+    };
+
+    Users.prototype.render = function() {
+      var model, _i, _len, _ref, _results;
+      this.view = new Witness.views.Users();
+      this.view.render();
+      this.pager = new Witness.views.UsersPager();
+      this.pager.setElement(this.view.$el.find(".b-users__pagination"));
+      this.pager.render({
+        offset: this.offset,
+        count: this.count
+      });
+      _ref = this.models;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        model = _ref[_i];
+        _results.push(this.view.$usersRoot.append(model.view.el));
+      }
+      return _results;
+    };
+
+    Users.prototype.parse = function(res) {
+      this.offset = res.offset;
+      this.count = res.count;
+      return res.users;
+    };
+
+    Users.prototype.url = "/admin/users";
+
+    Users.prototype.model = Witness.models.User;
+
+    return Users;
+
+  })(Backbone.Collection);
+
+}).call(this);
+
+(function() {
+
+  jQuery(function() {
+    return Backbone.history.start();
+  });
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.User = (function(_super) {
+
+    __extends(User, _super);
+
+    function User() {
+      return User.__super__.constructor.apply(this, arguments);
+    }
+
+    User.prototype.initialize = function() {};
+
+    User.prototype.tagName = "tr";
+
+    User.prototype.template = "user";
+
+    return User;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.UsersPager = (function(_super) {
+
+    __extends(UsersPager, _super);
+
+    function UsersPager() {
+      return UsersPager.__super__.constructor.apply(this, arguments);
+    }
+
+    UsersPager.prototype.initialize = function() {};
+
+    UsersPager.prototype.template = "users-pager";
+
+    UsersPager.prototype.options = {
+      el: "#layout"
+    };
+
+    return UsersPager;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.Users = (function(_super) {
+
+    __extends(Users, _super);
+
+    function Users() {
+      return Users.__super__.constructor.apply(this, arguments);
+    }
+
+    Users.prototype.initialize = function() {};
+
+    Users.prototype.render = function() {
+      Witness.View.prototype.render.call(this);
+      this.$usersRoot = this.$el.find(".b-users-table__body");
+      return this;
+    };
+
+    Users.prototype.template = "users";
+
+    return Users;
+
+  })(Witness.View);
+
+}).call(this);

@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node ./node_modules/grunt/bin/grunt && node app",
+    "start": "node app",
+    "precompile": "node ./node_modules/grunt/bin/grunt",
     "deploy": "git push heroku `git rev-parse --abbrev-ref HEAD`:master"
   },
   "dependencies": {
@@ -25,7 +26,8 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-less": "*",
-    "grunt-contrib-watch": "*"
+    "grunt-contrib-watch": "*",
+    "grunt-contrib-copy": "*"
   },
   "engines": {
     "node": "0.8.x",
