@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node app"
+    "start": "node app",
+    "deploy": "node ./node_modules/grunt/bin/grunt && git push heroku `git rev-parse --abbrev-ref HEAD`:master"
   },
   "dependencies": {
     "coffee-script": "*",
@@ -15,8 +16,15 @@
     "connect-mongo": "*",
     "mongoose": "3.1.2",
     "express": "3.0.1",
-    "jade": "*",
-    "less-middleware": "*"
+    "jade": "*"
+  },
+  "devDependencies": {
+    "grunt": "0.4.x",
+    "grunt-contrib-coffee": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-less": "*",
+    "grunt-contrib-watch": "*"
   },
   "engines": {
     "node": "0.8.x",

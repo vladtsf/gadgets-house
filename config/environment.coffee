@@ -11,7 +11,6 @@ module.exports = (app) ->
     app.set 'mongodb', "mongodb://vovan:123@alex.mongohq.com:10058/gadgets-test"
 
   app.configure "production", ->
-    app.use require("less-middleware")( src: fs.realpathSync(path.join __dirname, "..", "public"), compress: on )
     app.set 'mongodb', process.env.MONGODB
 
   app.configure ->
@@ -32,6 +31,5 @@ module.exports = (app) ->
     app.use passport.session()
     app.use express.methodOverride()
     app.use app.router
-    app.use require("less-middleware")( src: fs.realpathSync(path.join __dirname, "..", "public") )
     app.use express.static fs.realpathSync(path.join __dirname, "..", "public")
     app.use express.static fs.realpathSync(path.join __dirname, "..", "vendor")
