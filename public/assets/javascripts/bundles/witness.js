@@ -12293,9 +12293,3 @@ exports.rethrow = function rethrow(err, filename, lineno){
   })(Backbone.View);
 
 }).call(this);
-
-(function() {
-
-
-
-}).call(this);

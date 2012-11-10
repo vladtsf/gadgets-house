@@ -1,0 +1,3 @@
+window.Witness ?=
+  models: {}
+  views: {}

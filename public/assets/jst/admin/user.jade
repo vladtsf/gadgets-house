@@ -1,0 +1,13 @@
+roles = {1: "Администратор"}
+td
+  a(href="#users/#{ _id }")
+    i.icon-user
+    &nbsp;
+    = _id
+td= email
+td
+  span.label.label-important Пользователь
+  each role in roles
+    if roles[ role ]
+      &nbsp;
+      span.label.label-important= roles[ role ]

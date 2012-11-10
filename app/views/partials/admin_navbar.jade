@@ -1,4 +1,4 @@
-.navbar.navbar-inverse.navbar-fixed-top
+.navbar.navbar-inverse.navbar-fixed-top.b-admin-navbar
   .navbar-inner
     .container-fluid
       a.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
@@ -10,11 +10,13 @@
         p.navbar-text.pull-right
           a.navbar-link(href='/logout') admin@gadgets-house.net
         ul.nav
-          li(class=request.route.path === "/admin" ? "active" : "")
-            a(href='/admin') Панель управления
-          li(class=request.route.path === "/admin/users" ? "active" : "")
-            a(href='/admin/users') Пользователи
+          li.active
+            a(href='#', data-action="dashboard") Панель управления
+          li
+            a(href='#users', data-action="users") Пользователи
           li
             a(href='#') Категории
           li
             a(href='#') Товары
+          li
+            a(href='#') Заказы

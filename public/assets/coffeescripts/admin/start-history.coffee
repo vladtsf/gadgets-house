@@ -1,0 +1,2 @@
+jQuery ->
+  Backbone.history.start()

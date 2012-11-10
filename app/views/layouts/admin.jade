@@ -17,3 +17,6 @@ html
   body
     block content
       include ../partials/admin_navbar
+      #layout
+
+    script(type="text/javascript", src="/assets/javascripts/bundles/admin#{ request.app.settings.env === 'production' ? '.min' : '' }.js")

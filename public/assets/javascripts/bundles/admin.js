@@ -12072,8 +12072,555 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
+
+jade = (function(exports){
+/*!
+ * Jade - runtime
+ * Copyright(c) 2010 TJ Holowaychuk <tj@vision-media.ca>
+ * MIT Licensed
+ */
+
+/**
+ * Lame Array.isArray() polyfill for now.
+ */
+
+if (!Array.isArray) {
+  Array.isArray = function(arr){
+    return '[object Array]' == Object.prototype.toString.call(arr);
+  };
+}
+
+/**
+ * Lame Object.keys() polyfill for now.
+ */
+
+if (!Object.keys) {
+  Object.keys = function(obj){
+    var arr = [];
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        arr.push(key);
+      }
+    }
+    return arr;
+  }
+}
+
+/**
+ * Merge two attribute objects giving precedence
+ * to values in object `b`. Classes are special-cased
+ * allowing for arrays and merging/joining appropriately
+ * resulting in a string.
+ *
+ * @param {Object} a
+ * @param {Object} b
+ * @return {Object} a
+ * @api private
+ */
+
+exports.merge = function merge(a, b) {
+  var ac = a['class'];
+  var bc = b['class'];
+
+  if (ac || bc) {
+    ac = ac || [];
+    bc = bc || [];
+    if (!Array.isArray(ac)) ac = [ac];
+    if (!Array.isArray(bc)) bc = [bc];
+    ac = ac.filter(nulls);
+    bc = bc.filter(nulls);
+    a['class'] = ac.concat(bc).join(' ');
+  }
+
+  for (var key in b) {
+    if (key != 'class') {
+      a[key] = b[key];
+    }
+  }
+
+  return a;
+};
+
+/**
+ * Filter null `val`s.
+ *
+ * @param {Mixed} val
+ * @return {Mixed}
+ * @api private
+ */
+
+function nulls(val) {
+  return val != null;
+}
+
+/**
+ * Render the given attributes object.
+ *
+ * @param {Object} obj
+ * @param {Object} escaped
+ * @return {String}
+ * @api private
+ */
+
+exports.attrs = function attrs(obj, escaped){
+  var buf = []
+    , terse = obj.terse;
+
+  delete obj.terse;
+  var keys = Object.keys(obj)
+    , len = keys.length;
+
+  if (len) {
+    buf.push('');
+    for (var i = 0; i < len; ++i) {
+      var key = keys[i]
+        , val = obj[key];
+
+      if ('boolean' == typeof val || null == val) {
+        if (val) {
+          terse
+            ? buf.push(key)
+            : buf.push(key + '="' + key + '"');
+        }
+      } else if (0 == key.indexOf('data') && 'string' != typeof val) {
+        buf.push(key + "='" + JSON.stringify(val) + "'");
+      } else if ('class' == key && Array.isArray(val)) {
+        buf.push(key + '="' + exports.escape(val.join(' ')) + '"');
+      } else if (escaped && escaped[key]) {
+        buf.push(key + '="' + exports.escape(val) + '"');
+      } else {
+        buf.push(key + '="' + val + '"');
+      }
+    }
+  }
+
+  return buf.join(' ');
+};
+
+/**
+ * Escape the given string of `html`.
+ *
+ * @param {String} html
+ * @return {String}
+ * @api private
+ */
+
+exports.escape = function escape(html){
+  return String(html)
+    .replace(/&(?!(\w+|\#\d+);)/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+};
+
+/**
+ * Re-throw the given `err` in context to the
+ * the jade in `filename` at the given `lineno`.
+ *
+ * @param {Error} err
+ * @param {String} filename
+ * @param {String} lineno
+ * @api private
+ */
+
+exports.rethrow = function rethrow(err, filename, lineno){
+  if (!filename) throw err;
+
+  var context = 3
+    , str = require('fs').readFileSync(filename, 'utf8')
+    , lines = str.split('\n')
+    , start = Math.max(lineno - context, 0)
+    , end = Math.min(lines.length, lineno + context);
+
+  // Error context
+  var context = lines.slice(start, end).map(function(line, i){
+    var curr = i + start + 1;
+    return (curr == lineno ? '  > ' : '    ')
+      + curr
+      + '| '
+      + line;
+  }).join('\n');
+
+  // Alter exception message
+  err.path = filename;
+  err.message = (filename || 'Jade') + ':' + lineno
+    + '\n' + context + '\n\n' + err.message;
+  throw err;
+};
+
+  return exports;
+
+})({});
+
+(function() {
+  var _ref;
+
+  if ((_ref = window.Witness) == null) {
+    window.Witness = {
+      models: {},
+      views: {}
+    };
+  }
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.View = (function(_super) {
+
+    __extends(View, _super);
+
+    function View() {
+      return View.__super__.constructor.apply(this, arguments);
+    }
+
+    View.prototype.initialize = function() {};
+
+    View.prototype.getTemplate = function() {
+      return jade.templates[this.template];
+    };
+
+    View.prototype.render = function(params) {
+      var _base, _ref;
+      this.$el.html(typeof (_base = this.getTemplate()) === "function" ? _base(_.extend({}, params, (_ref = this.model) != null ? _ref.toJSON() : void 0)) : void 0);
+      return this;
+    };
+
+    return View;
+
+  })(Backbone.View);
+
+}).call(this);
+
+jade.templates = jade.templates || {};
+jade.templates['user'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+var roles = ({1: "Администратор"});
+buf.push('<td><a');
+buf.push(attrs({ 'href':("#users/" + ( _id ) + "") }, {"href":true}));
+buf.push('><i class="icon-user"></i>&nbsp;');
+var __val__ = _id
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</a></td><td>');
+var __val__ = email
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</td><td><span class="label label-important">Пользователь</span>');
+// iterate roles
+;(function(){
+  if ('number' == typeof roles.length) {
+
+    for (var $index = 0, $$l = roles.length; $index < $$l; $index++) {
+      var role = roles[$index];
+
+if ( roles[ role ])
+{
+buf.push('&nbsp;<span class="label label-important">');
+var __val__ = roles[ role ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</span>');
+}
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in roles) {
+      $$l++;      var role = roles[$index];
+
+if ( roles[ role ])
+{
+buf.push('&nbsp;<span class="label label-important">');
+var __val__ = roles[ role ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</span>');
+}
+    }
+
+  }
+}).call(this);
+
+buf.push('</td>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['users-pager'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<ul class="pager b-users-pager">');
+var page = (~~(offset / 10));
+var previousDisabled = (offset === 0);
+var nextDisabled = (count - offset < 10);
+buf.push('<li');
+buf.push(attrs({ "class": ('previous') + ' ' + (previousDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':(page > 0 ? "#users/page/" + ( previousDisabled ? page : page - 1 ) + "" : "#users") }, {"href":true}));
+buf.push('>&larr; Prev</a></li><li');
+buf.push(attrs({ "class": ('next') + ' ' + (nextDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':("#users/page/" + ( nextDisabled ? page : page + 1 ) + "") }, {"href":true}));
+buf.push('>Next &rarr;</a></li></ul>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['users'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div class="container b-users"><h1>Пользователи</h1><div class="row b-users__list"><table class="table table-bordered table-striped b-users-table"><thead><tr><th>id</th><th>email</th><th>роли</th></tr></thead><tbody class="b-users-table__body"></tbody></table></div><div class="row b-users__pagination"></div></div>');
+}
+return buf.join("");
+};
+})();
+(function() {
+  var AdminApplication,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  AdminApplication = (function(_super) {
+
+    __extends(AdminApplication, _super);
+
+    function AdminApplication() {
+      return AdminApplication.__super__.constructor.apply(this, arguments);
+    }
+
+    AdminApplication.prototype.initialize = function() {};
+
+    AdminApplication.prototype.switchNavBar = function(tab) {
+      return $(".b-admin-navbar li:has(a[data-action])").removeClass("active").filter(":has([data-action=\"" + tab + "\"])").addClass("active");
+    };
+
+    AdminApplication.prototype.setLayout = function(view) {
+      return $("#layout").empty().append(view.el);
+    };
+
+    AdminApplication.prototype.dashboard = function() {
+      var _ref;
+      this.switchNavBar("dashboard");
+      return (_ref = this.currentEntity) != null ? _ref.destroy() : void 0;
+    };
+
+    AdminApplication.prototype.users = function(page) {
+      var oldEntity, users,
+        _this = this;
+      if (page == null) {
+        page = 0;
+      }
+      this.switchNavBar("users");
+      oldEntity = this.currentEntity;
+      users = this.currentEntity = new Witness.models.Users();
+      return users.fetch({
+        add: true,
+        data: {
+          offset: page * 10
+        }
+      }).then(function() {
+        if (oldEntity != null) {
+          oldEntity.destroy();
+        }
+        users.render();
+        return _this.setLayout(users.view);
+      });
+    };
+
+    AdminApplication.prototype.root = function() {};
+
+    AdminApplication.prototype.routes = {
+      "": "dashboard",
+      "users": "users",
+      "users/page/:page": "users"
+    };
+
+    return AdminApplication;
+
+  })(Backbone.Router);
+
+  window.admin = new AdminApplication();
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.models.User = (function(_super) {
+
+    __extends(User, _super);
+
+    function User() {
+      return User.__super__.constructor.apply(this, arguments);
+    }
+
+    User.prototype.initialize = function() {
+      this.view = new Witness.views.User();
+      return this.view.model = this;
+    };
+
+    return User;
+
+  })(Backbone.Model);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.models.Users = (function(_super) {
+
+    __extends(Users, _super);
+
+    function Users() {
+      return Users.__super__.constructor.apply(this, arguments);
+    }
+
+    Users.prototype.initialize = function(users) {
+      this.on("remove", function(model, collection) {
+        model.view.remove();
+        return model.destroy();
+      });
+      return this.on("add", function(model, collection) {
+        return model.view.render();
+      });
+    };
+
+    Users.prototype.destroy = function() {
+      var _ref;
+      this.remove(this.models);
+      return (_ref = this.view) != null ? _ref.remove() : void 0;
+    };
+
+    Users.prototype.render = function() {
+      var model, _i, _len, _ref, _results;
+      this.view = new Witness.views.Users();
+      this.view.render();
+      this.pager = new Witness.views.UsersPager();
+      this.pager.setElement(this.view.$el.find(".b-users__pagination"));
+      this.pager.render({
+        offset: this.offset,
+        count: this.count
+      });
+      _ref = this.models;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        model = _ref[_i];
+        _results.push(this.view.$usersRoot.append(model.view.el));
+      }
+      return _results;
+    };
+
+    Users.prototype.parse = function(res) {
+      this.offset = res.offset;
+      this.count = res.count;
+      return res.users;
+    };
+
+    Users.prototype.url = "/admin/users";
+
+    Users.prototype.model = Witness.models.User;
+
+    return Users;
+
+  })(Backbone.Collection);
+
+}).call(this);
+
 (function() {
 
-  console.log("admin");
+  jQuery(function() {
+    return Backbone.history.start();
+  });
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.User = (function(_super) {
+
+    __extends(User, _super);
+
+    function User() {
+      return User.__super__.constructor.apply(this, arguments);
+    }
+
+    User.prototype.initialize = function() {};
+
+    User.prototype.tagName = "tr";
+
+    User.prototype.template = "user";
+
+    return User;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.UsersPager = (function(_super) {
+
+    __extends(UsersPager, _super);
+
+    function UsersPager() {
+      return UsersPager.__super__.constructor.apply(this, arguments);
+    }
+
+    UsersPager.prototype.initialize = function() {};
+
+    UsersPager.prototype.template = "users-pager";
+
+    UsersPager.prototype.options = {
+      el: "#layout"
+    };
+
+    return UsersPager;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.Users = (function(_super) {
+
+    __extends(Users, _super);
+
+    function Users() {
+      return Users.__super__.constructor.apply(this, arguments);
+    }
+
+    Users.prototype.initialize = function() {};
+
+    Users.prototype.render = function() {
+      Witness.View.prototype.render.call(this);
+      this.$usersRoot = this.$el.find(".b-users-table__body");
+      return this;
+    };
+
+    Users.prototype.template = "users";
+
+    return Users;
+
+  })(Witness.View);
 
 }).call(this);
