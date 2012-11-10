@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node app",
-    "deploy": "node ./node_modules/grunt/bin/grunt && git push heroku `git rev-parse --abbrev-ref HEAD`:master"
+    "start": "node ./node_modules/grunt/bin/grunt && node app",
+    "deploy": "git push heroku `git rev-parse --abbrev-ref HEAD`:master"
   },
   "dependencies": {
     "coffee-script": "*",

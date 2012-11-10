@@ -1,4 +1,4 @@
-roles = {1: "Администратор"}
+knownRoles = {1: "Администратор"}
 td
   a(href="#users/#{ _id }")
     i.icon-user
@@ -8,6 +8,6 @@ td= email
 td
   span.label.label-important Пользователь
   each role in roles
-    if roles[ role ]
+    if knownRoles[ role ]
       &nbsp;
-      span.label.label-important= roles[ role ]
+      span.label.label-important= knownRoles[ role ]

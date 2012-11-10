@@ -1,2 +1,5 @@
 /node_modules/
+/public/assets/javascripts/
+/public/assets/jst/compiled/
+/public/assets/css/
 npm-debug.log
