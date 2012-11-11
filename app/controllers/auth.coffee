@@ -33,8 +33,8 @@ module.exports = class
   )
 
   logout: (req, res) ->
-    req.logOut()
-    res.redirect( "/" )
+    req.logOut() if req.route.params.csrf is req.session._csrf
+    res.redirect( "/admin/" )
 
 # user = new User( email: 'admin@gadgets-house.net', password: "12345678", roles: [1] )
 # user.save ->

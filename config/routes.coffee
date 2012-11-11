@@ -13,4 +13,4 @@ module.exports = (app, route) ->
 
   route "get", "/login", "auth#loginForm"
   route "post", "/login", "auth#login"
-  route "get", "/logout", "auth#logout" # xss
+  route "get", "/logout/:csrf", "auth#logout"

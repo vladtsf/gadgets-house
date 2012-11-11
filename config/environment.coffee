@@ -30,6 +30,7 @@ module.exports = (app) ->
         store: require("../app/middleware/session")
     app.use passport.initialize()
     app.use passport.session()
+    app.use express.csrf()
     app.use express.methodOverride()
     app.use app.router
     app.use express.static fs.realpathSync(path.join __dirname, "..", "static")

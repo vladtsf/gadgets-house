@@ -15223,6 +15223,11 @@ return buf.join("");
 (function() {
 
   jQuery(function() {
+    $.ajaxSetup({
+      headers: {
+        "X-CSRF-Token": $("meta[name=\"csrf\"]").attr("content")
+      }
+    });
     return Backbone.history.start();
   });
 

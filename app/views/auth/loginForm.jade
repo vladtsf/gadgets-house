@@ -37,6 +37,7 @@ block content
   .container
     form.form-signin(action="/login", method="post")
       h2.form-signin-heading Please sign in
+      input(type="hidden", name="_csrf", value=request.session._csrf)
       input.input-block-level(type='text', name="login", placeholder='Login')
       input.input-block-level(type='password', name="password", placeholder='Password')
       button.btn.btn-large.btn-primary(type='submit') Sign in

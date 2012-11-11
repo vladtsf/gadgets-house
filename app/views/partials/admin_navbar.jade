@@ -18,7 +18,7 @@
                   a(href="/admin/#users/#{ request.user._id }") Аккаунт
                 li.divider
                 li
-                  a(href='/admin/#logout') Logout
+                  a(href='/logout/#{ encodeURIComponent( request.session._csrf ) }') Выйти
         ul.nav
           li.active
             a(href='#', data-action="dashboard") Панель управления
