@@ -15,12 +15,12 @@ class Witness.views.UsersProfile extends Witness.View
 
     data
 
-  buttonMsg: ( $button, msg, cb ) ->
+  buttonMsg: ( $button, msg, success, cb ) ->
     oldText = $button.text()
-    $button.toggleClass( "btn-danger btn-primary" ).text( msg )
+    $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( msg )
 
     setTimeout ->
-      $button.toggleClass( "btn-danger btn-primary" ).text( oldText )
+      $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( oldText )
 
       cb() if typeof cb is "function"
     , 2e3
@@ -39,11 +39,11 @@ class Witness.views.UsersProfile extends Witness.View
       processing = @model.save()
 
       processing.fail =>
-        @buttonMsg $save, "Ошибка", ->
+        @buttonMsg $save, "Ошибка", false, ->
           $buttons.attr( "disabled", off )
 
       processing.then =>
-        @buttonMsg $save, "Сохранено", ->
+        @buttonMsg $save, "Сохранено", true, ->
           $buttons.attr( "disabled", off )
 
     off
@@ -56,7 +56,7 @@ class Witness.views.UsersProfile extends Witness.View
     processing = @model.destroy( wait: on )
 
     processing.fail =>
-      @buttonMsg $delete, "Ошибка", ->
+      @buttonMsg $delete, "Ошибка", false, ->
         $buttons.attr( "disabled", off )
 
     processing.then =>

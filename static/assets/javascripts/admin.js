@@ -15316,12 +15316,12 @@ return buf.join("");
       return data;
     };
 
-    UsersProfile.prototype.buttonMsg = function($button, msg, cb) {
+    UsersProfile.prototype.buttonMsg = function($button, msg, success, cb) {
       var oldText;
       oldText = $button.text();
-      $button.toggleClass("btn-danger btn-primary").text(msg);
+      $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(msg);
       setTimeout(function() {
-        $button.toggleClass("btn-danger btn-primary").text(oldText);
+        $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(oldText);
         if (typeof cb === "function") {
           return cb();
         }
@@ -15339,12 +15339,12 @@ return buf.join("");
         $save = $buttons.filter(".b-profile__save");
         processing = this.model.save();
         processing.fail(function() {
-          return _this.buttonMsg($save, "Ошибка", function() {
+          return _this.buttonMsg($save, "Ошибка", false, function() {
             return $buttons.attr("disabled", false);
           });
         });
         processing.then(function() {
-          return _this.buttonMsg($save, "Сохранено", function() {
+          return _this.buttonMsg($save, "Сохранено", true, function() {
             return $buttons.attr("disabled", false);
           });
         });
@@ -15362,7 +15362,7 @@ return buf.join("");
         wait: true
       });
       processing.fail(function() {
-        return _this.buttonMsg($delete, "Ошибка", function() {
+        return _this.buttonMsg($delete, "Ошибка", false, function() {
           return $buttons.attr("disabled", false);
         });
       });
