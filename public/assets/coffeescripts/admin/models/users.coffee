@@ -29,4 +29,4 @@ class Witness.models.Users extends Backbone.Collection
     res.users
 
   url: "/admin/users"
-  model: Witness.models.User
+  model: Witness.models.UserEntry

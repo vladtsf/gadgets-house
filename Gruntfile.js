@@ -70,10 +70,19 @@ module.exports = function(grunt) {
           "vendor/assets/javascripts/jquery-1.8.2.js",
           "vendor/assets/javascripts/underscore.js",
           "vendor/assets/javascripts/backbone.js",
+          "vendor/assets/javascripts/backbone-validation.js",
           "vendor/assets/javascripts/jade-runtime.js",
           "tmp/javascripts/witness/*.js",
         ],
         dest: "tmp/javascripts/witness.js",
+        separator: ';'
+      },
+
+      bootstrap: {
+        src: [
+          "vendor/assets/bootstrap/docs/assets/js/bootstrap.js"
+        ],
+        dest: "tmp/javascripts/bootstrap.js",
         separator: ';'
       },
 
@@ -88,6 +97,7 @@ module.exports = function(grunt) {
       admin: {
         src: [
           "tmp/javascripts/witness.js",
+          "tmp/javascripts/bootstrap.js",
           "tmp/javascripts/jst_admin.js",
           "tmp/javascripts/admin/**/*.js"
         ],
@@ -120,7 +130,7 @@ module.exports = function(grunt) {
 
     watch: {
       files: [
-        "public/assets/**/*",
+        "public/assets/**/**",
       ],
       tasks: [ "dev" ]
     }

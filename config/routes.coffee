@@ -7,6 +7,9 @@ module.exports = (app, route) ->
 
     app.namespace "/users", ->
       route "get", "/", "admin_users#list"
+      route "get", "/:id", "admin_users#profile"
+      route "post", "/:id", "admin_users#saveProfile"
+      route "delete", "/:id", "admin_users#deleteProfile"
 
   route "get", "/login", "auth#loginForm"
   route "post", "/login", "auth#login"

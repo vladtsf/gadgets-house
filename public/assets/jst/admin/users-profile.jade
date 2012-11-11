@@ -1,0 +1,33 @@
+.container.b-users-profile
+  .row
+    h1 Профиль
+  form.bs-docs-example
+    fieldset
+      unless locals._id
+        legend Не найден
+      else
+        legend Редактирование
+
+        input(type="hidden", name="_id", value=_id)
+
+        div.control-group
+          label.control-label Email
+          input(type="text", name="email", placeholder="Email", value=email)
+
+        div.control-group
+          label.control-label Пароль
+          input(type="text", name="password", placeholder="Пароль", type="password")
+
+        div.control-group
+          label.control-label Повторите пароль
+          input(type="text", name="password_repeat", placeholder="Пароль", type="password")
+
+        div.control-group
+          label.control-label.checkbox
+            input(type="checkbox", name="admin", value="on", checked=_.indexOf(roles, 1) > -1)
+            | Администратор
+
+        button.b-profile__save.btn.btn-primary(type="submit", name="save", value="on") Сохранить
+        &nbsp;
+        button.b-profile__delete.btn(type="button", name="delete", value="on") Удалить
+

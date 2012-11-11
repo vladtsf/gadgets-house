@@ -1,4 +1,4 @@
-class Witness.views.User extends Witness.View
+class Witness.views.UserEntry extends Witness.View
 
   initialize: ->
 

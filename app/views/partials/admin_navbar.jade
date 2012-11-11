@@ -7,8 +7,18 @@
         span.icon-bar
       a.brand(href='/admin/') Gadgets House
       .nav-collapse.collapse
-        p.navbar-text.pull-right
-          a.navbar-link(href='/logout') admin@gadgets-house.net
+        .navbar-text.pull-right
+         .btn-group
+            button.btn.btn-danger.dropdown-toggle(data-toggle='dropdown')
+                = request.user.email
+                &nbsp;
+                span.caret
+              ul.dropdown-menu
+                li
+                  a(href="/admin/#users/#{ request.user._id }") Profile
+                li.divider
+                li
+                  a(href='/admin/#logout') Logout
         ul.nav
           li.active
             a(href='#', data-action="dashboard") Панель управления
