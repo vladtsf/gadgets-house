@@ -14952,7 +14952,7 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
-buf.push('<div class="container b-users-profile"><div class="row"><h1>Профиль</h1></div><form class="bs-docs-example"><fieldset><legend>Редактирование</legend><input');
+buf.push('<div class="container b-users-profile"><div class="row"><h1>Профиль</h1></div><form class="bs-docs-example"><fieldset><legend>' + escape((interp =  !!locals._id ? "Редактирование" : "Создание" ) == null ? '' : interp) + '</legend><input');
 buf.push(attrs({ 'type':("hidden"), 'name':("_id"), 'value':(locals._id) }, {"type":true,"name":true,"value":true}));
 buf.push('/><div class="control-group"><label class="control-label">Email</label><input');
 buf.push(attrs({ 'type':("text"), 'name':("email"), 'placeholder':("Email"), 'value':(locals.email) }, {"type":true,"name":true,"placeholder":true,"value":true}));

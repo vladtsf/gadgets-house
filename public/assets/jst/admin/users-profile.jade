@@ -3,10 +3,7 @@
     h1 Профиль
   form.bs-docs-example
     fieldset
-      //- unless locals._id
-      //-   legend Не найден
-      //- else
-      legend Редактирование
+      legend #{ !!locals._id ? "Редактирование" : "Создание" }
 
       input(type="hidden", name="_id", value=locals._id)
 
