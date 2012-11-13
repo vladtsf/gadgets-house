@@ -1,4 +1,5 @@
 User = require( "../models/user" )
+_ = require( "underscore" )
 
 class AdminUsers
 
@@ -62,6 +63,30 @@ class AdminUsers
 
           user.save ->
             res.json( user )
+
+  createProfile: ( req, res ) ->
+    roles = []
+    roles.push( 1 ) if req.body.admin?
+
+    User
+      .findOne( email: req.body.email )
+      .exec ( err, found ) ->
+        if found
+          res.send( 403 )
+        else
+          user = new User
+            email: req.body.email
+            password: req.body.password
+            roles: roles
+
+          # @todo: validation
+
+          user.save ->
+            res.json
+              _id: user._id
+              id: user._id
+              email: user.email
+              roles: user.roles
 
   deleteProfile: ( req, res ) ->
     _id = req.route.params.id

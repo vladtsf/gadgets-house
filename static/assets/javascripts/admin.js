@@ -14952,20 +14952,16 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
-buf.push('<div class="container b-users-profile"><div class="row"><h1>Профиль</h1></div><form class="bs-docs-example"><fieldset>');
-if (!( locals._id))
-{
-buf.push('<legend>Не найден</legend>');
-}
-else
-{
-buf.push('<legend>Редактирование</legend><input');
-buf.push(attrs({ 'type':("hidden"), 'name':("_id"), 'value':(_id) }, {"type":true,"name":true,"value":true}));
+buf.push('<div class="container b-users-profile"><div class="row"><h1>Профиль</h1></div><form class="bs-docs-example"><fieldset><legend>Редактирование</legend><input');
+buf.push(attrs({ 'type':("hidden"), 'name':("_id"), 'value':(locals._id) }, {"type":true,"name":true,"value":true}));
 buf.push('/><div class="control-group"><label class="control-label">Email</label><input');
-buf.push(attrs({ 'type':("text"), 'name':("email"), 'placeholder':("Email"), 'value':(email) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push(attrs({ 'type':("text"), 'name':("email"), 'placeholder':("Email"), 'value':(locals.email) }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/></div><div class="control-group"><label class="control-label">Пароль</label><input type="password" name="password" placeholder="Пароль"/></div><div class="control-group"><label class="control-label">Повторите пароль</label><input type="password" name="password_repeat" placeholder="Пароль"/></div><div class="control-group"><label class="control-label checkbox"><input');
-buf.push(attrs({ 'type':("checkbox"), 'name':("admin"), 'value':("on"), 'checked':(_.indexOf(roles, 1) > -1) }, {"type":true,"name":true,"value":true,"checked":true}));
-buf.push('/>Администратор</label></div><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>&nbsp;<button type="button" name="delete" value="on" class="b-profile__delete btn">Удалить</button>');
+buf.push(attrs({ 'type':("checkbox"), 'name':("admin"), 'value':("on"), 'checked':(_.indexOf(locals.roles, 1) > -1) }, {"type":true,"name":true,"value":true,"checked":true}));
+buf.push('/>Администратор</label></div><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
+if ( locals._id)
+{
+buf.push('&nbsp;<button type="button" name="delete" value="on" class="b-profile__delete btn">Удалить</button>');
 }
 buf.push('</fieldset></form></div>');
 }
@@ -15046,6 +15042,18 @@ return buf.join("");
       });
     };
 
+    AdminApplication.prototype.createUser = function() {
+      var oldEntity, user;
+      this.switchNavBar(["users", "users-create"]);
+      oldEntity = this.currentEntity;
+      user = this.currentEntity = new Witness.views.UsersProfile();
+      if (oldEntity != null) {
+        oldEntity.destroy();
+      }
+      user.render();
+      return this.setLayout(user);
+    };
+
     AdminApplication.prototype.profile = function(id) {
       var oldEntity, user,
         _this = this;
@@ -15064,6 +15072,7 @@ return buf.join("");
     AdminApplication.prototype.routes = {
       "": "dashboard",
       "users": "users",
+      "users/new": "createUser",
       "users/page/:page": "users",
       "users/:id": "profile"
     };
@@ -15088,31 +15097,35 @@ return buf.join("");
       return UserProfile.__super__.constructor.apply(this, arguments);
     }
 
-    UserProfile.prototype.initialize = function() {};
-
-    UserProfile.prototype.validation = {
-      email: [
-        {
-          required: true,
-          msg: "Поле не может быть пустым"
-        }, {
-          pattern: 'email',
-          msg: "Введите действительный адрес email"
-        }
-      ],
-      password: {
-        required: false,
-        minLength: 4,
-        msg: "Пароль должен быть длиннее 4 символов"
-      },
-      password_repeat: {
-        equalTo: "password",
-        msg: "Пароли не совпадают"
-      }
+    UserProfile.prototype.initialize = function() {
+      var _this = this;
+      return this.validation = (function() {
+        return {
+          email: [
+            {
+              required: true,
+              msg: "Поле не может быть пустым"
+            }, {
+              pattern: 'email',
+              msg: "Введите действительный адрес email"
+            }
+          ],
+          password: {
+            required: !(_this.get("id") != null),
+            minLength: 4,
+            msg: "Пароль должен быть длиннее 4 символов"
+          },
+          password_repeat: {
+            equalTo: "password",
+            msg: "Пароли не совпадают"
+          }
+        };
+      })();
     };
 
     UserProfile.prototype.url = function() {
-      return "/admin/users/" + (this.get("id"));
+      var _ref;
+      return "/admin/users/" + ((_ref = this.get("id")) != null ? _ref : "");
     };
 
     return UserProfile;

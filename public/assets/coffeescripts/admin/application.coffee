@@ -35,6 +35,16 @@ class AdminApplication extends Backbone.Router
 
       @setLayout( users.view )
 
+  createUser: ->
+    @switchNavBar( [ "users", "users-create" ] )
+
+    oldEntity = @currentEntity
+
+    user = @currentEntity = new Witness.views.UsersProfile()
+    oldEntity?.destroy()
+    user.render()
+    @setLayout( user )
+
   profile: ( id ) ->
     @switchNavBar( "users" )
 
@@ -43,7 +53,6 @@ class AdminApplication extends Backbone.Router
     user = @currentEntity = new Witness.views.UsersProfile( {}, id )
 
     user.model.fetch().always =>
-    # users.fetch( add: on, data: offset: page * 10 ).then =>
       oldEntity?.destroy()
       user.render()
       @setLayout( user )
@@ -51,6 +60,7 @@ class AdminApplication extends Backbone.Router
   routes:
     "": "dashboard"
     "users": "users"
+    "users/new": "createUser"
     "users/page/:page": "users"
     "users/:id": "profile"
 

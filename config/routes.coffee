@@ -9,6 +9,7 @@ module.exports = (app, route) ->
       route "get", "/", "admin_users#list"
       route "get", "/:id", "admin_users#profile"
       route "put", "/:id", "admin_users#saveProfile"
+      route "post", "/", "admin_users#createProfile"
       route "delete", "/:id", "admin_users#deleteProfile"
 
   route "get", "/login", "auth#loginForm"
