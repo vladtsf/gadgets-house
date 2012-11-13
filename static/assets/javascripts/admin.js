@@ -14999,8 +14999,18 @@ return buf.join("");
 
     AdminApplication.prototype.initialize = function() {};
 
-    AdminApplication.prototype.switchNavBar = function(tab) {
-      return $(".b-admin-navbar li:has(a[data-action])").removeClass("active").filter(":has([data-action=\"" + tab + "\"])").addClass("active");
+    AdminApplication.prototype.switchNavBar = function(tabs) {
+      var item, selector, _i, _len;
+      selector = [];
+      if (tabs.constructor === Array) {
+        for (_i = 0, _len = tabs.length; _i < _len; _i++) {
+          item = tabs[_i];
+          selector.push("[data-action=\"" + item + "\"]");
+        }
+      } else {
+        selector.push("[data-action=\"" + tabs + "\"]");
+      }
+      return $(".b-admin-navbar li:has(a[data-action])").removeClass("active").filter(":has(" + (selector.join(",")) + ")").addClass("active");
     };
 
     AdminApplication.prototype.setLayout = function(view) {
@@ -15019,7 +15029,7 @@ return buf.join("");
       if (page == null) {
         page = 0;
       }
-      this.switchNavBar("users");
+      this.switchNavBar(["users", "users-list"]);
       oldEntity = this.currentEntity;
       users = this.currentEntity = new Witness.models.Users();
       return users.fetch({

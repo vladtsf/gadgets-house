@@ -2,10 +2,17 @@ class AdminApplication extends Backbone.Router
 
   initialize: ->
 
-  switchNavBar: ( tab )->
+  switchNavBar: ( tabs )->
+    selector = []
+
+    if tabs.constructor is Array
+      selector.push( "[data-action=\"#{ item }\"]" ) for own item in tabs
+    else
+      selector.push( "[data-action=\"#{ tabs }\"]" )
+
     $( ".b-admin-navbar li:has(a[data-action])" )
       .removeClass( "active" )
-      .filter( ":has([data-action=\"#{ tab }\"])" )
+      .filter( ":has(#{ selector.join( "," ) })" )
       .addClass( "active" )
 
   setLayout: ( view ) ->
@@ -16,7 +23,7 @@ class AdminApplication extends Backbone.Router
     @currentEntity?.destroy()
 
   users: ( page = 0 ) ->
-    @switchNavBar( "users" )
+    @switchNavBar( [ "users", "users-list" ] )
 
     oldEntity = @currentEntity
 
