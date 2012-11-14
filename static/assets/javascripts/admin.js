@@ -14952,9 +14952,7 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
-buf.push('<div class="container b-users-profile"><div class="row"><h1>Профиль</h1></div><form class="bs-docs-example"><fieldset><legend>' + escape((interp =  !!locals._id ? "Редактирование" : "Создание" ) == null ? '' : interp) + '</legend><input');
-buf.push(attrs({ 'type':("hidden"), 'name':("_id"), 'value':(locals._id) }, {"type":true,"name":true,"value":true}));
-buf.push('/><div class="control-group"><label class="control-label">Email</label><input');
+buf.push('<div class="container b-users-profile"><div class="row"><h1>Профиль</h1></div><form class="bs-docs-example"><fieldset><legend>' + escape((interp =  !!locals._id ? "Редактирование" : "Создание" ) == null ? '' : interp) + '</legend><div class="control-group"><label class="control-label">Email</label><input');
 buf.push(attrs({ 'type':("text"), 'name':("email"), 'placeholder':("Email"), 'value':(locals.email) }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/></div><div class="control-group"><label class="control-label">Пароль</label><input type="password" name="password" placeholder="Пароль"/></div><div class="control-group"><label class="control-label">Повторите пароль</label><input type="password" name="password_repeat" placeholder="Пароль"/></div><div class="control-group"><label class="control-label checkbox"><input');
 buf.push(attrs({ 'type':("checkbox"), 'name':("admin"), 'value':("on"), 'checked':(_.indexOf(locals.roles, 1) > -1) }, {"type":true,"name":true,"value":true,"checked":true}));
@@ -15054,12 +15052,12 @@ return buf.join("");
       return this.setLayout(user);
     };
 
-    AdminApplication.prototype.profile = function(id) {
+    AdminApplication.prototype.profile = function(_id) {
       var oldEntity, user,
         _this = this;
       this.switchNavBar("users");
       oldEntity = this.currentEntity;
-      user = this.currentEntity = new Witness.views.UsersProfile({}, id);
+      user = this.currentEntity = new Witness.views.UsersProfile({}, _id);
       return user.model.fetch().always(function() {
         if (oldEntity != null) {
           oldEntity.destroy();
@@ -15097,6 +15095,8 @@ return buf.join("");
       return UserProfile.__super__.constructor.apply(this, arguments);
     }
 
+    UserProfile.prototype.idAttribute = "_id";
+
     UserProfile.prototype.initialize = function() {
       var _this = this;
       return this.validation = (function() {
@@ -15111,7 +15111,7 @@ return buf.join("");
             }
           ],
           password: {
-            required: !(_this.get("id") != null),
+            required: !(_this.get("_id") != null),
             minLength: 4,
             msg: "Пароль должен быть длиннее 4 символов"
           },
@@ -15125,7 +15125,7 @@ return buf.join("");
 
     UserProfile.prototype.url = function() {
       var _ref;
-      return "/admin/users/" + ((_ref = this.get("id")) != null ? _ref : "");
+      return "/admin/users/" + ((_ref = this.get("_id")) != null ? _ref : "");
     };
 
     return UserProfile;
@@ -15324,7 +15324,7 @@ return buf.join("");
 
     UsersProfile.prototype.initialize = function(options, _id) {
       this.model = new Witness.models.UserProfile({
-        id: _id
+        _id: _id
       });
       return Backbone.Validation.bind(this);
     };

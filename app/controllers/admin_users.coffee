@@ -84,7 +84,6 @@ class AdminUsers
           user.save ->
             res.json
               _id: user._id
-              id: user._id
               email: user.email
               roles: user.roles
 

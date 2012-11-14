@@ -45,12 +45,12 @@ class AdminApplication extends Backbone.Router
     user.render()
     @setLayout( user )
 
-  profile: ( id ) ->
+  profile: ( _id ) ->
     @switchNavBar( "users" )
 
     oldEntity = @currentEntity
 
-    user = @currentEntity = new Witness.views.UsersProfile( {}, id )
+    user = @currentEntity = new Witness.views.UsersProfile( {}, _id )
 
     user.model.fetch().always =>
       oldEntity?.destroy()

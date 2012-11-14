@@ -5,8 +5,6 @@
     fieldset
       legend #{ !!locals._id ? "Редактирование" : "Создание" }
 
-      input(type="hidden", name="_id", value=locals._id)
-
       div.control-group
         label.control-label Email
         input(type="text", name="email", placeholder="Email", value=locals.email)

@@ -1,7 +1,7 @@
 class Witness.views.UsersProfile extends Witness.View
 
   initialize: ( options, _id ) ->
-    @model = new Witness.models.UserProfile( id: _id )
+    @model = new Witness.models.UserProfile( { _id } )
     Backbone.Validation.bind( @ )
 
   destroy: ->
