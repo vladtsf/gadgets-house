@@ -20,7 +20,7 @@ module.exports = (app) ->
 
       unless controllerInstance.stop
         if controllerInstance[actionName]?
-          controllerInstance[actionName].apply(@, arguments)
+          controllerInstance[actionName].apply( controllerInstance, arguments)
         else
           res.render()
 

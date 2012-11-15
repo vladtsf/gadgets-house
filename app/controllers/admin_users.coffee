@@ -1,14 +1,43 @@
 User = require( "../models/user" )
 _ = require( "underscore" )
+backbone = require "../middleware/backbone"
+
+class UserValidator extends backbone.Model
+
+  idAttribute: "_id"
+
+  initialize: ->
+    @validation = do =>
+      email: [
+        required: on
+        msg: "Поле не может быть пустым"
+      ,
+        pattern: 'email'
+        msg: "Введите действительный адрес email"
+      ]
+      password:
+        required: not @id?
+        minLength: 4
+        msg: "Пароль должен быть длиннее 4 символов"
+      password_repeat:
+        equalTo: "password"
+        msg: "Пароли не совпадают"
 
 class AdminUsers
 
   @publicFields: "_id email roles"
 
-  constructor: ( req, res ) ->
-    unless req.user
+  constructor: ( @req, @res ) ->
+    unless @req.user
       @stop = on
-      res.send( 403 )
+      @res.send( 403 )
+
+  validate: ( ) ->
+    if typeof ( validation = new UserValidator( @req.body ).validate() ) isnt "undefined"
+      @res.json( 403, { errors: validation, success: off } )
+      return off
+
+    return on
 
   list: ( req, res ) ->
     offset = parseInt( req.query.offset ) || 0
@@ -47,7 +76,7 @@ class AdminUsers
     roles = []
     roles.push( 1 ) if req.body.admin?
 
-    # @todo: validation
+    @validate()
 
     User
       .findOne( { _id } )
@@ -68,6 +97,8 @@ class AdminUsers
     roles = []
     roles.push( 1 ) if req.body.admin?
 
+    @validate()
+
     User
       .findOne( email: req.body.email )
       .exec ( err, found ) ->
@@ -78,8 +109,6 @@ class AdminUsers
             email: req.body.email
             password: req.body.password
             roles: roles
-
-          # @todo: validation
 
           user.save ->
             res.json

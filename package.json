@@ -10,6 +10,8 @@
   "dependencies": {
     "coffee-script": "*",
     "underscore": "*",
+    "backbone": "*",
+    "backbone-validation": "*",
     "express-namespace": "*",
     "passport": "*",
     "passport-local": "*",
