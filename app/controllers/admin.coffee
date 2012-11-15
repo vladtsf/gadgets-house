@@ -1,11 +1,11 @@
-module.exports = class
+class AdminController
 
-  constructor: ( req, res ) ->
+  constructor: ( @req, @res ) ->
     unless req.user
       @stop = on
-      res.redirect("/login")
+      res.redirect( "/login" )
+    else unless 1 in req.user.roles
+      @stop = on
+      res.redirect( "/" )
 
-# User = require( "../models/user" )
-# user = new User( email: 'vtsvang@gmail.com', password: "12345678", roles: [1] )
-# user.save ->
-#   console.log(arguments)
+module.exports = AdminController

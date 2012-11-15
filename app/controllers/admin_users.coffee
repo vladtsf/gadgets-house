@@ -1,6 +1,7 @@
 User = require( "../models/user" )
 _ = require( "underscore" )
-backbone = require "../middleware/backbone"
+backbone = require( "../middleware/backbone" )
+AdminController = require( "./admin" )
 
 class UserValidator extends backbone.Model
 
@@ -23,14 +24,11 @@ class UserValidator extends backbone.Model
         equalTo: "password"
         msg: "Пароли не совпадают"
 
-class AdminUsers
+class AdminUsers extends AdminController
 
   @publicFields: "_id email roles"
 
-  constructor: ( @req, @res ) ->
-    unless @req.user
-      @stop = on
-      @res.send( 403 )
+  initialize: ->
 
   validate: ( ) ->
     if typeof ( validation = new UserValidator( @req.body ).validate() ) isnt "undefined"
