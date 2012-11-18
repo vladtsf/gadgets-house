@@ -1,3 +1,5 @@
+_.mixin( _.str.exports() )
+
 jQuery ->
   $.ajaxSetup
     headers:

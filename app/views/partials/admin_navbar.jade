@@ -31,8 +31,17 @@
                   a(href="#users", data-action="users-list") Список
                 li
                   a(href="#users/new", data-action="users-create") Создать
-          li
-            a(href='#') Категории
+          li.dropdown
+            a.dropdown-toggle(href="#", data-toggle="dropdown", data-action="categories")
+                | Категории
+                b.caret
+              ul.dropdown-menu
+                li
+                  a(href="#categories", data-action="categories-list") Список
+                li
+                  a(href="#categories/new", data-action="categories-create") Создать
+                li
+                  a(href="#manufacturers", data-action="manufacturers") Производители
           li
             a(href='#') Товары
           li

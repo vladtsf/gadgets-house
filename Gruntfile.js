@@ -68,7 +68,9 @@ module.exports = function(grunt) {
       witness: {
         src: [
           "vendor/assets/javascripts/jquery-1.8.2.js",
+          "vendor/assets/javascripts/jquery.form.js",
           "vendor/assets/javascripts/underscore.js",
+          "vendor/assets/javascripts/underscore.string.js",
           "vendor/assets/javascripts/backbone.js",
           "vendor/assets/javascripts/backbone-validation.js",
           "vendor/assets/javascripts/jade-runtime.js",

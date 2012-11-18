@@ -45,6 +45,16 @@ class AdminApplication extends Backbone.Router
     user.render()
     @setLayout( user )
 
+  createCategory: ->
+    @switchNavBar( [ "categories", "categories-create" ] )
+
+    oldEntity = @currentEntity
+
+    category = @currentEntity = new Witness.views.CategoryEdit()
+    oldEntity?.destroy()
+    category.render()
+    @setLayout( category )
+
   profile: ( _id ) ->
     @switchNavBar( "users" )
 
@@ -59,10 +69,13 @@ class AdminApplication extends Backbone.Router
 
   routes:
     "": "dashboard"
+
     "users": "users"
     "users/new": "createUser"
     "users/page/:page": "users"
     "users/:id": "profile"
+
+    "categories/new": "createCategory"
 
 
 window.admin = new AdminApplication()

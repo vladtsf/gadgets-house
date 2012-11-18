@@ -1,0 +1,29 @@
+.container.b-users-profile
+  .row
+    h1 Категория
+  form.bs-docs-example
+    fieldset
+      legend Название
+      input(type="text", name="name", value=locals.name)
+
+      legend Поля
+      .control-group.b-category-fields
+        //- .input-append.b-category-field
+        //-       input.span(type="text", name="name", placeholder="Надпись", value=locals.name)
+        //-       //- btn-primary
+        //-       button.b-category-field__multiline.btn(type="button", class="", data-multiline=false)
+        //-         i.icon-align-justify
+        //-       //- btn-danger
+        //-       button.btn.btn-success.b-category-field__add(type="button")
+        //-         i.b-category-field__icon.icon-plus
+        //-       button.btn.btn-primary.b-category-field__save
+        //-         i.icon-ok
+
+
+      legend Действия
+      .control-group
+        button.b-profile__save.btn.btn-primary(type="submit", name="save", value="on") Сохранить
+        if locals._id
+          &nbsp;
+          button.b-profile__delete.btn(type="button", name="delete", value="on") Удалить
+

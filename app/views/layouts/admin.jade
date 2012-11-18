@@ -20,4 +20,6 @@ html
       include ../partials/admin_navbar
       #layout
 
-    script(type="text/javascript", src="/assets/javascripts/admin#{ request.app.settings.env === 'production' ? '.min' : '' }.js")
+    block footer
+      script(type="text/javascript", src="/assets/javascripts/admin#{ request.app.settings.env === 'production' ? '.min' : '' }.js")
+
