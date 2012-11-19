@@ -9,11 +9,11 @@ class Witness.views.CategoryFieldEdit extends Witness.View
   multiline: ( event ) ->
     $ct = $( event.currentTarget )
 
-    @validate()
-
     $ct
       .toggleClass( "btn-warning" )
       .data( "multiline", not $ct.data( "multiline" ) )
+
+    @validate()
 
   addField: ( event ) ->
     $ct = $( event.currentTarget )

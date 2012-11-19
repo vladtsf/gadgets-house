@@ -17184,9 +17184,10 @@ return buf.join("");
     };
 
     CategoryEdit.prototype.save = function(e) {
-      var $buttons, $save, model, processing, _i, _len, _ref,
+      var $buttons, $save, fields, model, processing, _i, _len, _ref,
         _this = this;
       this.validate();
+      fields = [];
       _ref = this.fields.models;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         model = _ref[_i];
@@ -17194,7 +17195,11 @@ return buf.join("");
         if (!model.isValid()) {
           return false;
         }
+        fields.push(model.toJSON());
       }
+      this.model.set("fields", fields, {
+        silent: true
+      });
       if (this.model.isValid()) {
         $buttons = this.$el.find("button");
         $buttons.attr("disabled", true);
@@ -17267,8 +17272,8 @@ return buf.join("");
     CategoryFieldEdit.prototype.multiline = function(event) {
       var $ct;
       $ct = $(event.currentTarget);
-      this.validate();
-      return $ct.toggleClass("btn-warning").data("multiline", !$ct.data("multiline"));
+      $ct.toggleClass("btn-warning").data("multiline", !$ct.data("multiline"));
+      return this.validate();
     };
 
     CategoryFieldEdit.prototype.addField = function(event) {

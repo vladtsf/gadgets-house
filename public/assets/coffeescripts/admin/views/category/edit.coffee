@@ -39,9 +39,14 @@ class Witness.views.CategoryEdit extends Witness.View
   save: ( e ) ->
     @validate()
 
+    fields = []
+
     for own model in @fields.models
       model.validate()
       return off unless model.isValid()
+      fields.push( model.toJSON() )
+
+    @model.set( "fields", fields, silent: on )
 
     if @model.isValid()
       $buttons = @$el.find( "button" )
