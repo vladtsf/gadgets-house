@@ -4,21 +4,16 @@
   form.bs-docs-example
     fieldset
       legend Название
-      input(type="text", name="name", value=locals.name)
+      .control-group
+        label.control-label Полное название в каталоге
+        input(type="text", name="category-name", placeholder="Название", value=locals.name)
+
+      .control-group
+        label.control-label Системное имя
+        input(type="text", name="category-machine-name", placeholder="Имя", value=locals.name)
 
       legend Поля
       .control-group.b-category-fields
-        //- .input-append.b-category-field
-        //-       input.span(type="text", name="name", placeholder="Надпись", value=locals.name)
-        //-       //- btn-primary
-        //-       button.b-category-field__multiline.btn(type="button", class="", data-multiline=false)
-        //-         i.icon-align-justify
-        //-       //- btn-danger
-        //-       button.btn.btn-success.b-category-field__add(type="button")
-        //-         i.b-category-field__icon.icon-plus
-        //-       button.btn.btn-primary.b-category-field__save
-        //-         i.icon-ok
-
 
       legend Действия
       .control-group

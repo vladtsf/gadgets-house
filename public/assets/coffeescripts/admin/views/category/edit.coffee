@@ -7,58 +7,59 @@ class Witness.views.CategoryEdit extends Witness.View
       view = new Witness.views.CategoryFieldEdit( model: model )
       @$el.find( ".b-category-fields" ).append( view.render().el )
 
-    # @model = new Witness.models.UserProfile( { _id } )
-    # Backbone.Validation.bind( @ )
+    @model = @model ? new Witness.models.Category( { _id } )
+    Backbone.Validation.bind( @ )
 
   destroy: ->
     @remove()
 
   render: ->
     Witness.View::render.apply( @, arguments )
-    @fields.add( new Witness.models.CategoryField() )
+
+    @fields.add( @model?.fields ? [ new Witness.models.CategoryField() ] )
     @
 
 
-  # data: ->
-  #   data = {}
+  data: ->
+    "name": @$el.find( "[name=\"category-name\"]" ).val()
+    "machine-name": @$el.find( "[name=\"category-machine-name\"]" ).val()
 
-  #   for own field in @$el.find( "form" ).serializeArray()
-  #     data[ field.name ] = field.value
+  buttonMsg: ( $button, msg, success, cb ) ->
+    oldText = $button.text()
+    $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( msg )
 
-  #   data
+    setTimeout ->
+      $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( oldText )
 
-  # buttonMsg: ( $button, msg, success, cb ) ->
-  #   oldText = $button.text()
-  #   $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( msg )
+      cb() if typeof cb is "function"
+    , 2e3
 
-  #   setTimeout ->
-  #     $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( oldText )
+    @
 
-  #     cb() if typeof cb is "function"
-  #   , 2e3
+  save: ( e ) ->
+    @validate()
 
-  #   @
+    for own model in @fields.models
+      model.validate()
+      return off unless model.isValid()
 
-  # save: ( e ) ->
-  #   @validate()
+    if @model.isValid()
+      $buttons = @$el.find( "button" )
 
-  #   if @model.isValid()
-  #     $buttons = @$el.find( "button" )
+      $buttons.attr( "disabled", on )
+      $save = $buttons.filter( ".b-profile__save" )
 
-  #     $buttons.attr( "disabled", on )
-  #     $save = $buttons.filter( ".b-profile__save" )
+      processing = @model.save()
 
-  #     processing = @model.save()
+      processing.fail =>
+        @buttonMsg $save, "Ошибка", false, ->
+          $buttons.attr( "disabled", off )
 
-  #     processing.fail =>
-  #       @buttonMsg $save, "Ошибка", false, ->
-  #         $buttons.attr( "disabled", off )
+      processing.then =>
+        @buttonMsg $save, "Сохранено", true, ->
+          $buttons.attr( "disabled", off )
 
-  #     processing.then =>
-  #       @buttonMsg $save, "Сохранено", true, ->
-  #         $buttons.attr( "disabled", off )
-
-  #   off
+    off
 
   # removeAccount: ->
   #   $buttons = @$el.find( "button" )
@@ -74,24 +75,24 @@ class Witness.views.CategoryEdit extends Witness.View
   #   processing.then =>
   #     location.hash = "users"
 
-  # validate: ( e ) ->
-  #   @model.set( @data(), silent: on )
+  validate: ( e ) ->
+    @model.set( @data(), silent: on )
 
-  #   @$el.find( "form .control-group" )
-  #     .removeClass( "error" )
-  #     .find( ".help-inline" )
-  #     .remove()
+    @$el.find( ".control-group" )
+      .removeClass( "error" )
+      .find( ".help-inline" )
+      .remove()
 
-  #   for own field, msg of @model.validate()
-  #     $errField = @$el.find( "form .control-group:has([name=\"#{ field }\"])" )
+    for own field, msg of @model.validate()
+      $errField = @$el.find( "form .control-group:has([name=\"category-#{ field }\"])" )
 
-  #     $errField
-  #       .addClass( "error" )
-  #       .append( """<span class="help-inline">#{ msg }</span>""" )
+      $errField
+        .addClass( "error" )
+        .append( """<span class="help-inline">#{ msg }</span>""" )
 
-  events: {}
-    # "submit form": "save"
+  events:
+    "submit form": "save"
     # "click .b-profile__delete": "removeAccount"
-    # "focusout": "validate"
+    "focusout": "validate"
 
   template: "category-edit"

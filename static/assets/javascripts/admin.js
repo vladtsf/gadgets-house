@@ -16591,9 +16591,11 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
-buf.push('<div class="container b-users-profile"><div class="row"><h1>Категория</h1></div><form class="bs-docs-example"><fieldset><legend>Название</legend><input');
-buf.push(attrs({ 'type':("text"), 'name':("name"), 'value':(locals.name) }, {"type":true,"name":true,"value":true}));
-buf.push('/><legend>Поля</legend><div class="control-group b-category-fields"></div><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
+buf.push('<div class="container b-users-profile"><div class="row"><h1>Категория</h1></div><form class="bs-docs-example"><fieldset><legend>Название</legend><div class="control-group"><label class="control-label">Полное название в каталоге</label><input');
+buf.push(attrs({ 'type':("text"), 'name':("category-name"), 'placeholder':("Название"), 'value':(locals.name) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push('/></div><div class="control-group"><label class="control-label">Системное имя</label><input');
+buf.push(attrs({ 'type':("text"), 'name':("category-machine-name"), 'placeholder':("Имя"), 'value':(locals.name) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push('/></div><legend>Поля</legend><div class="control-group b-category-fields"></div><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
 if ( locals._id)
 {
 buf.push('&nbsp;<button type="button" name="delete" value="on" class="b-profile__delete btn">Удалить</button>');
@@ -16610,10 +16612,10 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
-buf.push('<span class="add-on b-category-field__valid"><i class="icon-remove"></i></span><input');
+buf.push('<span class="add-on b-category-field__valid"><i></i></span><input');
 buf.push(attrs({ 'type':("text"), 'name':("machine-name"), 'placeholder':("Системное имя"), 'value':(locals.name), "class": ('span') }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/><input');
-buf.push(attrs({ 'type':("text"), 'name':("name"), 'placeholder':("Надпись"), 'value':(locals.name), "class": ('span') }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push(attrs({ 'type':("text"), 'name':("name"), 'placeholder':("Название"), 'value':(locals.name), "class": ('span') }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/><button type="button" class="b-category-field__multiline btn "><i class="icon-align-justify"></i></button><button type="button" class="btn btn-success b-category-field__add"><i class="b-category-field__icon icon-plus"></i></button>');
 }
 return buf.join("");
@@ -16875,7 +16877,6 @@ return buf.join("");
           machineName: [
             {
               required: true,
-              minLength: 4,
               msg: "Поле не может быть пустым"
             }, {
               pattern: "machine-name",
@@ -16918,6 +16919,55 @@ return buf.join("");
     return CategoryFields;
 
   })(Backbone.Collection);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.models.Category = (function(_super) {
+
+    __extends(Category, _super);
+
+    function Category() {
+      return Category.__super__.constructor.apply(this, arguments);
+    }
+
+    Category.prototype.idAttribute = "_id";
+
+    Category.prototype.initialize = function() {
+      var _this = this;
+      return this.validation = (function() {
+        return {
+          "machine-name": [
+            {
+              required: true,
+              msg: "Поле не может быть пустым"
+            }, {
+              pattern: "machine-name",
+              msg: "Поле должно состоять из латинских символов и цифр"
+            }, {
+              pattern: "starts-with-word",
+              msg: "Поле не должно начинаться с цифры"
+            }
+          ],
+          "name": {
+            required: true,
+            msg: "Поле не может быть пустым"
+          }
+        };
+      })();
+    };
+
+    Category.prototype.url = function() {
+      var _ref;
+      return "/admin/categories/" + ((_ref = this.get("_id")) != null ? _ref : "");
+    };
+
+    return Category;
+
+  })(Backbone.Model);
 
 }).call(this);
 
@@ -17086,15 +17136,20 @@ return buf.join("");
     }
 
     CategoryEdit.prototype.initialize = function(options, _id) {
-      var _this = this;
+      var _ref,
+        _this = this;
       this.fields = new Witness.models.CategoryFields();
-      return this.fields.on("add", function(model, collection) {
+      this.fields.on("add", function(model, collection) {
         var view;
         view = new Witness.views.CategoryFieldEdit({
           model: model
         });
         return _this.$el.find(".b-category-fields").append(view.render().el);
       });
+      this.model = (_ref = this.model) != null ? _ref : new Witness.models.Category({
+        _id: _id
+      });
+      return Backbone.Validation.bind(this);
     };
 
     CategoryEdit.prototype.destroy = function() {
@@ -17102,12 +17157,84 @@ return buf.join("");
     };
 
     CategoryEdit.prototype.render = function() {
+      var _ref, _ref1;
       Witness.View.prototype.render.apply(this, arguments);
-      this.fields.add(new Witness.models.CategoryField());
+      this.fields.add((_ref = (_ref1 = this.model) != null ? _ref1.fields : void 0) != null ? _ref : [new Witness.models.CategoryField()]);
       return this;
     };
 
-    CategoryEdit.prototype.events = {};
+    CategoryEdit.prototype.data = function() {
+      return {
+        "name": this.$el.find("[name=\"category-name\"]").val(),
+        "machine-name": this.$el.find("[name=\"category-machine-name\"]").val()
+      };
+    };
+
+    CategoryEdit.prototype.buttonMsg = function($button, msg, success, cb) {
+      var oldText;
+      oldText = $button.text();
+      $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(msg);
+      setTimeout(function() {
+        $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(oldText);
+        if (typeof cb === "function") {
+          return cb();
+        }
+      }, 2e3);
+      return this;
+    };
+
+    CategoryEdit.prototype.save = function(e) {
+      var $buttons, $save, model, processing, _i, _len, _ref,
+        _this = this;
+      this.validate();
+      _ref = this.fields.models;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        model = _ref[_i];
+        model.validate();
+        if (!model.isValid()) {
+          return false;
+        }
+      }
+      if (this.model.isValid()) {
+        $buttons = this.$el.find("button");
+        $buttons.attr("disabled", true);
+        $save = $buttons.filter(".b-profile__save");
+        processing = this.model.save();
+        processing.fail(function() {
+          return _this.buttonMsg($save, "Ошибка", false, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+        processing.then(function() {
+          return _this.buttonMsg($save, "Сохранено", true, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+      }
+      return false;
+    };
+
+    CategoryEdit.prototype.validate = function(e) {
+      var $errField, field, msg, _ref, _results;
+      this.model.set(this.data(), {
+        silent: true
+      });
+      this.$el.find(".control-group").removeClass("error").find(".help-inline").remove();
+      _ref = this.model.validate();
+      _results = [];
+      for (field in _ref) {
+        if (!__hasProp.call(_ref, field)) continue;
+        msg = _ref[field];
+        $errField = this.$el.find("form .control-group:has([name=\"category-" + field + "\"])");
+        _results.push($errField.addClass("error").append("<span class=\"help-inline\">" + msg + "</span>"));
+      }
+      return _results;
+    };
+
+    CategoryEdit.prototype.events = {
+      "submit form": "save",
+      "focusout": "validate"
+    };
 
     CategoryEdit.prototype.template = "category-edit";
 

@@ -1,15 +1,10 @@
-_.extend( Backbone.Validation.patterns, {
-  "machine-name": /^[a-z\d]+$/,
-  "starts-with-word": /^[^\d]/
-} )
-
-class Witness.models.CategoryField extends Backbone.Model
+class Witness.models.Category extends Backbone.Model
 
   idAttribute: "_id"
 
   initialize: ->
     @validation = do =>
-      machineName: [
+      "machine-name": [
         required: on
         msg: "Поле не может быть пустым"
       ,
@@ -19,8 +14,8 @@ class Witness.models.CategoryField extends Backbone.Model
         pattern: "starts-with-word"
         msg: "Поле не должно начинаться с цифры"
       ]
-      name:
+      "name":
         required: on
         msg: "Поле не может быть пустым"
 
-  # url: -> "/admin/users/#{ @get( "_id" ) ? "" }"
+  url: -> "/admin/categories/#{ @get( "_id" ) ? "" }"
