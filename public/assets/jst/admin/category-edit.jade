@@ -1,4 +1,4 @@
-.container.b-users-profile
+.container.b-category
   .row
     h1 Категория
   form.bs-docs-example
@@ -13,6 +13,7 @@
         input(type="text", name="category-machine-name", placeholder="Имя", value=locals.name)
 
       legend Поля
+      button.btn.btn-success.pull-right.b-category__add-field(type="button") Добавить
       .control-group.b-category-fields
 
       legend Действия
@@ -20,5 +21,5 @@
         button.b-profile__save.btn.btn-primary(type="submit", name="save", value="on") Сохранить
         if locals._id
           &nbsp;
-          button.b-profile__delete.btn(type="button", name="delete", value="on") Удалить
+          button.b-category__delete.btn(type="button", name="delete", value="on") Удалить
 

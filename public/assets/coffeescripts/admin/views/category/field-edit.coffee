@@ -15,14 +15,6 @@ class Witness.views.CategoryFieldEdit extends Witness.View
 
     @validate()
 
-  addField: ( event ) ->
-    $ct = $( event.currentTarget )
-
-    $ct.toggleClass( "btn-danger btn-success b-category-field__add b-category-field__delete" )
-    $ct.find( ".b-category-field__icon" ).toggleClass( "icon-plus icon-minus" )
-
-    @model.collection.add( new Witness.models.CategoryField() )
-
   deleteField: ( event ) ->
     @model.destroy()
     @remove()
@@ -44,7 +36,6 @@ class Witness.views.CategoryFieldEdit extends Witness.View
 
   events:
     "click .b-category-field__multiline": "multiline"
-    "click .b-category-field__add": "addField"
     "click .b-category-field__delete": "deleteField"
     "keyup": "validate"
 

@@ -45,15 +45,34 @@ class AdminApplication extends Backbone.Router
     user.render()
     @setLayout( user )
 
-  createCategory: ->
-    @switchNavBar( [ "categories", "categories-create" ] )
+  category: ( id ) ->
+    @switchNavBar( unless id then [ "categories", "categories-create" ] else [ "categories" ] )
 
     oldEntity = @currentEntity
 
-    category = @currentEntity = new Witness.views.CategoryEdit()
-    oldEntity?.destroy()
-    category.render()
-    @setLayout( category )
+    category = @currentEntity = new Witness.views.CategoryEdit( {}, id )
+
+    render = =>
+      oldEntity?.destroy()
+      category.render()
+      @setLayout( category )
+
+    if id
+      category.model.fetch().then render
+    else
+      render()
+
+  listCategories: ( page = 0 ) ->
+    @switchNavBar( [ "categories", "categories-list" ] )
+
+    oldEntity = @currentEntity
+
+    categories = @currentEntity = new Witness.views.CategoriesList()
+
+    categories.model.fetch( add: on, data: offset: page * 10 ).then =>
+      oldEntity?.destroy()
+      categories.render()
+      @setLayout( categories )
 
   profile: ( _id ) ->
     @switchNavBar( "users" )
@@ -75,7 +94,10 @@ class AdminApplication extends Backbone.Router
     "users/page/:page": "users"
     "users/:id": "profile"
 
-    "categories/new": "createCategory"
+    "categories": "listCategories"
+    "categories/new": "category"
+    "categories/page/:page": "listCategories"
+    "categories/:id": "category"
 
 
 window.admin = new AdminApplication()

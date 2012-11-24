@@ -1,0 +1,9 @@
+ul.pager.b-categories-pager
+  page = ~~(offset / 10)
+  previousDisabled = offset === 0
+  nextDisabled = count - offset < 10
+
+  li.previous(class=previousDisabled ? "disabled" : "")
+    a(href= page > 0 ? "#categories/page/#{ previousDisabled ? page : page - 1 }" : "#categories") &larr; Prev
+  li.next(class=nextDisabled ? "disabled" : "")
+    a(href="#categories/page/#{ nextDisabled ? page : page + 1 }") Next &rarr;

@@ -8,6 +8,7 @@
     "deploy": "git push heroku `git rev-parse --abbrev-ref HEAD`:master"
   },
   "dependencies": {
+    "async": "*",
     "coffee-script": "*",
     "underscore": "*",
     "backbone": "*",

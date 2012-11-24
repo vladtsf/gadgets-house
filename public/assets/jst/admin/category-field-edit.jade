@@ -2,7 +2,7 @@ span.add-on.b-category-field__valid
   i
 input.span(type="text", name="machine-name", placeholder="Системное имя", value=locals.name)
 input.span(type="text", name="name", placeholder="Название", value=locals.name)
-button.b-category-field__multiline.btn(type="button", class="", data-multiline=false)
+button.b-category-field__multiline.btn(type="button", class=locals.multiline ? "btn-warning" : "", data-multiline=locals.multiline)
   i.icon-align-justify
-button.btn.btn-success.b-category-field__add(type="button")
-  i.b-category-field__icon.icon-plus
+button.btn.btn-danger.b-category-field__delete(type="button")
+  i.b-category-field__icon.icon-minus

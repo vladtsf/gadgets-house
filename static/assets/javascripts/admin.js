@@ -16585,20 +16585,121 @@ exports.rethrow = function rethrow(err, filename, lineno){
 
 }(window.jQuery);
 jade.templates = jade.templates || {};
+jade.templates['categories-list'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div class="container b-categories"><div class="row"><h1>Категории</h1></div><div class="row b-categories__list">');
+if ( _.keys( locals ).length)
+{
+buf.push('<table class="table table-bordered table-striped b-categories-table"><tbody class="b-categories-table__body">');
+// iterate locals
+;(function(){
+  if ('number' == typeof locals.length) {
+
+    for (var idx = 0, $$l = locals.length; idx < $$l; idx++) {
+      var category = locals[idx];
+
+buf.push('<tr><td><a');
+buf.push(attrs({ 'href':("#categories/" + ( category._id ) + "") }, {"href":true}));
+buf.push('>');
+var __val__ = category.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</a>&nbsp;( ' + escape((interp =  category.machineName ) == null ? '' : interp) + ' )</td></tr>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var idx in locals) {
+      $$l++;      var category = locals[idx];
+
+buf.push('<tr><td><a');
+buf.push(attrs({ 'href':("#categories/" + ( category._id ) + "") }, {"href":true}));
+buf.push('>');
+var __val__ = category.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</a>&nbsp;( ' + escape((interp =  category.machineName ) == null ? '' : interp) + ' )</td></tr>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</tbody></table>');
+}
+else
+{
+buf.push('<div class="alert"><strong>Список пуст</strong></div>');
+}
+buf.push('</div><div class="row b-categories__pagination"></div></div>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['categories-page'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<ul class="pager b-categories-pager">');
+var page = (~~(locals.offset / 10));
+var previousDisabled = (locals.offset === 0);
+var nextDisabled = (locals.count - locals.offset < 10);
+buf.push('<li');
+buf.push(attrs({ "class": ('previous') + ' ' + (previousDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':(page > 0 ? "#users/page/" + ( previousDisabled ? page : page - 1 ) + "" : "#users") }, {"href":true}));
+buf.push('>&larr; Prev</a></li><li');
+buf.push(attrs({ "class": ('next') + ' ' + (nextDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':("#users/page/" + ( nextDisabled ? page : page + 1 ) + "") }, {"href":true}));
+buf.push('>Next &rarr;</a></li></ul>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['categories-pager'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<ul class="pager b-categories-pager">');
+var page = (~~(offset / 10));
+var previousDisabled = (offset === 0);
+var nextDisabled = (count - offset < 10);
+buf.push('<li');
+buf.push(attrs({ "class": ('previous') + ' ' + (previousDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':(page > 0 ? "#categories/page/" + ( previousDisabled ? page : page - 1 ) + "" : "#categories") }, {"href":true}));
+buf.push('>&larr; Prev</a></li><li');
+buf.push(attrs({ "class": ('next') + ' ' + (nextDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':("#categories/page/" + ( nextDisabled ? page : page + 1 ) + "") }, {"href":true}));
+buf.push('>Next &rarr;</a></li></ul>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
 jade.templates['category-edit'] = (function(){
   return function anonymous(locals, attrs, escape, rethrow, merge) {
 attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
 var buf = [];
 with (locals || {}) {
 var interp;
-buf.push('<div class="container b-users-profile"><div class="row"><h1>Категория</h1></div><form class="bs-docs-example"><fieldset><legend>Название</legend><div class="control-group"><label class="control-label">Полное название в каталоге</label><input');
+buf.push('<div class="container b-category"><div class="row"><h1>Категория</h1></div><form class="bs-docs-example"><fieldset><legend>Название</legend><div class="control-group"><label class="control-label">Полное название в каталоге</label><input');
 buf.push(attrs({ 'type':("text"), 'name':("category-name"), 'placeholder':("Название"), 'value':(locals.name) }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/></div><div class="control-group"><label class="control-label">Системное имя</label><input');
 buf.push(attrs({ 'type':("text"), 'name':("category-machine-name"), 'placeholder':("Имя"), 'value':(locals.name) }, {"type":true,"name":true,"placeholder":true,"value":true}));
-buf.push('/></div><legend>Поля</legend><div class="control-group b-category-fields"></div><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
+buf.push('/></div><legend>Поля</legend><button type="button" class="btn btn-success pull-right b-category__add-field">Добавить</button><div class="control-group b-category-fields"></div><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
 if ( locals._id)
 {
-buf.push('&nbsp;<button type="button" name="delete" value="on" class="b-profile__delete btn">Удалить</button>');
+buf.push('&nbsp;<button type="button" name="delete" value="on" class="b-category__delete btn">Удалить</button>');
 }
 buf.push('</div></fieldset></form></div>');
 }
@@ -16616,7 +16717,9 @@ buf.push('<span class="add-on b-category-field__valid"><i></i></span><input');
 buf.push(attrs({ 'type':("text"), 'name':("machine-name"), 'placeholder':("Системное имя"), 'value':(locals.name), "class": ('span') }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/><input');
 buf.push(attrs({ 'type':("text"), 'name':("name"), 'placeholder':("Название"), 'value':(locals.name), "class": ('span') }, {"type":true,"name":true,"placeholder":true,"value":true}));
-buf.push('/><button type="button" class="b-category-field__multiline btn "><i class="icon-align-justify"></i></button><button type="button" class="btn btn-success b-category-field__add"><i class="b-category-field__icon icon-plus"></i></button>');
+buf.push('/><button');
+buf.push(attrs({ 'type':("button"), 'data-multiline':(locals.multiline), "class": ('b-category-field__multiline') + ' ' + ('btn') + ' ' + (locals.multiline ? "btn-warning" : "") }, {"class":true,"type":true,"data-multiline":true}));
+buf.push('><i class="icon-align-justify"></i></button><button type="button" class="btn btn-danger b-category-field__delete"><i class="b-category-field__icon icon-minus"></i></button>');
 }
 return buf.join("");
 };
@@ -16807,16 +16910,47 @@ return buf.join("");
       return this.setLayout(user);
     };
 
-    AdminApplication.prototype.createCategory = function() {
-      var category, oldEntity;
-      this.switchNavBar(["categories", "categories-create"]);
+    AdminApplication.prototype.category = function(id) {
+      var category, oldEntity, render,
+        _this = this;
+      this.switchNavBar(!id ? ["categories", "categories-create"] : ["categories"]);
       oldEntity = this.currentEntity;
-      category = this.currentEntity = new Witness.views.CategoryEdit();
-      if (oldEntity != null) {
-        oldEntity.destroy();
+      category = this.currentEntity = new Witness.views.CategoryEdit({}, id);
+      render = function() {
+        if (oldEntity != null) {
+          oldEntity.destroy();
+        }
+        category.render();
+        return _this.setLayout(category);
+      };
+      if (id) {
+        return category.model.fetch().then(render);
+      } else {
+        return render();
       }
-      category.render();
-      return this.setLayout(category);
+    };
+
+    AdminApplication.prototype.listCategories = function(page) {
+      var categories, oldEntity,
+        _this = this;
+      if (page == null) {
+        page = 0;
+      }
+      this.switchNavBar(["categories", "categories-list"]);
+      oldEntity = this.currentEntity;
+      categories = this.currentEntity = new Witness.views.CategoriesList();
+      return categories.model.fetch({
+        add: true,
+        data: {
+          offset: page * 10
+        }
+      }).then(function() {
+        if (oldEntity != null) {
+          oldEntity.destroy();
+        }
+        categories.render();
+        return _this.setLayout(categories);
+      });
     };
 
     AdminApplication.prototype.profile = function(_id) {
@@ -16840,7 +16974,10 @@ return buf.join("");
       "users/new": "createUser",
       "users/page/:page": "users",
       "users/:id": "profile",
-      "categories/new": "createCategory"
+      "categories": "listCategories",
+      "categories/new": "category",
+      "categories/page/:page": "listCategories",
+      "categories/:id": "category"
     };
 
     return AdminApplication;
@@ -16848,6 +16985,37 @@ return buf.join("");
   })(Backbone.Router);
 
   window.admin = new AdminApplication();
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.models.Categories = (function(_super) {
+
+    __extends(Categories, _super);
+
+    function Categories() {
+      return Categories.__super__.constructor.apply(this, arguments);
+    }
+
+    Categories.prototype.initialize = function(categories) {
+      return this.model = Witness.models.Category;
+    };
+
+    Categories.prototype.parse = function(res) {
+      this.offset = res.offset;
+      this.count = res.count;
+      this.limit = res.limit;
+      return res.categories;
+    };
+
+    Categories.prototype.url = "/admin/categories";
+
+    return Categories;
+
+  })(Backbone.Collection);
 
 }).call(this);
 
@@ -16940,7 +17108,7 @@ return buf.join("");
       var _this = this;
       return this.validation = (function() {
         return {
-          "machine-name": [
+          machineName: [
             {
               required: true,
               msg: "Поле не может быть пустым"
@@ -16952,7 +17120,7 @@ return buf.join("");
               msg: "Поле не должно начинаться с цифры"
             }
           ],
-          "name": {
+          name: {
             required: true,
             msg: "Поле не может быть пустым"
           }
@@ -17139,15 +17307,15 @@ return buf.join("");
       var _ref,
         _this = this;
       this.fields = new Witness.models.CategoryFields();
+      this.model = (_ref = this.model) != null ? _ref : new Witness.models.Category({
+        _id: _id
+      });
       this.fields.on("add", function(model, collection) {
         var view;
         view = new Witness.views.CategoryFieldEdit({
           model: model
         });
         return _this.$el.find(".b-category-fields").append(view.render().el);
-      });
-      this.model = (_ref = this.model) != null ? _ref : new Witness.models.Category({
-        _id: _id
       });
       return Backbone.Validation.bind(this);
     };
@@ -17157,16 +17325,15 @@ return buf.join("");
     };
 
     CategoryEdit.prototype.render = function() {
-      var _ref, _ref1;
       Witness.View.prototype.render.apply(this, arguments);
-      this.fields.add((_ref = (_ref1 = this.model) != null ? _ref1.fields : void 0) != null ? _ref : [new Witness.models.CategoryField()]);
+      this.fields.add(this.model.get("fields"));
       return this;
     };
 
     CategoryEdit.prototype.data = function() {
       return {
         "name": this.$el.find("[name=\"category-name\"]").val(),
-        "machine-name": this.$el.find("[name=\"category-machine-name\"]").val()
+        "machineName": this.$el.find("[name=\"category-machine-name\"]").val()
       };
     };
 
@@ -17211,12 +17378,36 @@ return buf.join("");
           });
         });
         processing.then(function() {
+          location.hash = "categories/" + _this.model.id;
           return _this.buttonMsg($save, "Сохранено", true, function() {
             return $buttons.attr("disabled", false);
           });
         });
       }
       return false;
+    };
+
+    CategoryEdit.prototype.del = function() {
+      var $buttons, $delete, processing,
+        _this = this;
+      $buttons = this.$el.find("button");
+      $buttons.attr("disabled", true);
+      $delete = $buttons.filter(".b-category__delete");
+      processing = this.model.destroy({
+        wait: true
+      });
+      processing.fail(function() {
+        return _this.buttonMsg($delete, "Ошибка", false, function() {
+          return $buttons.attr("disabled", false);
+        });
+      });
+      return processing.then(function() {
+        return location.hash = "categories";
+      });
+    };
+
+    CategoryEdit.prototype.addField = function() {
+      return this.fields.add(new Witness.models.CategoryField());
     };
 
     CategoryEdit.prototype.validate = function(e) {
@@ -17238,6 +17429,8 @@ return buf.join("");
 
     CategoryEdit.prototype.events = {
       "submit form": "save",
+      "click .b-category__delete": "del",
+      "click .b-category__add-field": "addField",
       "focusout": "validate"
     };
 
@@ -17276,14 +17469,6 @@ return buf.join("");
       return this.validate();
     };
 
-    CategoryFieldEdit.prototype.addField = function(event) {
-      var $ct;
-      $ct = $(event.currentTarget);
-      $ct.toggleClass("btn-danger btn-success b-category-field__add b-category-field__delete");
-      $ct.find(".b-category-field__icon").toggleClass("icon-plus icon-minus");
-      return this.model.collection.add(new Witness.models.CategoryField());
-    };
-
     CategoryFieldEdit.prototype.deleteField = function(event) {
       this.model.destroy();
       return this.remove();
@@ -17305,7 +17490,6 @@ return buf.join("");
 
     CategoryFieldEdit.prototype.events = {
       "click .b-category-field__multiline": "multiline",
-      "click .b-category-field__add": "addField",
       "click .b-category-field__delete": "deleteField",
       "keyup": "validate"
     };
@@ -17313,6 +17497,70 @@ return buf.join("");
     CategoryFieldEdit.prototype.template = "category-field-edit";
 
     return CategoryFieldEdit;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.CategoriesList = (function(_super) {
+
+    __extends(CategoriesList, _super);
+
+    function CategoriesList() {
+      return CategoriesList.__super__.constructor.apply(this, arguments);
+    }
+
+    CategoriesList.prototype.initialize = function(options, _id) {
+      return this.model = new Witness.models.Categories();
+    };
+
+    CategoriesList.prototype.destroy = function() {
+      return this.remove();
+    };
+
+    CategoriesList.prototype.render = function() {
+      var count, offset, _ref, _ref1;
+      Witness.View.prototype.render.apply(this, arguments);
+      if ((_ref = this.pager) == null) {
+        this.pager = new Witness.views.CategoriesPager();
+      }
+      this.pager.setElement(this.$el.find(".b-categories__pagination"));
+      return this.pager.render((_ref1 = this.model, offset = _ref1.offset, count = _ref1.count, _ref1));
+    };
+
+    CategoriesList.prototype.template = "categories-list";
+
+    return CategoriesList;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.CategoriesPager = (function(_super) {
+
+    __extends(CategoriesPager, _super);
+
+    function CategoriesPager() {
+      return CategoriesPager.__super__.constructor.apply(this, arguments);
+    }
+
+    CategoriesPager.prototype.initialize = function() {};
+
+    CategoriesPager.prototype.template = "categories-pager";
+
+    CategoriesPager.prototype.options = {
+      el: "#layout"
+    };
+
+    return CategoriesPager;
 
   })(Witness.View);
 

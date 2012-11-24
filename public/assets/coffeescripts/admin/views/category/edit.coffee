@@ -2,12 +2,12 @@ class Witness.views.CategoryEdit extends Witness.View
 
   initialize: ( options, _id ) ->
     @fields = new Witness.models.CategoryFields()
+    @model = @model ? new Witness.models.Category( { _id } )
 
     @fields.on "add", ( model, collection ) =>
       view = new Witness.views.CategoryFieldEdit( model: model )
       @$el.find( ".b-category-fields" ).append( view.render().el )
 
-    @model = @model ? new Witness.models.Category( { _id } )
     Backbone.Validation.bind( @ )
 
   destroy: ->
@@ -15,14 +15,14 @@ class Witness.views.CategoryEdit extends Witness.View
 
   render: ->
     Witness.View::render.apply( @, arguments )
+    @fields.add @model.get( "fields" )
 
-    @fields.add( @model?.fields ? [ new Witness.models.CategoryField() ] )
     @
 
 
   data: ->
     "name": @$el.find( "[name=\"category-name\"]" ).val()
-    "machine-name": @$el.find( "[name=\"category-machine-name\"]" ).val()
+    "machineName": @$el.find( "[name=\"category-machine-name\"]" ).val()
 
   buttonMsg: ( $button, msg, success, cb ) ->
     oldText = $button.text()
@@ -61,24 +61,28 @@ class Witness.views.CategoryEdit extends Witness.View
           $buttons.attr( "disabled", off )
 
       processing.then =>
+        location.hash = "categories/#{ @model.id }"
         @buttonMsg $save, "Сохранено", true, ->
           $buttons.attr( "disabled", off )
 
     off
 
-  # removeAccount: ->
-  #   $buttons = @$el.find( "button" )
-  #   $buttons.attr( "disabled", on )
-  #   $delete = $buttons.filter( ".b-profile__delete" )
+  del: ->
+    $buttons = @$el.find( "button" )
+    $buttons.attr( "disabled", on )
+    $delete = $buttons.filter( ".b-category__delete" )
 
-  #   processing = @model.destroy( wait: on )
+    processing = @model.destroy( wait: on )
 
-  #   processing.fail =>
-  #     @buttonMsg $delete, "Ошибка", false, ->
-  #       $buttons.attr( "disabled", off )
+    processing.fail =>
+      @buttonMsg $delete, "Ошибка", false, ->
+        $buttons.attr( "disabled", off )
 
-  #   processing.then =>
-  #     location.hash = "users"
+    processing.then =>
+      location.hash = "categories"
+
+  addField: ->
+    @fields.add( new Witness.models.CategoryField() )
 
   validate: ( e ) ->
     @model.set( @data(), silent: on )
@@ -97,7 +101,8 @@ class Witness.views.CategoryEdit extends Witness.View
 
   events:
     "submit form": "save"
-    # "click .b-profile__delete": "removeAccount"
+    "click .b-category__delete": "del"
+    "click .b-category__add-field": "addField"
     "focusout": "validate"
 
   template: "category-edit"

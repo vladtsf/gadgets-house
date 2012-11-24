@@ -4,7 +4,7 @@ class Witness.models.Category extends Backbone.Model
 
   initialize: ->
     @validation = do =>
-      "machine-name": [
+      machineName: [
         required: on
         msg: "Поле не может быть пустым"
       ,
@@ -14,7 +14,7 @@ class Witness.models.Category extends Backbone.Model
         pattern: "starts-with-word"
         msg: "Поле не должно начинаться с цифры"
       ]
-      "name":
+      name:
         required: on
         msg: "Поле не может быть пустым"
 

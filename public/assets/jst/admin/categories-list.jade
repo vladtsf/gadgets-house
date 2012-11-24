@@ -1,0 +1,18 @@
+.container.b-categories
+  .row
+    h1 Категории
+
+  .row.b-categories__list
+    if _.keys( locals ).length
+      table.table.table-bordered.table-striped.b-categories-table
+          tbody.b-categories-table__body
+            each category, idx in locals
+              tr
+                td
+                  a( href="#categories/#{ category._id }" )=category.name
+                  |&nbsp;( #{ category.machineName } )
+    else
+      .alert
+        strong Список пуст
+
+  .row.b-categories__pagination
