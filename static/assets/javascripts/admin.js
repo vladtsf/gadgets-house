@@ -16695,7 +16695,7 @@ var interp;
 buf.push('<div class="container b-category"><div class="row"><h1>Категория</h1></div><form class="bs-docs-example"><fieldset><legend>Название</legend><div class="control-group"><label class="control-label">Полное название в каталоге</label><input');
 buf.push(attrs({ 'type':("text"), 'name':("category-name"), 'placeholder':("Название"), 'value':(locals.name) }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/></div><div class="control-group"><label class="control-label">Системное имя</label><input');
-buf.push(attrs({ 'type':("text"), 'name':("category-machine-name"), 'placeholder':("Имя"), 'value':(locals.name) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push(attrs({ 'type':("text"), 'name':("category-machineName"), 'placeholder':("Имя"), 'value':(locals.name) }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/></div><legend>Поля</legend><button type="button" class="btn btn-success pull-right b-category__add-field">Добавить</button><div class="control-group b-category-fields"></div><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
 if ( locals._id)
 {
@@ -17325,15 +17325,18 @@ return buf.join("");
     };
 
     CategoryEdit.prototype.render = function() {
+      var _ref;
       Witness.View.prototype.render.apply(this, arguments);
-      this.fields.add(this.model.get("fields"));
+      if ((_ref = this.model.get("fields")) != null ? _ref.length : void 0) {
+        this.fields.add(this.model.get("fields"));
+      }
       return this;
     };
 
     CategoryEdit.prototype.data = function() {
       return {
         "name": this.$el.find("[name=\"category-name\"]").val(),
-        "machineName": this.$el.find("[name=\"category-machine-name\"]").val()
+        "machineName": this.$el.find("[name=\"category-machineName\"]").val()
       };
     };
 

@@ -15,14 +15,15 @@ class Witness.views.CategoryEdit extends Witness.View
 
   render: ->
     Witness.View::render.apply( @, arguments )
-    @fields.add @model.get( "fields" )
+
+    @fields.add @model.get( "fields" ) if @model.get( "fields" )?.length
 
     @
 
 
   data: ->
     "name": @$el.find( "[name=\"category-name\"]" ).val()
-    "machineName": @$el.find( "[name=\"category-machine-name\"]" ).val()
+    "machineName": @$el.find( "[name=\"category-machineName\"]" ).val()
 
   buttonMsg: ( $button, msg, success, cb ) ->
     oldText = $button.text()
