@@ -16725,6 +16725,59 @@ return buf.join("");
 };
 })();
 jade.templates = jade.templates || {};
+jade.templates['manufacturers-list'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div class="container b-manufacturers"><div class="row"><h1>Производители</h1></div><div class="row b-manufacturers__list">');
+if ( _.keys( locals ).length)
+{
+buf.push('<table class="table table-bordered table-striped b-manufacturers-table"><tbody class="b-manufacturers-table__body">');
+// iterate locals
+;(function(){
+  if ('number' == typeof locals.length) {
+
+    for (var idx = 0, $$l = locals.length; idx < $$l; idx++) {
+      var manufacturer = locals[idx];
+
+buf.push('<tr><td><a');
+buf.push(attrs({ 'href':("#manufacturers/" + ( manufacturer._id ) + "") }, {"href":true}));
+buf.push('>');
+var __val__ = manufacturer.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</a></td></tr>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var idx in locals) {
+      $$l++;      var manufacturer = locals[idx];
+
+buf.push('<tr><td><a');
+buf.push(attrs({ 'href':("#manufacturers/" + ( manufacturer._id ) + "") }, {"href":true}));
+buf.push('>');
+var __val__ = manufacturer.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</a></td></tr>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</tbody></table>');
+}
+else
+{
+buf.push('<div class="alert"><strong>Список пуст</strong></div>');
+}
+buf.push('</div><div class="row b-manufacturers__pagination"></div></div>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
 jade.templates['user'] = (function(){
   return function anonymous(locals, attrs, escape, rethrow, merge) {
 attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
@@ -16953,6 +17006,29 @@ return buf.join("");
       });
     };
 
+    AdminApplication.prototype.listManufacturers = function(page) {
+      var manufacturers, oldEntity,
+        _this = this;
+      if (page == null) {
+        page = 0;
+      }
+      this.switchNavBar(["categories", "manufacturers"]);
+      oldEntity = this.currentEntity;
+      manufacturers = this.currentEntity = new Witness.views.ManufacturersList();
+      return manufacturers.model.fetch({
+        add: true,
+        data: {
+          offset: page * 10
+        }
+      }).then(function() {
+        if (oldEntity != null) {
+          oldEntity.destroy();
+        }
+        manufacturers.render();
+        return _this.setLayout(manufacturers);
+      });
+    };
+
     AdminApplication.prototype.profile = function(_id) {
       var oldEntity, user,
         _this = this;
@@ -16977,7 +17053,8 @@ return buf.join("");
       "categories": "listCategories",
       "categories/new": "category",
       "categories/page/:page": "listCategories",
-      "categories/:id": "category"
+      "categories/:id": "category",
+      "manufacturers": "listManufacturers"
     };
 
     return AdminApplication;
@@ -17136,6 +17213,74 @@ return buf.join("");
     return Category;
 
   })(Backbone.Model);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.models.Manufacturer = (function(_super) {
+
+    __extends(Manufacturer, _super);
+
+    function Manufacturer() {
+      return Manufacturer.__super__.constructor.apply(this, arguments);
+    }
+
+    Manufacturer.prototype.idAttribute = "_id";
+
+    Manufacturer.prototype.initialize = function() {
+      var _this = this;
+      return this.validation = (function() {
+        return {
+          name: {
+            required: true,
+            msg: "Поле не может быть пустым"
+          }
+        };
+      })();
+    };
+
+    Manufacturer.prototype.url = function() {
+      var _ref;
+      return "/admin/manufacturers/" + ((_ref = this.get("_id")) != null ? _ref : "");
+    };
+
+    return Manufacturer;
+
+  })(Backbone.Model);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.models.Manufacturers = (function(_super) {
+
+    __extends(Manufacturers, _super);
+
+    function Manufacturers() {
+      return Manufacturers.__super__.constructor.apply(this, arguments);
+    }
+
+    Manufacturers.prototype.initialize = function(categories) {
+      return this.model = Witness.models.Manufacturer;
+    };
+
+    Manufacturers.prototype.parse = function(res) {
+      this.offset = res.offset;
+      this.count = res.count;
+      this.limit = res.limit;
+      return res.manufacturers;
+    };
+
+    Manufacturers.prototype.url = "/admin/manufacturers";
+
+    return Manufacturers;
+
+  })(Backbone.Collection);
 
 }).call(this);
 
@@ -17564,6 +17709,38 @@ return buf.join("");
     };
 
     return CategoriesPager;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.ManufacturersList = (function(_super) {
+
+    __extends(ManufacturersList, _super);
+
+    function ManufacturersList() {
+      return ManufacturersList.__super__.constructor.apply(this, arguments);
+    }
+
+    ManufacturersList.prototype.initialize = function(options, _id) {
+      return this.model = new Witness.models.Manufacturers();
+    };
+
+    ManufacturersList.prototype.destroy = function() {
+      return this.remove();
+    };
+
+    ManufacturersList.prototype.render = function() {
+      return Witness.View.prototype.render.apply(this, arguments);
+    };
+
+    ManufacturersList.prototype.template = "manufacturers-list";
+
+    return ManufacturersList;
 
   })(Witness.View);
 

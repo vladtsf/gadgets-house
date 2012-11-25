@@ -1,0 +1,17 @@
+.container.b-manufacturers
+  .row
+    h1 Производители
+
+  .row.b-manufacturers__list
+    if _.keys( locals ).length
+      table.table.table-bordered.table-striped.b-manufacturers-table
+          tbody.b-manufacturers-table__body
+            each manufacturer, idx in locals
+              tr
+                td
+                  a( href="#manufacturers/#{ manufacturer._id }" )=manufacturer.name
+    else
+      .alert
+        strong Список пуст
+
+  .row.b-manufacturers__pagination
