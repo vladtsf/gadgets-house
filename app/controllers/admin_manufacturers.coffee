@@ -4,41 +4,24 @@ async = require( "async" )
 backbone = require( "../middleware/backbone" )
 AdminController = require( "./admin" )
 
-_.extend( backbone.Validation.patterns, {
-  "machine-name": /^[a-z\d]+$/,
-  "starts-with-word": /^[^\d]/
-} )
-
-class CategoryValidator extends backbone.Model
+class ManufacturerValidator extends backbone.Model
 
   idAttribute: "_id"
 
   initialize: ->
     @validation = do =>
-      "machineName": [
-        required: on
-        msg: "Поле не может быть пустым"
-      ,
-        pattern: "machine-name"
-        msg: "Поле должно состоять из латинских символов и цифр"
-      ,
-        pattern: "starts-with-word"
-        msg: "Поле не должно начинаться с цифры"
-      ]
       "name":
         required: on
         msg: "Поле не может быть пустым"
 
-class AdminCategories extends AdminController
+class AdminManufacturers extends AdminController
 
-  Category = require "../models/category"
-
-  # @publicFields: "_id email roles"
+  Manufacturer = require "../models/manufacturer"
 
   initialize: ->
 
-  validate: ( ) ->
-    if typeof ( validation = new CategoryValidator( @req.body ).validate() ) isnt "undefined"
+  validate: ->
+    if typeof ( validation = new ManufacturerValidator( @req.body ).validate() ) isnt "undefined"
       @res.json( 400, { errors: validation, success: off } )
       return off
 
@@ -48,31 +31,32 @@ class AdminCategories extends AdminController
     offset = parseInt( req.query.offset ) || 0
     limit = parseInt( req.query.limit ) || 10
 
-    Category
+    Manufacturer
       .count()
       .exec ( err, count ) ->
-        Category
+        Manufacturer
           .find()
           .sort( "-_id" )
           .skip( offset )
           .limit( limit )
-          .exec ( err, categories ) ->
+          .exec ( err, manufacturers ) ->
             if err
               res.send 404
             else
-              res.json { offset, limit, count, categories }
+              res.json { offset, limit, count, manufacturers }
 
   show: ( req, res ) ->
-    Category
+    Manufacturer
       .findOne( _id: req.route.params.id )
-      .exec ( err, category ) =>
+      .exec ( err, manufacturer ) =>
         return res.send( 503 ) if err
-        return res.send( 404 ) unless category
+        return res.send( 404 ) unless manufacturer
 
-        res.json category
+        res.json manufacturer
 
   del: ( req, res ) ->
-    Category
+    console.log "asdsads"
+    Manufacturer
       .remove( _id: req.route.params.id )
       .exec ( err ) ->
         if err
@@ -83,29 +67,29 @@ class AdminCategories extends AdminController
   create: ( req, res ) ->
     return unless @validate()
 
-    new Category( req.body ).save ( err, category ) =>
+    new Manufacturer( { name } = req.body ).save ( err, manufacturer ) =>
       return res.send( 503 ) if err
 
-      res.json category
+      res.json manufacturer
 
   update: ( req, res ) ->
     return unless @validate()
 
-    { name, machineName, fields } = req.body
+    { name } = req.body
 
-    Category
+    Manufacturer
       .findOne( _id: req.route.params.id )
-      .exec ( err, category ) =>
+      .exec ( err, manufacturer ) =>
         if err
           res.send 503
-        else unless category
+        else unless manufacturer
           res.send 404
         else
           category.update
-            $set: { name, machineName, fields }
+            $set: { name }
           , ( err, numAffected ) =>
             return res.send( 503 ) if err
 
-            res.json category
+            res.json manufacturer
 
-module.exports = AdminCategories
+module.exports = AdminManufacturers

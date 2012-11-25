@@ -32,7 +32,7 @@ class AdminUsers extends AdminController
 
   validate: ( ) ->
     if typeof ( validation = new UserValidator( @req.body ).validate() ) isnt "undefined"
-      @res.json( 403, { errors: validation, success: off } )
+      @res.json( 400, { errors: validation, success: off } )
       return off
 
     return on
