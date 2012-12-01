@@ -36,7 +36,7 @@ class AdminManufacturers extends AdminController
       .exec ( err, count ) ->
         Manufacturer
           .find()
-          .sort( "-_id" )
+          .sort( "+_id" )
           .skip( offset )
           .limit( limit )
           .exec ( err, manufacturers ) ->
@@ -55,7 +55,6 @@ class AdminManufacturers extends AdminController
         res.json manufacturer
 
   del: ( req, res ) ->
-    console.log "asdsads"
     Manufacturer
       .remove( _id: req.route.params.id )
       .exec ( err ) ->
@@ -85,7 +84,7 @@ class AdminManufacturers extends AdminController
         else unless manufacturer
           res.send 404
         else
-          category.update
+          manufacturer.update
             $set: { name }
           , ( err, numAffected ) =>
             return res.send( 503 ) if err

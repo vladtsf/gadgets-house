@@ -16725,6 +16725,20 @@ return buf.join("");
 };
 })();
 jade.templates = jade.templates || {};
+jade.templates['manufacturers-item'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<form class="form-inline input-append"><input');
+buf.push(attrs({ 'type':("text"), 'value':(locals.name), 'name':("name"), "class": ('b-name-field') }, {"type":true,"value":true,"name":true}));
+buf.push('/><button type="save" disabled="disabled" class="btn btn-success b-save-changes"><i class="icon-ok"></i></button><button type="button" class="btn btn-danger b-remove-item"><i class="icon-remove"></i></button></form>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
 jade.templates['manufacturers-list'] = (function(){
   return function anonymous(locals, attrs, escape, rethrow, merge) {
 attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
@@ -16734,45 +16748,13 @@ var interp;
 buf.push('<div class="container b-manufacturers"><div class="row"><h1>Производители</h1></div><div class="row b-manufacturers__list">');
 if ( _.keys( locals ).length)
 {
-buf.push('<table class="table table-bordered table-striped b-manufacturers-table"><tbody class="b-manufacturers-table__body">');
-// iterate locals
-;(function(){
-  if ('number' == typeof locals.length) {
-
-    for (var idx = 0, $$l = locals.length; idx < $$l; idx++) {
-      var manufacturer = locals[idx];
-
-buf.push('<tr><td><a');
-buf.push(attrs({ 'href':("#manufacturers/" + ( manufacturer._id ) + "") }, {"href":true}));
-buf.push('>');
-var __val__ = manufacturer.name
-buf.push(escape(null == __val__ ? "" : __val__));
-buf.push('</a></td></tr>');
-    }
-
-  } else {
-    var $$l = 0;
-    for (var idx in locals) {
-      $$l++;      var manufacturer = locals[idx];
-
-buf.push('<tr><td><a');
-buf.push(attrs({ 'href':("#manufacturers/" + ( manufacturer._id ) + "") }, {"href":true}));
-buf.push('>');
-var __val__ = manufacturer.name
-buf.push(escape(null == __val__ ? "" : __val__));
-buf.push('</a></td></tr>');
-    }
-
-  }
-}).call(this);
-
-buf.push('</tbody></table>');
+buf.push('<ul class="b-manufacturers-list unstyled"></ul>');
 }
 else
 {
 buf.push('<div class="alert"><strong>Список пуст</strong></div>');
 }
-buf.push('</div><div class="row b-manufacturers__pagination"></div></div>');
+buf.push('</div><div class="row"><button type="button" class="btn btn-primary pull-right b-add-button">Добавить</button></div><div class="row b-manufacturers__pagination"></div></div>');
 }
 return buf.join("");
 };
@@ -17718,6 +17700,63 @@ return buf.join("");
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+  Witness.views.ManufacturersListItem = (function(_super) {
+
+    __extends(ManufacturersListItem, _super);
+
+    function ManufacturersListItem() {
+      return ManufacturersListItem.__super__.constructor.apply(this, arguments);
+    }
+
+    ManufacturersListItem.prototype.initialize = function() {
+      return this.model.on("destroy", this.destroy, this);
+    };
+
+    ManufacturersListItem.prototype.options = {
+      tagName: "li"
+    };
+
+    ManufacturersListItem.prototype.destroy = function() {
+      return this.remove();
+    };
+
+    ManufacturersListItem.prototype.change = function(event) {
+      var isChanged, val;
+      isChanged = this.model.get("name") === (val = _.trim(($(event.currentTarget)).val()));
+      return this.$el.find(".b-save-changes").attr("disabled", isChanged || val.length === 0);
+    };
+
+    ManufacturersListItem.prototype.del = function() {
+      return this.model.destroy();
+    };
+
+    ManufacturersListItem.prototype.save = function(event) {
+      var _this = this;
+      this.model.set("name", (this.$el.find(".b-name-field")).val());
+      this.model.save().then(function() {
+        return (_this.$el.find(".b-save-changes")).attr("disabled", true);
+      });
+      return false;
+    };
+
+    ManufacturersListItem.prototype.events = {
+      "keyup .b-name-field": "change",
+      "click .b-remove-item": "del",
+      "submit form": "save"
+    };
+
+    ManufacturersListItem.prototype.template = "manufacturers-item";
+
+    return ManufacturersListItem;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   Witness.views.ManufacturersList = (function(_super) {
 
     __extends(ManufacturersList, _super);
@@ -17727,7 +17766,17 @@ return buf.join("");
     }
 
     ManufacturersList.prototype.initialize = function(options, _id) {
-      return this.model = new Witness.models.Manufacturers();
+      var _this = this;
+      this.model = new Witness.models.Manufacturers();
+      return this.model.on("add", function(model, collection) {
+        return (function(model) {
+          return setTimeout(function() {
+            return _this.$el.find(".b-manufacturers-list").append(new Witness.views.ManufacturersListItem({
+              model: model
+            }).render().el);
+          });
+        })(model);
+      });
     };
 
     ManufacturersList.prototype.destroy = function() {
@@ -17736,6 +17785,14 @@ return buf.join("");
 
     ManufacturersList.prototype.render = function() {
       return Witness.View.prototype.render.apply(this, arguments);
+    };
+
+    ManufacturersList.prototype.add = function() {
+      return this.model.add(new Witness.models.Manufacturer);
+    };
+
+    ManufacturersList.prototype.events = {
+      "click .b-add-button": "add"
     };
 
     ManufacturersList.prototype.template = "manufacturers-list";
