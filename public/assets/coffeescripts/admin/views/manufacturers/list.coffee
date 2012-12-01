@@ -6,7 +6,13 @@ class Witness.views.ManufacturersList extends Witness.View
     @model.on "add", ( model, collection ) =>
       do ( model ) =>
         setTimeout =>
+          @$el.find( ".b-list-is-empty" ).hide()
           @$el.find( ".b-manufacturers-list" ).append new Witness.views.ManufacturersListItem( model: model ).render().el
+
+    @model.on "remove", ( model, collection ) =>
+      unless collection.length
+        @$el.find( ".b-list-is-empty" ).show()
+
 
   destroy: ->
     @remove()
@@ -19,15 +25,5 @@ class Witness.views.ManufacturersList extends Witness.View
 
   events:
     "click .b-add-button": "add"
-
-    # $holder = @$el.find( ".b-manufacturers-list" )
-
-    # for own model in @model.models
-
-
-    # @pager ?= new Witness.views.CategoriesPager()
-    # @pager.setElement( @$el.find( ".b-categories__pagination" ) )
-    # @pager.render( { offset, count } = @model )
-
 
   template: "manufacturers-list"

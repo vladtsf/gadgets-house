@@ -3,11 +3,9 @@
     h1 Производители
 
   .row.b-manufacturers__list
-    if _.keys( locals ).length
-      ul.b-manufacturers-list.unstyled
-    else
-      .alert
-        strong Список пуст
+    ul.b-manufacturers-list.unstyled
+    .alert.b-list-is-empty
+      strong Список пуст
   .row
     button.btn.btn-primary.pull-right.b-add-button( type="button" ) Добавить
 
