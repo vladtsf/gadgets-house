@@ -16745,16 +16745,7 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
-buf.push('<div class="container b-manufacturers"><div class="row"><h1>Производители</h1></div><div class="row b-manufacturers__list">');
-if ( _.keys( locals ).length)
-{
-buf.push('<ul class="b-manufacturers-list unstyled"></ul>');
-}
-else
-{
-buf.push('<div class="alert"><strong>Список пуст</strong></div>');
-}
-buf.push('</div><div class="row"><button type="button" class="btn btn-primary pull-right b-add-button">Добавить</button></div><div class="row b-manufacturers__pagination"></div></div>');
+buf.push('<div class="container b-manufacturers"><div class="row"><h1>Производители</h1></div><div class="row b-manufacturers__list"><ul class="b-manufacturers-list unstyled"></ul><div class="alert b-list-is-empty"><strong>Список пуст</strong></div></div><div class="row"><button type="button" class="btn btn-primary pull-right b-add-button">Добавить</button></div><div class="row b-manufacturers__pagination"></div></div>');
 }
 return buf.join("");
 };
@@ -17768,14 +17759,20 @@ return buf.join("");
     ManufacturersList.prototype.initialize = function(options, _id) {
       var _this = this;
       this.model = new Witness.models.Manufacturers();
-      return this.model.on("add", function(model, collection) {
+      this.model.on("add", function(model, collection) {
         return (function(model) {
           return setTimeout(function() {
+            _this.$el.find(".b-list-is-empty").hide();
             return _this.$el.find(".b-manufacturers-list").append(new Witness.views.ManufacturersListItem({
               model: model
             }).render().el);
           });
         })(model);
+      });
+      return this.model.on("remove", function(model, collection) {
+        if (!collection.length) {
+          return _this.$el.find(".b-list-is-empty").show();
+        }
       });
     };
 
