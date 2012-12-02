@@ -43,7 +43,14 @@
                 li.divider
                 li
                   a(href="#manufacturers", data-action="manufacturers") Производители
-          li
-            a(href='#') Товары
+          li.dropdown
+            a.dropdown-toggle(href="#", data-toggle="dropdown", data-action="products")
+                | Товары
+                b.caret
+              ul.dropdown-menu
+                li
+                  a(href="#products", data-action="products-list") Список
+                li
+                  a(href="#products/new", data-action="products-create") Создать
           li
             a(href='#') Заказы

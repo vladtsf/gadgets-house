@@ -16751,6 +16751,25 @@ return buf.join("");
 };
 })();
 jade.templates = jade.templates || {};
+jade.templates['product-edit'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div class="container b-product"><div class="row"><h1>Товар</h1></div><form><fieldset><legend>Основное</legend><div class="control-group"><label class="control-label">Название</label><input type="text" name="name" placeholder="Название" value=""/></div><div class="control-group"><label class="control-label">Категория</label><select><option>Выберите</option><option>Подставки</option><option>Планшеты</option><option>Смартфоны</option></select></div><div class="control-group"><label class="control-label">Производитель</label><input');
+buf.push(attrs({ 'type':("text"), 'name':("manufacturer"), 'placeholder':("Производитель"), 'data-provide':("typeahead"), 'data-items':("4"), 'data-source':(JSON.stringify(["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Dakota","North Carolina","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"])) }, {"type":true,"name":true,"placeholder":true,"data-provide":true,"data-items":true,"data-source":true}));
+buf.push('/></div><div class="control-group"><label class="control-label">Цена</label><input type="text" name="price" placeholder="Цена" value=""/></div><div class="control-group"><label class="control-label">Описание</label><textarea name="description" placeholder="Описание" rows="3"></textarea></div><div class="control-group"><label class="control-label">Фото</label><input type="file" name="photo" value=""/></div><legend>Дополнительно</legend><div class="control-group"><label class="control-label">Inline поле</label><input type="text" name="inline" placeholder="Inline" value=""/></div><div class="control-group"><label class="control-label">Miltiline поле</label><textarea name="multiline" placeholder="Multiline" rows="3"></textarea></div><legend>Фотографии</legend><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
+if ( locals._id)
+{
+buf.push('&nbsp;<button type="button" name="delete" value="on" class="b-category__delete btn">Удалить</button>');
+}
+buf.push('</div></fieldset></form></div>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
 jade.templates['user'] = (function(){
   return function anonymous(locals, attrs, escape, rethrow, merge) {
 attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
@@ -16956,6 +16975,26 @@ return buf.join("");
       }
     };
 
+    AdminApplication.prototype.product = function(id) {
+      var oldEntity, product, render,
+        _this = this;
+      this.switchNavBar(!id ? ["products", "products-create"] : ["products"]);
+      oldEntity = this.currentEntity;
+      product = this.currentEntity = new Witness.views.ProductEdit({}, id);
+      render = function() {
+        if (oldEntity != null) {
+          oldEntity.destroy();
+        }
+        product.render();
+        return _this.setLayout(product);
+      };
+      if (id) {
+        return product.model.fetch().then(render);
+      } else {
+        return render();
+      }
+    };
+
     AdminApplication.prototype.listCategories = function(page) {
       var categories, oldEntity,
         _this = this;
@@ -17027,7 +17066,8 @@ return buf.join("");
       "categories/new": "category",
       "categories/page/:page": "listCategories",
       "categories/:id": "category",
-      "manufacturers": "listManufacturers"
+      "manufacturers": "listManufacturers",
+      "products/new": "product"
     };
 
     return AdminApplication;
@@ -17254,6 +17294,33 @@ return buf.join("");
     return Manufacturers;
 
   })(Backbone.Collection);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.models.Product = (function(_super) {
+
+    __extends(Product, _super);
+
+    function Product() {
+      return Product.__super__.constructor.apply(this, arguments);
+    }
+
+    Product.prototype.idAttribute = "_id";
+
+    Product.prototype.initialize = function() {};
+
+    Product.prototype.url = function() {
+      var _ref;
+      return "/admin/products/" + ((_ref = this.get("_id")) != null ? _ref : "");
+    };
+
+    return Product;
+
+  })(Backbone.Model);
 
 }).call(this);
 
@@ -17795,6 +17862,38 @@ return buf.join("");
     ManufacturersList.prototype.template = "manufacturers-list";
 
     return ManufacturersList;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.ProductEdit = (function(_super) {
+
+    __extends(ProductEdit, _super);
+
+    function ProductEdit() {
+      return ProductEdit.__super__.constructor.apply(this, arguments);
+    }
+
+    ProductEdit.prototype.initialize = function(options, _id) {
+      var _ref;
+      this.model = (_ref = this.model) != null ? _ref : new Witness.models.Product({
+        _id: _id
+      });
+      return Backbone.Validation.bind(this);
+    };
+
+    ProductEdit.prototype.destroy = function() {
+      return this.remove();
+    };
+
+    ProductEdit.prototype.template = "product-edit";
+
+    return ProductEdit;
 
   })(Witness.View);
 

@@ -62,6 +62,23 @@ class AdminApplication extends Backbone.Router
     else
       render()
 
+  product: ( id ) ->
+    @switchNavBar( unless id then [ "products", "products-create" ] else [ "products" ] )
+
+    oldEntity = @currentEntity
+
+    product = @currentEntity = new Witness.views.ProductEdit( {}, id )
+
+    render = =>
+      oldEntity?.destroy()
+      product.render()
+      @setLayout( product )
+
+    if id
+      product.model.fetch().then render
+    else
+      render()
+
   listCategories: ( page = 0 ) ->
     @switchNavBar( [ "categories", "categories-list" ] )
 
@@ -112,5 +129,8 @@ class AdminApplication extends Backbone.Router
     "categories/:id": "category"
 
     "manufacturers": "listManufacturers"
+
+    "products/new": "product"
+
 
 window.admin = new AdminApplication()

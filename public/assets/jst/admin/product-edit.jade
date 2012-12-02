@@ -1,0 +1,63 @@
+.container.b-product
+  .row
+    h1 Товар
+  form
+    fieldset
+      legend Основное
+
+      //- name
+      .control-group
+        label.control-label Название
+        input(type="text", name="name", placeholder="Название", value="")
+
+      //- category
+      .control-group
+        label.control-label Категория
+        select
+          option Выберите
+          option Подставки
+          option Планшеты
+          option Смартфоны
+
+      //- manufacturer
+      .control-group
+        label.control-label Производитель
+        input( type="text", name="manufacturer", placeholder="Производитель", data-provide="typeahead", data-items="4", data-source=JSON.stringify(["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Dakota","North Carolina","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"]) )
+
+      //- price
+      .control-group
+        label.control-label Цена
+        input(type="text", name="price", placeholder="Цена", value="")
+
+      //- description
+      .control-group
+        label.control-label Описание
+        textarea(name="description", placeholder="Описание", rows="3")
+
+      //- photo
+      .control-group
+        label.control-label Фото
+        input(type="file", name="photo", value="")
+
+      legend Дополнительно
+      //- inline
+      .control-group
+        label.control-label Inline поле
+        input(type="text", name="inline", placeholder="Inline", value="")
+
+      //- multiline
+      .control-group
+        label.control-label Miltiline поле
+        textarea(name="multiline", placeholder="Multiline", rows="3")
+
+      legend Фотографии
+        //- photos
+        //- ...
+
+      legend Действия
+      .control-group
+        button.b-profile__save.btn.btn-primary(type="submit", name="save", value="on") Сохранить
+        if locals._id
+          &nbsp;
+          button.b-category__delete.btn(type="button", name="delete", value="on") Удалить
+
