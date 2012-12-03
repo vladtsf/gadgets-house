@@ -2,10 +2,12 @@ async = require( "async" )
 AdminController = require( "./admin" )
 knox = require "knox"
 app = require "../bootstrap"
+mmmagic = require "mmmagic"
 
 class AdminBlobs extends AdminController
 
   Blob = require "../models/blob"
+  Magic = mmmagic.Magic
   amazon = knox.createClient( app.settings.amazonS3 )
 
   initialize: ->
@@ -53,18 +55,26 @@ class AdminBlobs extends AdminController
       res.json {}
 
   create: ( req, res ) ->
-    return res.send( 400 ) unless req.files.image?
+    return res.json( 400, success: off, error: "Bad request" ) unless req.files.qqfile?
 
-    blob = new Blob( name: req.files.image.filename )
+    blob = new Blob( name: req.files.qqfile.filename )
 
-    async.parallel [
-        ( callback ) =>
-          blob.save callback
-        ( callback ) =>
-          amazon.putFile req.files.image.path, "/blobs/#{ blob._id }", callback
-    ], ( err, results ) =>
-      return res.send( 503 ) if err
+    new Magic( mmmagic.MAGIC_MIME_TYPE ).detectFile req.files.qqfile.path, ( err, mime ) =>
+      return res.json( 500, success: off, error: "Internal server error" ) if err
 
-      res.json blob
+      async.parallel [
+          ( callback ) =>
+            blob.save callback
+          ( callback ) =>
+            amazon.putFile req.files.qqfile.path, "/blobs/#{ blob._id }", { "Content-Type": mime }, callback
+      ], ( err, results ) =>
+        return res.json( 500, success: off, error: "Internal server error" ) if err
+
+        res.json
+          _id: blob._id
+          success: on
+          link: "#{ app.settings.amazonCloudFont }/blobs/#{ blob._id }"
+          name: blob.name
+          uploaded: +blob.uploaded
 
 module.exports = AdminBlobs

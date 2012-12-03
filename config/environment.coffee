@@ -13,7 +13,7 @@ module.exports = (app) ->
         key: "AKIAIXGSWTV5UYWWC2GA"
         secret: "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"
         bucket: "gadgets-house-test"
-    app.set "amazonCloudFont", "http://d10sd6eeqywl8o.cloudfront.net"
+    app.set "amazonCloudFont", "http://gadgets-house-test.s3.amazonaws.com"
 
   app.configure "production", ->
     app.set 'mongodb', process.env.MONGODB

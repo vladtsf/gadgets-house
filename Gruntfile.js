@@ -32,7 +32,10 @@ module.exports = function(grunt) {
           paths: [ "public/assets/stylesheets/", "vendor/assets/" ]
         },
         files: {
-          "static/assets/stylesheets/*.css": "public/assets/stylesheets/*.less"
+          "static/assets/stylesheets/*.css": [
+            "vendor/assets/fileuploader/client/fileuploader.css",
+            "public/assets/stylesheets/*.less"
+          ]
         }
       },
       production: {
@@ -41,7 +44,10 @@ module.exports = function(grunt) {
           yuicompress: true
         },
         files: {
-          "static/assets/stylesheets/*.css": "public/assets/stylesheets/*.less"
+          "static/assets/stylesheets/*.css": [
+            "vendor/assets/fileuploader/client/fileuploader.css",
+            "public/assets/stylesheets/*.less"
+          ]
         }
       }
     },
@@ -80,6 +86,22 @@ module.exports = function(grunt) {
         separator: ';'
       },
 
+      fileuploader: {
+        src: [
+          "vendor/assets/fileuploader/client/js/header.js",
+          "vendor/assets/fileuploader/client/js/util.js",
+          "vendor/assets/fileuploader/client/js/button.js",
+          "vendor/assets/fileuploader/client/js/handler.base.js",
+          "vendor/assets/fileuploader/client/js/handler.form.js",
+          "vendor/assets/fileuploader/client/js/handler.xhr.js",
+          "vendor/assets/fileuploader/client/js/uploader.basic.js",
+          "vendor/assets/fileuploader/client/js/uploader.js",
+          "vendor/assets/fileuploader/client/js/jquery-plugin.js"
+        ],
+        dest: "tmp/javascripts/fileuploader.js",
+        separator: ';'
+      },
+
       bootstrap: {
         src: [
           "vendor/assets/bootstrap/docs/assets/js/bootstrap.js"
@@ -100,6 +122,7 @@ module.exports = function(grunt) {
         src: [
           "tmp/javascripts/witness.js",
           "tmp/javascripts/bootstrap.js",
+          "tmp/javascripts/fileuploader.js",
           "tmp/javascripts/jst_admin.js",
           "tmp/javascripts/admin/**/*.js"
         ],

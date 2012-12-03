@@ -21,7 +21,8 @@
     "mongoose": "3.1.2",
     "express": "3.0.1",
     "knox": "*",
-    "jade": "*"
+    "jade": "*",
+    "mmmagic": "*"
   },
   "devDependencies": {
     "grunt": "0.4.x",

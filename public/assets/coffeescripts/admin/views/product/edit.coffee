@@ -12,12 +12,38 @@ class Witness.views.ProductEdit extends Witness.View
   destroy: ->
     @remove()
 
-  # render: ->
-    # Witness.View::render.apply( @, arguments )
+  render: ->
+    Witness.View::render.apply( @, arguments )
+
+    uploader = new qq.FineUploader
+      element: @$( ".upload-photo" ).get 0
+      multiple: off
+      validation:
+        allowedExtensions: ["jpeg", "jpg", "gif", "png"]
+        sizeLimit: 307200 # 300 kB = 300 * 1024 bytes
+      request:
+        endpoint: "/admin/blobs/"
+        forceMultipart: on
+      text:
+        uploadButton: """Upload"""
+      template: """<div class="qq-uploader">
+                  <pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>
+                  <div class="qq-upload-button btn btn-success">Выбрать</div>
+                  <ul class="qq-upload-list" style="display: none"></ul>
+                </div>"""
+      classes:
+        success: 'alert alert-success',
+        fail: 'alert alert-error'
+      debug: on
+      callbacks:
+        onComplete: ( id, fileName, res) =>
+          if res.success
+            @model.set "photo", res._id
+            @$( ".uploaded-photo-placeholder" ).html """<img width="128" height="128" src="#{ res.link }" alt="#{ fileName }" />"""
 
     # @fields.add @model.get( "fields" ) if @model.get( "fields" )?.length
 
-    # @
+    @
 
 
   # data: ->
