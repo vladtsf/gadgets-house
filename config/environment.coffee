@@ -9,9 +9,19 @@ module.exports = (app) ->
   app.configure "development", ->
     app.use express.errorHandler()
     app.set 'mongodb', "mongodb://vovan:123@alex.mongohq.com:10058/gadgets-test"
+    app.set "amazonS3",
+        key: "AKIAIXGSWTV5UYWWC2GA"
+        secret: "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"
+        bucket: "gadgets-house-test"
+    app.set "amazonCloudFont", "http://d10sd6eeqywl8o.cloudfront.net"
 
   app.configure "production", ->
     app.set 'mongodb', process.env.MONGODB
+    app.set "amazonS3",
+        key: process.env.AMAZON_S3_KEY
+        secret: process.env.AMAZON_S3_SECRET
+        bucket: process.env.AMAZON_S3_BUCKET
+    app.set "amazonCloudFont", process.env.AMAZON_CLOUD_FRONT_URL
 
   app.configure ->
     app.set "db", require( "../app/middleware/db" )

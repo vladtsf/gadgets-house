@@ -26,6 +26,12 @@ module.exports = (app, route) ->
       route "put", "/:id", "admin_manufacturers#update"
       route "delete", "/:id", "admin_manufacturers#del"
 
+    app.namespace "/blobs", ->
+      route "get", "/", "admin_blobs#list"
+      route "post", "/", "admin_blobs#create"
+      route "get", "/:id", "admin_blobs#show"
+      route "delete", "/:id", "admin_blobs#del"
+
   route "get", "/login", "auth#loginForm"
   route "post", "/login", "auth#login"
   route "get", "/logout/:csrf", "auth#logout"
