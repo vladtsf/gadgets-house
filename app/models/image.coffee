@@ -10,4 +10,4 @@ schema = new mongoose.Schema
     type: Date
     default: Date.now
 
-module.exports = Blob = mongoose.model "Blob", schema
+module.exports = Image = mongoose.model "Image", schema
