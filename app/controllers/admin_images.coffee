@@ -15,24 +15,6 @@ class AdminImages extends AdminController
 
   initialize: ->
 
-  list: ( req, res ) ->
-    offset = parseInt( req.query.offset ) || 0
-    limit = parseInt( req.query.limit ) || 10
-
-    Image
-      .count()
-      .exec ( err, count ) ->
-        Image
-          .find()
-          .sort( "-uploaded" )
-          .skip( offset )
-          .limit( limit )
-          .exec ( err, images ) ->
-            if err
-              res.send 404
-            else
-              res.json { offset, limit, count, images }
-
   show: ( req, res ) ->
     Image
       .findOne( _id: req.route.params.id )
