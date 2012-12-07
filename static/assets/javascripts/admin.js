@@ -20012,7 +20012,7 @@ return buf.join("");
           sizeLimit: 307200
         },
         request: {
-          endpoint: "/admin/blobs/",
+          endpoint: "/admin/images/128x128/",
           forceMultipart: true
         },
         text: {

@@ -22,7 +22,7 @@ class Witness.views.ProductEdit extends Witness.View
         allowedExtensions: ["jpeg", "jpg", "gif", "png"]
         sizeLimit: 307200 # 300 kB = 300 * 1024 bytes
       request:
-        endpoint: "/admin/images/64x64/"
+        endpoint: "/admin/images/128x128/"
         forceMultipart: on
       text:
         uploadButton: """Upload"""
