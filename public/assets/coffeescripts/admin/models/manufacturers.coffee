@@ -7,6 +7,6 @@ class Witness.models.Manufacturers extends Backbone.Collection
     @offset = res.offset
     @count = res.count
     @limit = res.limit
-    res.manufacturers
+    res.docs
 
   url: "/admin/manufacturers"

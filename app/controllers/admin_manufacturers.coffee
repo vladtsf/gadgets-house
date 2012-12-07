@@ -4,91 +4,84 @@ async = require( "async" )
 backbone = require( "../middleware/backbone" )
 AdminController = require( "./admin" )
 
-class ManufacturerValidator extends backbone.Model
-
-  idAttribute: "_id"
-
-  initialize: ->
-    @validation = do =>
-      "name":
-        required: on
-        msg: "Поле не может быть пустым"
-
 class AdminManufacturers extends AdminController
 
   Manufacturer = require "../models/manufacturer"
 
   initialize: ->
 
-  validate: ->
-    if typeof ( validation = new ManufacturerValidator( @req.body ).validate() ) isnt "undefined"
-      @res.json( 400, { errors: validation, success: off } )
-      return off
+  model: require "../models/manufacturer"
+  fields: [ "name" ]
 
-    return on
+  validation:
+    "name":
+      required: on
+      msg: "Поле не может быть пустым"
 
-  list: ( req, res ) ->
-    offset = parseInt( req.query.offset ) || 0
-    limit = parseInt( req.query.limit ) || 10
+  # list: ( req, res ) ->
+  #   offset = parseInt( req.query.offset ) || 0
+  #   limit = parseInt( req.query.limit ) || 10
 
-    Manufacturer
-      .count()
-      .exec ( err, count ) ->
-        Manufacturer
-          .find()
-          .sort( "+_id" )
-          .skip( offset )
-          .limit( limit )
-          .exec ( err, manufacturers ) ->
-            if err
-              res.send 404
-            else
-              res.json { offset, limit, count, manufacturers }
+  #   console.log Manufacturer
 
-  show: ( req, res ) ->
-    Manufacturer
-      .findOne( _id: req.route.params.id )
-      .exec ( err, manufacturer ) =>
-        return res.send( 503 ) if err
-        return res.send( 404 ) unless manufacturer
+  #   Manufacturer
+  #     .count()
+  #     .exec ( err, count ) ->
+  #       Manufacturer
+  #         .find()
+  #         .sort( "+_id" )
+  #         .skip( offset )
+  #         .limit( limit )
+  #         .exec ( err, manufacturers ) ->
+  #           if err
+  #             res.send 404
+  #           else
+  #             res.json { offset, limit, count, manufacturers }
 
-        res.json manufacturer
+  # show: ( req, res ) ->
+  #   Manufacturer
+  #     .findOne( _id: req.route.params.id )
+  #     .exec ( err, manufacturer ) =>
+  #       return res.send( 503 ) if err
+  #       return res.send( 404 ) unless manufacturer
 
-  del: ( req, res ) ->
-    Manufacturer
-      .remove( _id: req.route.params.id )
-      .exec ( err ) ->
-        if err
-          res.json 503, success: off
-        else
-          res.json success: on
+  #       res.json manufacturer
 
-  create: ( req, res ) ->
-    return unless @validate()
+  # del: ( req, res ) ->
+  #   Manufacturer
+  #     .remove( _id: req.route.params.id )
+  #     .exec ( err ) ->
+  #       if err
+  #         res.json 503, success: off
+  #       else
+  #         res.json success: on
 
-    new Manufacturer( { name } = req.body ).save ( err, manufacturer ) =>
-      return res.send( 503 ) if err
+  # create: ( req, res ) ->
+  #   return unless @validate()
 
-      res.json manufacturer
+  #   new Manufacturer( { name } = req.body ).save ( err, manufacturer ) =>
+  #     return res.send( 503 ) if err
 
-  update: ( req, res ) ->
-    return unless @validate()
+  #     res.json manufacturer
 
-    { name } = req.body
+  # update: ( req, res ) ->
+  #   return unless @validate()
 
-    Manufacturer
-      .findOne( _id: req.route.params.id )
-      .exec ( err, manufacturer ) =>
-        if err
-          res.send 503
-        else unless manufacturer
-          res.send 404
-        else
-          manufacturer.update
-            $set: { name }
-          , ( err, numAffected ) =>
-            return res.send( 503 ) if err
+  #   { name } = req.body
 
-            res.json manufacturer
+  #   Manufacturer
+  #     .findOne( _id: req.route.params.id )
+  #     .exec ( err, manufacturer ) =>
+  #       if err
+  #         res.send 503
+  #       else unless manufacturer
+  #         res.send 404
+  #       else
+  #         manufacturer.update
+  #           $set: { name }
+  #         , ( err, numAffected ) =>
+  #           return res.send( 503 ) if err
+
+  #           res.json manufacturer
 
 module.exports = AdminManufacturers

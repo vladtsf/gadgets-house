@@ -1,4 +1,4 @@
-class AdminController
+class AdminController extends require( "./rest" )
 
   constructor: ( @req, @res ) ->
     unless req.user

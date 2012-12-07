@@ -19395,7 +19395,7 @@ return buf.join("");
       this.offset = res.offset;
       this.count = res.count;
       this.limit = res.limit;
-      return res.manufacturers;
+      return res.docs;
     };
 
     Manufacturers.prototype.url = "/admin/manufacturers";
