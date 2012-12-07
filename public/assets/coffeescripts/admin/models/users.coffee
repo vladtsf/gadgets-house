@@ -26,7 +26,7 @@ class Witness.models.Users extends Backbone.Collection
   parse: ( res ) ->
     @offset = res.offset
     @count = res.count
-    res.users
+    res.docs
 
   url: "/admin/users"
   model: Witness.models.UserEntry

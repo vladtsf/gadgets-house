@@ -7,10 +7,10 @@ module.exports = (app, route) ->
 
     app.namespace "/users", ->
       route "get", "/", "admin_users#list"
-      route "get", "/:id", "admin_users#profile"
-      route "put", "/:id", "admin_users#saveProfile"
-      route "post", "/", "admin_users#createProfile"
-      route "delete", "/:id", "admin_users#deleteProfile"
+      route "get", "/:id", "admin_users#show"
+      route "put", "/:id", "admin_users#update"
+      route "post", "/", "admin_users#create"
+      route "delete", "/:id", "admin_users#del"
 
     app.namespace "/categories", ->
       route "get", "/", "admin_categories#list"

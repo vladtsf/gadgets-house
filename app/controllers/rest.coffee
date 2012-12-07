@@ -1,11 +1,12 @@
 Backbone = require( "../middleware/backbone" )
+_ = require "underscore"
 
 class RestController
 
   fields: []
   model: {}
 
-  _validate: ->
+  validate: ->
     return on unless @validation
 
     Validator = Backbone.Model.extend
@@ -28,6 +29,7 @@ class RestController
       .exec ( err, count ) =>
         @model
           .find()
+          .select( _.union( "_id", @fields ).join " "  )
           .sort( "#{ order }_id" )
           .skip( offset )
           .limit( limit )
@@ -40,6 +42,7 @@ class RestController
   show: ( req, res ) ->
     @model
       .findOne( _id: req.route.params.id )
+      .select( _.union( "_id", @fields ).join " " )
       .exec ( err, doc ) =>
         return res.send( 500 ) if err
         return res.send( 404 ) unless doc
@@ -56,19 +59,25 @@ class RestController
           res.json success: on
 
   create: ( req, res ) ->
-    return unless @_validate()
+    return unless @validate()
 
-    new @model( { name } = req.body ).save ( err, doc ) =>
+    changeset = {}
+
+    for own field in @fields when field isnt "_id" and req.body[ field ]?
+      changeset[ field ] = req.body[ field ]
+
+    new @model( changeset ).save ( err, doc ) =>
+      console.log err
       return res.send( 500 ) if err
 
       res.json doc
 
   update: ( req, res ) ->
-    return unless @_validate()
+    return unless @validate()
 
     changeset = {}
 
-    for own field in @fields when req.body[ field ]?
+    for own field in @fields when field isnt "_id" and req.body[ field ]?
       changeset[ field ] = req.body[ field ]
 
     @model

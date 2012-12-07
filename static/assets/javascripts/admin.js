@@ -19557,7 +19557,7 @@ return buf.join("");
     Users.prototype.parse = function(res) {
       this.offset = res.offset;
       this.count = res.count;
-      return res.users;
+      return res.docs;
     };
 
     Users.prototype.url = "/admin/users";
