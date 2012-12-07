@@ -18804,7 +18804,7 @@ var interp;
 buf.push('<div class="container b-category"><div class="row"><h1>Категория</h1></div><form class="bs-docs-example"><fieldset><legend>Название</legend><div class="control-group"><label class="control-label">Полное название в каталоге</label><input');
 buf.push(attrs({ 'type':("text"), 'name':("category-name"), 'placeholder':("Название"), 'value':(locals.name) }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/></div><div class="control-group"><label class="control-label">Системное имя</label><input');
-buf.push(attrs({ 'type':("text"), 'name':("category-machineName"), 'placeholder':("Имя"), 'value':(locals.name) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push(attrs({ 'type':("text"), 'name':("category-machineName"), 'placeholder':("Имя"), 'value':(locals.machineName) }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/></div><legend>Поля</legend><button type="button" class="btn btn-success pull-right b-category__add-field">Добавить</button><div class="control-group b-category-fields"></div><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
 if ( locals._id)
 {
@@ -19207,7 +19207,7 @@ return buf.join("");
       this.offset = res.offset;
       this.count = res.count;
       this.limit = res.limit;
-      return res.categories;
+      return res.docs;
     };
 
     Categories.prototype.url = "/admin/categories";

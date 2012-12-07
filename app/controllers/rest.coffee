@@ -41,7 +41,7 @@ class RestController
     @model
       .findOne( _id: req.route.params.id )
       .exec ( err, doc ) =>
-        return res.send( 503 ) if err
+        return res.send( 500 ) if err
         return res.send( 404 ) unless doc
 
         res.json doc
@@ -51,7 +51,7 @@ class RestController
       .remove( _id: req.route.params.id )
       .exec ( err ) ->
         if err
-          res.json 503, success: off
+          res.json 500, success: off
         else
           res.json success: on
 
@@ -59,7 +59,7 @@ class RestController
     return unless @_validate()
 
     new @model( { name } = req.body ).save ( err, doc ) =>
-      return res.send( 503 ) if err
+      return res.send( 500 ) if err
 
       res.json doc
 
@@ -75,14 +75,14 @@ class RestController
       .findOne( _id: req.route.params.id )
       .exec ( err, doc ) =>
         if err
-          res.send 503
+          res.send 500
         else unless doc
           res.send 404
         else
           doc.update
             $set: changeset
           , ( err, numAffected ) =>
-            return res.send( 503 ) if err
+            return res.send( 500 ) if err
 
             res.json doc
 

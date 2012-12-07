@@ -7,6 +7,6 @@ class Witness.models.Categories extends Backbone.Collection
     @offset = res.offset
     @count = res.count
     @limit = res.limit
-    res.categories
+    res.docs
 
   url: "/admin/categories"
