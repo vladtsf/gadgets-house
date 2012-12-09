@@ -95,4 +95,7 @@ class RestController
 
             res.json doc
 
+  rescue: ( err, req, res ) ->
+    res.json 500, errors: [ err.message ]
+
 module.exports = RestController

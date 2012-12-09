@@ -1,8 +1,8 @@
-express = require("express")
-path    = require("path")
-fs      = require("fs")
-passport= require("passport")
-pkg     = require("../package.json")
+express = require "express"
+path    = require "path"
+fs      = require "fs"
+passport= require "passport"
+pkg     = require "../package.json"
 
 module.exports = (app) ->
 
