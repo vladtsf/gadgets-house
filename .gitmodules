@@ -4,3 +4,6 @@
 [submodule "vendor/assets/fileuploader"]
 	path = vendor/assets/fileuploader
 	url = git://github.com/valums/file-uploader.git
+[submodule "vendor/assets/bootstrap-toggle-buttons"]
+	path = vendor/assets/bootstrap-toggle-buttons
+	url = git://github.com/nostalgiaz/bootstrap-toggle-buttons.git

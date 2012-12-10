@@ -37,13 +37,28 @@
             textarea(name="description", placeholder="Описание", rows="3")
 
         .span6
-          //- photo
-          .control-group.span3
-            label.control-label Фото
-            .upload-photo
-            br
-            .uploaded-photo-placeholder
-            //- input(type="file", name="photo", value="")
+          .control-group
+            //- photo
+            .control-group.span3
+              label.control-label Фото
+              .upload-photo
+              br
+              .uploaded-photo-placeholder
+              //- input(type="file", name="photo", value="")
+
+          .control-group
+            //- publish
+            .span6
+              label.control-label Опубликовать
+              .b-published.b-toggle-button
+                input(type="checkbox", checked=false, name="published")
+
+          .control-group
+            //- on stock
+            .span6
+              label.control-label Наличие
+              .b-published.b-toggle-button
+                input(type="checkbox", checked=true, name="onStock")
 
       .row
         .span12

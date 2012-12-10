@@ -32,9 +32,13 @@ module.exports = function(grunt) {
           paths: [ "public/assets/stylesheets/", "vendor/assets/" ]
         },
         files: {
-          "static/assets/stylesheets/*.css": [
-            "vendor/assets/fileuploader/client/fileuploader.css",
-            "public/assets/stylesheets/*.less"
+          "static/assets/stylesheets/admin.css": [
+            "vendor/assets/fileuploader/client/fineuploader.css",
+            "vendor/assets/bootstrap-toggle-buttons/static/stylesheets/bootstrap-toggle-buttons.css",
+            "public/assets/stylesheets/admin.less"
+          ],
+          "static/assets/stylesheets/application.css": [
+            "public/assets/stylesheets/application.less"
           ]
         }
       },
@@ -44,9 +48,13 @@ module.exports = function(grunt) {
           yuicompress: true
         },
         files: {
-          "static/assets/stylesheets/*.css": [
-            "vendor/assets/fileuploader/client/fileuploader.css",
-            "public/assets/stylesheets/*.less"
+          "static/assets/stylesheets/admin.css": [
+            "vendor/assets/fileuploader/client/fineuploader.css",
+            "vendor/assets/bootstrap-toggle-buttons/static/stylesheets/bootstrap-toggle-buttons.css",
+            "public/assets/stylesheets/admin.less"
+          ],
+          "static/assets/stylesheets/application.css": [
+            "public/assets/stylesheets/application.less"
           ]
         }
       }
@@ -104,7 +112,8 @@ module.exports = function(grunt) {
 
       bootstrap: {
         src: [
-          "vendor/assets/bootstrap/docs/assets/js/bootstrap.js"
+          "vendor/assets/bootstrap/docs/assets/js/bootstrap.js",
+          "vendor/assets/bootstrap-toggle-buttons/static/js/jquery.toggle.buttons.js"
         ],
         dest: "tmp/javascripts/bootstrap.js",
         separator: ';'

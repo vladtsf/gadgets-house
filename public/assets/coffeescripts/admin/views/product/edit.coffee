@@ -15,12 +15,14 @@ class Witness.views.ProductEdit extends Witness.View
   render: ->
     Witness.View::render.apply( @, arguments )
 
+    @$( ".b-toggle-button" ).toggleButtons()
+
     uploader = new qq.FineUploader
       element: @$( ".upload-photo" ).get 0
       multiple: off
       validation:
         allowedExtensions: ["jpeg", "jpg", "gif", "png"]
-        sizeLimit: 307200 # 300 kB = 300 * 1024 bytes
+        sizeLimit: 4096e3 # 4096 kB = 4096 * 1024 bytes
       request:
         endpoint: "/admin/images/128x128/"
         forceMultipart: on
@@ -29,7 +31,7 @@ class Witness.views.ProductEdit extends Witness.View
       template: """<div class="qq-uploader">
                   <pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>
                   <div class="qq-upload-button btn btn-success">Выбрать</div>
-                  <ul class="qq-upload-list" style="display: none"></ul>
+                  <ul class="qq-upload-list" style="display: none;"></ul>
                 </div>"""
       classes:
         success: 'alert alert-success',
