@@ -1,0 +1,8 @@
+each field in locals.category.fields
+  //- inline
+  .control-group
+    label.control-label= field.name
+    if field.multiline
+      textarea(name="custom_#{ locals.category.machineName }_#{ field.machineName }", placeholder=field.name, rows="3")= locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]
+    else
+      input(type="text", name="custom_#{ locals.category.machineName }_#{ field.machineName }", placeholder=field.name, value=locals[ "custom_" + locals.category.machineName + "_" + field.machineName ])

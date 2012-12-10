@@ -2,6 +2,7 @@ class Witness.views.ProductEdit extends Witness.View
 
   initialize: ( options, _id ) ->
     @model = @model ? new Witness.models.Product( { _id } )
+    @categories = new Witness.models.Categories()
 
     # @fields.on "add", ( model, collection ) =>
     #   view = new Witness.views.CategoryFieldEdit( model: model )
@@ -12,36 +13,56 @@ class Witness.views.ProductEdit extends Witness.View
   destroy: ->
     @remove()
 
+  switchCategory: ( event ) ->
+    $ct = $ event.currentTarget
+    category = ( @categories.where name: $ct.val() )[ 0 ]
+
+    @renderFields category.toJSON() if category?
+
+    off
+
+  renderFields: ( category ) ->
+    locals = _.extend @model.toJSON(), category: category
+    @$( ".b-custom-fields" ).html _.trim jade.templates[ "product-custom-fields" ] locals
+
+    @
+
   render: ->
-    Witness.View::render.apply( @, arguments )
+    @categories.fetch( add: on, data: limit: 100 ).then =>
 
-    @$( ".b-toggle-button" ).toggleButtons()
+      Witness.View::render.call @,
+        categoriesSource: _.escape JSON.stringify ( category.name for own category in @categories.toJSON() )
 
-    uploader = new qq.FineUploader
-      element: @$( ".upload-photo" ).get 0
-      multiple: off
-      validation:
-        allowedExtensions: ["jpeg", "jpg", "gif", "png"]
-        sizeLimit: 4096e3 # 4096 kB = 4096 * 1024 bytes
-      request:
-        endpoint: "/admin/images/128x128/"
-        forceMultipart: on
-      text:
-        uploadButton: """Upload"""
-      template: """<div class="qq-uploader">
-                  <pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>
-                  <div class="qq-upload-button btn btn-success">Выбрать</div>
-                  <ul class="qq-upload-list" style="display: none;"></ul>
-                </div>"""
-      classes:
-        success: 'alert alert-success',
-        fail: 'alert alert-error'
-      debug: on
-      callbacks:
-        onComplete: ( id, fileName, res) =>
-          if res.success
-            @model.set "photo", res._id
-            @$( ".uploaded-photo-placeholder" ).html """<img width="128" height="128" src="#{ res.link }" alt="#{ fileName }" />"""
+      if @model.get "category"
+        @renderFields @model.get "category"
+
+      @$( ".b-toggle-button" ).toggleButtons()
+
+      uploader = new qq.FineUploader
+        element: @$( ".upload-photo" ).get 0
+        multiple: off
+        validation:
+          allowedExtensions: ["jpeg", "jpg", "gif", "png"]
+          sizeLimit: 4096e3 # 4096 kB = 4096 * 1024 bytes
+        request:
+          endpoint: "/admin/images/128x128/"
+          forceMultipart: on
+        text:
+          uploadButton: """Upload"""
+        template: """<div class="qq-uploader">
+                    <pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>
+                    <div class="qq-upload-button btn btn-success">Выбрать</div>
+                    <ul class="qq-upload-list" style="display: none;"></ul>
+                  </div>"""
+        classes:
+          success: 'alert alert-success',
+          fail: 'alert alert-error'
+        debug: off
+        callbacks:
+          onComplete: ( id, fileName, res) =>
+            if res.success
+              @model.set "photo", res._id
+              @$( ".uploaded-photo-placeholder" ).html """<img width="128" height="128" src="#{ res.link }" alt="#{ fileName }" />"""
 
     # @fields.add @model.get( "fields" ) if @model.get( "fields" )?.length
 
@@ -127,10 +148,11 @@ class Witness.views.ProductEdit extends Witness.View
   #       .addClass( "error" )
   #       .append( """<span class="help-inline">#{ msg }</span>""" )
 
-  # events:
-  #   "submit form": "save"
-  #   "click .b-category__delete": "del"
-  #   "click .b-category__add-field": "addField"
-  #   "focusout": "validate"
+  events:
+    "change .b-category-select": "switchCategory"
+    # "change .b-category-select": "switchCategory"
+    # "click .b-category__delete": "del"
+    # "click .b-category__add-field": "addField"
+    # "focusout": "validate"
 
   template: "product-edit"

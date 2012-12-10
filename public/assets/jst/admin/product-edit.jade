@@ -15,11 +15,7 @@
           //- category
           .control-group
             label.control-label Категория
-            select
-              option Выберите
-              option Подставки
-              option Планшеты
-              option Смартфоны
+            input.b-category-select(type="text", autocomplete="off", placeholder="Категория", data-provide="typeahead", data-source=locals.categoriesSource, data-items=4)
 
           //- manufacturer
           .control-group
@@ -31,47 +27,46 @@
             label.control-label Цена
             input(type="text", name="price", placeholder="Цена", value="")
 
+        .span6
+          //- photo
+          .control-group
+            .control-group
+              label.control-label Фото
+              .upload-photo
+              br
+              .uploaded-photo-placeholder
+
+          //- publish
+          .control-group
+            label.control-label Опубликовать
+            .b-published.b-toggle-button
+              input(type="checkbox", checked=false, name="published")
+
+          //- on stock
+          .control-group
+            label.control-label Наличие
+            .b-published.b-toggle-button
+              input(type="checkbox", checked=true, name="onStock")
+
           //- description
           .control-group
             label.control-label Описание
             textarea(name="description", placeholder="Описание", rows="3")
 
-        .span6
-          .control-group
-            //- photo
-            .control-group.span3
-              label.control-label Фото
-              .upload-photo
-              br
-              .uploaded-photo-placeholder
-              //- input(type="file", name="photo", value="")
-
-          .control-group
-            //- publish
-            .span6
-              label.control-label Опубликовать
-              .b-published.b-toggle-button
-                input(type="checkbox", checked=false, name="published")
-
-          .control-group
-            //- on stock
-            .span6
-              label.control-label Наличие
-              .b-published.b-toggle-button
-                input(type="checkbox", checked=true, name="onStock")
-
       .row
         .span12
           legend Дополнительно
-          //- inline
-          .control-group
-            label.control-label Inline поле
-            input(type="text", name="inline", placeholder="Inline", value="")
 
-          //- multiline
-          .control-group
-            label.control-label Miltiline поле
-            textarea(name="multiline", placeholder="Multiline", rows="3")
+          .b-custom-fields
+          //- //- inline
+          //- .control-group
+          //-   label.control-label Inline поле
+          //-   input(type="text", name="inline", placeholder="Inline", value="")
+
+          //- //- multiline
+          //- .control-group
+          //-   label.control-label Miltiline поле
+          //-   textarea(name="multiline", placeholder="Multiline", rows="3")
 
       .row
         .span12
