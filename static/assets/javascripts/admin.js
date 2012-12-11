@@ -20428,7 +20428,7 @@ return buf.join("");
             onComplete: function(id, fileName, res) {
               if (res.success) {
                 _this.model.set("photo", res._id);
-                return _this.$(".uploaded-photo-placeholder").html("<img width=\"128\" height=\"128\" src=\"" + res.link + "\" alt=\"" + fileName + "\" />");
+                return _this.$(".uploaded-photo-placeholder").html("<img width=\"128\" height=\"128\" src=\"" + res.thumb + "\" alt=\"" + fileName + "\" />");
               }
             }
           }

@@ -62,7 +62,7 @@ class Witness.views.ProductEdit extends Witness.View
           onComplete: ( id, fileName, res) =>
             if res.success
               @model.set "photo", res._id
-              @$( ".uploaded-photo-placeholder" ).html """<img width="128" height="128" src="#{ res.link }" alt="#{ fileName }" />"""
+              @$( ".uploaded-photo-placeholder" ).html """<img width="128" height="128" src="#{ res.thumb }" alt="#{ fileName }" />"""
 
     # @fields.add @model.get( "fields" ) if @model.get( "fields" )?.length
 

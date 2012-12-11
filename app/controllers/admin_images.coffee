@@ -24,9 +24,12 @@ class AdminImages extends AdminController
 
         res.json
           _id: image._id
+          mime: image.mime
           name: image.name
           uploaded: +image.uploaded
-          link: "#{ app.settings.amazonCloudFont }/images/#{ image._id }"
+          size: image.size
+          original: "#{ app.settings.amazonCloudFont }/images/#{ image._id }/original"
+          thumb: "#{ app.settings.amazonCloudFont }/images/#{ image._id }/thumb"
 
   del: ( req, res ) ->
     async.parallel [
@@ -42,10 +45,9 @@ class AdminImages extends AdminController
   create: ( req, res ) ->
     return res.json( 400, success: off, error: "Bad request" ) unless req.files.qqfile?
 
-    image = new Image( name: req.files.qqfile.filename )
     picture = gm( req.files.qqfile.path )
 
-    if req.route.params.width? or req.route.params.height?
+    if resized = req.route.params.width? or req.route.params.height?
       picture.resize req.route.params.width, req.route.params.height
 
     async.parallel [
@@ -53,22 +55,37 @@ class AdminImages extends AdminController
         new Magic( mmmagic.MAGIC_MIME_TYPE ).detectFile req.files.qqfile.path, callback
       ( callback ) ->
         picture.buffer callback
+      ( callback ) ->
+        picture.identify callback
     ], ( err, results ) ->
         return res.json( 500, success: off, error: "Internal server error" ) if err
+
+        image = new Image
+          name: req.files.qqfile.filename
+          mime: results[ 0 ]
+          size: results[ 2 ][ 0 ]?.size
 
         async.parallel [
             ( callback ) ->
               image.save callback
             ( callback ) ->
-              amazon.putBuffer results[ 1 ], "/images/#{ image._id }", { "Content-Type": results[ 0 ] }, callback
+              if resized
+                amazon.putBuffer results[ 1 ], "/images/#{ image._id }/thumb", { "Content-Type": results[ 0 ] }, callback
+              else
+               callback()
+            ( callback ) ->
+              amazon.putFile req.files.qqfile.path, "/images/#{ image._id }/original", { "Content-Type": results[ 0 ] }, callback
         ], ( err, results ) =>
           return res.json( 500, success: off, error: "Internal server error" ) if err
 
           res.json
             _id: image._id
-            success: on
-            link: "#{ app.settings.amazonCloudFont }/images/#{ image._id }"
+            mime: image.mime
             name: image.name
             uploaded: +image.uploaded
+            size: image.size
+            original: "#{ app.settings.amazonCloudFont }/images/#{ image._id }/original"
+            thumb: "#{ app.settings.amazonCloudFont }/images/#{ image._id }/thumb"
+            success: on
 
 module.exports = AdminImages
