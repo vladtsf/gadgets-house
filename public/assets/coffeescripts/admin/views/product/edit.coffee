@@ -3,14 +3,29 @@ class Witness.views.ProductEdit extends Witness.View
   initialize: ( options, _id ) ->
     @model = @model ? new Witness.models.Product( { _id } )
     @categories = new Witness.models.Categories()
+    @photos = new Backbone.Collection()
 
-    # @fields.on "add", ( model, collection ) =>
-    #   view = new Witness.views.CategoryFieldEdit( model: model )
-    #   @$el.find( ".b-category-fields" ).append( view.render().el )
+    @partials =
+      photo: new Witness.View
+        model: @model
+        template: "product-photo"
+        partialPath: ".uploaded-photo-placeholder"
+      photos: new Witness.views.ProductPhotos
+        model: @model
+        partialPath: ".uploaded-photos-placeholder"
+
+    @model.on "change:photo", =>
+      @partials.photo.render()
+
+    @photos.on "add", ( model, collection ) =>
+      @partials.photos.add model.id
 
     Backbone.Validation.bind( @ )
 
   destroy: ->
+    for own key, partial of @partials
+      partial.remove()
+
     @remove()
 
   switchCategory: ( event ) ->
@@ -27,44 +42,59 @@ class Witness.views.ProductEdit extends Witness.View
 
     @
 
+  uploader: ( selector, multiple = off, size = "128x128" ) ->
+    def = new $.Deferred()
+
+    new qq.FineUploader
+      element: @$( selector ).get 0
+      multiple: multiple
+      validation:
+        allowedExtensions: ["jpeg", "jpg", "gif", "png"]
+        sizeLimit: 4096e3 # 4096 kB = 4096 * 1024 bytes
+      request:
+        endpoint: "/admin/images/#{ size }/"
+        forceMultipart: on
+      text:
+        uploadButton: """Upload"""
+      template: """<div class="qq-uploader">
+                  <pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>
+                  <div class="qq-upload-button btn btn-success">Выбрать</div>
+                  <ul class="qq-upload-list" style="display: none;"></ul>
+                </div>"""
+      classes:
+        success: 'alert alert-success',
+        fail: 'alert alert-error'
+      debug: off
+      callbacks:
+        onComplete: ( id, fileName, res)  =>
+          if res.success
+            def.notify( res._id )
+        onError: ( id, fileName, errorReason ) =>
+          def.fail( id, errorReason )
+
+    def
+
   render: ->
     @categories.fetch( add: on, data: limit: 100 ).then =>
 
       Witness.View::render.call @,
         categoriesSource: _.escape JSON.stringify ( category.name for own category in @categories.toJSON() )
 
+      # refresh partials
+      for own key, partial of @partials
+        partial.setElement @$ partial.options.partialPath
+        partial.render()
+
       if @model.get "category"
         @renderFields @model.get "category"
 
       @$( ".b-toggle-button" ).toggleButtons()
 
-      uploader = new qq.FineUploader
-        element: @$( ".upload-photo" ).get 0
-        multiple: off
-        validation:
-          allowedExtensions: ["jpeg", "jpg", "gif", "png"]
-          sizeLimit: 4096e3 # 4096 kB = 4096 * 1024 bytes
-        request:
-          endpoint: "/admin/images/128x128/"
-          forceMultipart: on
-        text:
-          uploadButton: """Upload"""
-        template: """<div class="qq-uploader">
-                    <pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>
-                    <div class="qq-upload-button btn btn-success">Выбрать</div>
-                    <ul class="qq-upload-list" style="display: none;"></ul>
-                  </div>"""
-        classes:
-          success: 'alert alert-success',
-          fail: 'alert alert-error'
-        debug: off
-        callbacks:
-          onComplete: ( id, fileName, res) =>
-            if res.success
-              @model.set "photo", res._id
-              @$( ".uploaded-photo-placeholder" ).html """<img width="128" height="128" src="#{ res.thumb }" alt="#{ fileName }" />"""
+      @uploader( ".upload-photo" ).progress ( id ) =>
+        @model.set "photo", id
 
-    # @fields.add @model.get( "fields" ) if @model.get( "fields" )?.length
+      @uploader( ".upload-photos", on, "260x180" ).progress ( id ) =>
+        @photos.add { id }
 
     @
 

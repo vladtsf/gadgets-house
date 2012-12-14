@@ -22,4 +22,6 @@ html
 
     block footer
       script(type="text/javascript", src="/assets/javascripts/admin#{ request.app.settings.env === 'production' ? '.min' : '' }.js")
+      script
+        AdminApplication.settings.set( "cdn", !{ JSON.stringify( locals.settings.amazonCloudFont ) } )
 

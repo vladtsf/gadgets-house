@@ -1,6 +1,8 @@
-class AdminApplication extends Backbone.Router
+class window.AdminApplication extends Backbone.Router
 
   initialize: ->
+
+  @settings = new Backbone.Model()
 
   switchNavBar: ( tabs )->
     selector = []

@@ -14544,7 +14544,8 @@ exports.rethrow = function rethrow(err, filename, lineno){
     View.prototype.initialize = function() {};
 
     View.prototype.getTemplate = function() {
-      return jade.templates[this.template];
+      var _ref, _ref1;
+      return jade.templates[(_ref = this.template) != null ? _ref : (_ref1 = this.options) != null ? _ref1.template : void 0];
     };
 
     View.prototype.render = function(params) {

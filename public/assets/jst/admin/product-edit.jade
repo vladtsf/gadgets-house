@@ -32,9 +32,9 @@
           .control-group
             .control-group
               label.control-label Фото
-              .upload-photo
-              br
               .uploaded-photo-placeholder
+              br
+              .upload-photo
 
           //- publish
           .control-group
@@ -56,23 +56,19 @@
       .row
         .span12
           legend Дополнительно
-
+          //- additional
           .b-custom-fields
-          //- //- inline
-          //- .control-group
-          //-   label.control-label Inline поле
-          //-   input(type="text", name="inline", placeholder="Inline", value="")
-
-          //- //- multiline
-          //- .control-group
-          //-   label.control-label Miltiline поле
-          //-   textarea(name="multiline", placeholder="Multiline", rows="3")
 
       .row
         .span12
           legend Фотографии
-            //- photos
-            //- ...
+          //- photos
+          .control-group
+            .upload-photos.pull-right
+            br
+
+          .control-group
+            ul.uploaded-photos-placeholder.thumbnails
 
       .row
         .span12

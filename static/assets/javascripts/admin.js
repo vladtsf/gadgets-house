@@ -14544,7 +14544,8 @@ exports.rethrow = function rethrow(err, filename, lineno){
     View.prototype.initialize = function() {};
 
     View.prototype.getTemplate = function() {
-      return jade.templates[this.template];
+      var _ref, _ref1;
+      return jade.templates[(_ref = this.template) != null ? _ref : (_ref1 = this.options) != null ? _ref1.template : void 0];
     };
 
     View.prototype.render = function(params) {
@@ -19225,12 +19226,45 @@ buf.push('<div class="container b-product"><div class="row"><h1>Товар</h1><
 buf.push(attrs({ 'type':("text"), 'autocomplete':("off"), 'placeholder':("Категория"), 'data-provide':("typeahead"), 'data-source':(locals.categoriesSource), 'data-items':(4), "class": ('b-category-select') }, {"type":true,"autocomplete":true,"placeholder":true,"data-provide":true,"data-source":true,"data-items":true}));
 buf.push('/></div><div class="control-group"><label class="control-label">Производитель</label><input');
 buf.push(attrs({ 'type':("text"), 'name':("manufacturer"), 'placeholder':("Производитель"), 'data-provide':("typeahead"), 'data-items':("4"), 'data-source':(JSON.stringify(["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Dakota","North Carolina","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"])) }, {"type":true,"name":true,"placeholder":true,"data-provide":true,"data-items":true,"data-source":true}));
-buf.push('/></div><div class="control-group"><label class="control-label">Цена</label><input type="text" name="price" placeholder="Цена" value=""/></div></div><div class="span6"><div class="control-group"><div class="control-group"><label class="control-label">Фото</label><div class="upload-photo"></div><br/><div class="uploaded-photo-placeholder"></div></div></div><div class="control-group"><label class="control-label">Опубликовать</label><div class="b-published b-toggle-button"><input type="checkbox" name="published"/></div></div><div class="control-group"><label class="control-label">Наличие</label><div class="b-published b-toggle-button"><input type="checkbox" checked="checked" name="onStock"/></div></div><div class="control-group"><label class="control-label">Описание</label><textarea name="description" placeholder="Описание" rows="3"></textarea></div></div></div><div class="row"><div class="span12"><legend>Дополнительно</legend><div class="b-custom-fields"></div></div></div><div class="row"><div class="span12"><legend>Фотографии</legend></div></div><div class="row"><div class="span12"><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
+buf.push('/></div><div class="control-group"><label class="control-label">Цена</label><input type="text" name="price" placeholder="Цена" value=""/></div></div><div class="span6"><div class="control-group"><div class="control-group"><label class="control-label">Фото</label><div class="uploaded-photo-placeholder"></div><br/><div class="upload-photo"></div></div></div><div class="control-group"><label class="control-label">Опубликовать</label><div class="b-published b-toggle-button"><input type="checkbox" name="published"/></div></div><div class="control-group"><label class="control-label">Наличие</label><div class="b-published b-toggle-button"><input type="checkbox" checked="checked" name="onStock"/></div></div><div class="control-group"><label class="control-label">Описание</label><textarea name="description" placeholder="Описание" rows="3"></textarea></div></div></div><div class="row"><div class="span12"><legend>Дополнительно</legend><div class="b-custom-fields"></div></div></div><div class="row"><div class="span12"><legend>Фотографии</legend><div class="control-group"><div class="upload-photos pull-right"></div><br/></div><div class="control-group"><ul class="uploaded-photos-placeholder thumbnails"></ul></div></div></div><div class="row"><div class="span12"><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
 if ( locals._id)
 {
 buf.push('&nbsp;<button type="button" name="delete" value="on" class="b-category__delete btn">Удалить</button>');
 }
 buf.push('</div></div></div></fieldset></form></div>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['product-photo'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+if ( locals.photo)
+{
+buf.push('<img');
+buf.push(attrs({ 'width':("128"), 'height':("128"), 'src':("" + ( AdminApplication.settings.get("cdn") ) + "/images/" + ( locals.photo ) + "/thumb"), 'alt':("") }, {"width":true,"height":true,"src":true,"alt":true}));
+buf.push('/>');
+}
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['product-photos'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<li class="span3"><a');
+buf.push(attrs({ 'href':("" + ( AdminApplication.settings.get("cdn") ) + "/images/" + ( id ) + "/original"), "class": ('thumbnail') }, {"href":true}));
+buf.push('><img');
+buf.push(attrs({ 'src':("" + ( AdminApplication.settings.get("cdn") ) + "/images/" + ( id ) + "/thumb") }, {"src":true}));
+buf.push('/></a></li>');
 }
 return buf.join("");
 };
@@ -19348,11 +19382,10 @@ return buf.join("");
 };
 })();
 (function() {
-  var AdminApplication,
-    __hasProp = {}.hasOwnProperty,
+  var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  AdminApplication = (function(_super) {
+  window.AdminApplication = (function(_super) {
 
     __extends(AdminApplication, _super);
 
@@ -19361,6 +19394,8 @@ return buf.join("");
     }
 
     AdminApplication.prototype.initialize = function() {};
+
+    AdminApplication.settings = new Backbone.Model();
 
     AdminApplication.prototype.switchNavBar = function(tabs) {
       var item, selector, _i, _len;
@@ -20346,15 +20381,41 @@ return buf.join("");
     }
 
     ProductEdit.prototype.initialize = function(options, _id) {
-      var _ref;
+      var _ref,
+        _this = this;
       this.model = (_ref = this.model) != null ? _ref : new Witness.models.Product({
         _id: _id
       });
       this.categories = new Witness.models.Categories();
+      this.photos = new Backbone.Collection();
+      this.partials = {
+        photo: new Witness.View({
+          model: this.model,
+          template: "product-photo",
+          partialPath: ".uploaded-photo-placeholder"
+        }),
+        photos: new Witness.views.ProductPhotos({
+          model: this.model,
+          partialPath: ".uploaded-photos-placeholder"
+        })
+      };
+      this.model.on("change:photo", function() {
+        return _this.partials.photo.render();
+      });
+      this.photos.on("add", function(model, collection) {
+        return _this.partials.photos.add(model.id);
+      });
       return Backbone.Validation.bind(this);
     };
 
     ProductEdit.prototype.destroy = function() {
+      var key, partial, _ref;
+      _ref = this.partials;
+      for (key in _ref) {
+        if (!__hasProp.call(_ref, key)) continue;
+        partial = _ref[key];
+        partial.remove();
+      }
       return this.remove();
     };
 
@@ -20379,6 +20440,50 @@ return buf.join("");
       return this;
     };
 
+    ProductEdit.prototype.uploader = function(selector, multiple, size) {
+      var def,
+        _this = this;
+      if (multiple == null) {
+        multiple = false;
+      }
+      if (size == null) {
+        size = "128x128";
+      }
+      def = new $.Deferred();
+      new qq.FineUploader({
+        element: this.$(selector).get(0),
+        multiple: multiple,
+        validation: {
+          allowedExtensions: ["jpeg", "jpg", "gif", "png"],
+          sizeLimit: 4096e3
+        },
+        request: {
+          endpoint: "/admin/images/" + size + "/",
+          forceMultipart: true
+        },
+        text: {
+          uploadButton: "Upload"
+        },
+        template: "<div class=\"qq-uploader\">\n  <pre class=\"qq-upload-drop-area span12\"><span>{dragZoneText}</span></pre>\n  <div class=\"qq-upload-button btn btn-success\">Выбрать</div>\n  <ul class=\"qq-upload-list\" style=\"display: none;\"></ul>\n</div>",
+        classes: {
+          success: 'alert alert-success',
+          fail: 'alert alert-error'
+        },
+        debug: false,
+        callbacks: {
+          onComplete: function(id, fileName, res) {
+            if (res.success) {
+              return def.notify(res._id);
+            }
+          },
+          onError: function(id, fileName, errorReason) {
+            return def.fail(id, errorReason);
+          }
+        }
+      });
+      return def;
+    };
+
     ProductEdit.prototype.render = function() {
       var _this = this;
       this.categories.fetch({
@@ -20387,7 +20492,7 @@ return buf.join("");
           limit: 100
         }
       }).then(function() {
-        var category, uploader;
+        var category, key, partial, _ref;
         Witness.View.prototype.render.call(_this, {
           categoriesSource: _.escape(JSON.stringify((function() {
             var _i, _len, _ref, _results;
@@ -20400,38 +20505,24 @@ return buf.join("");
             return _results;
           }).call(_this)))
         });
+        _ref = _this.partials;
+        for (key in _ref) {
+          if (!__hasProp.call(_ref, key)) continue;
+          partial = _ref[key];
+          partial.setElement(_this.$(partial.options.partialPath));
+          partial.render();
+        }
         if (_this.model.get("category")) {
           _this.renderFields(_this.model.get("category"));
         }
         _this.$(".b-toggle-button").toggleButtons();
-        return uploader = new qq.FineUploader({
-          element: _this.$(".upload-photo").get(0),
-          multiple: false,
-          validation: {
-            allowedExtensions: ["jpeg", "jpg", "gif", "png"],
-            sizeLimit: 4096e3
-          },
-          request: {
-            endpoint: "/admin/images/128x128/",
-            forceMultipart: true
-          },
-          text: {
-            uploadButton: "Upload"
-          },
-          template: "<div class=\"qq-uploader\">\n  <pre class=\"qq-upload-drop-area span12\"><span>{dragZoneText}</span></pre>\n  <div class=\"qq-upload-button btn btn-success\">Выбрать</div>\n  <ul class=\"qq-upload-list\" style=\"display: none;\"></ul>\n</div>",
-          classes: {
-            success: 'alert alert-success',
-            fail: 'alert alert-error'
-          },
-          debug: false,
-          callbacks: {
-            onComplete: function(id, fileName, res) {
-              if (res.success) {
-                _this.model.set("photo", res._id);
-                return _this.$(".uploaded-photo-placeholder").html("<img width=\"128\" height=\"128\" src=\"" + res.thumb + "\" alt=\"" + fileName + "\" />");
-              }
-            }
-          }
+        _this.uploader(".upload-photo").progress(function(id) {
+          return _this.model.set("photo", id);
+        });
+        return _this.uploader(".upload-photos", true, "260x180").progress(function(id) {
+          return _this.photos.add({
+            id: id
+          });
         });
       });
       return this;
@@ -20444,6 +20535,48 @@ return buf.join("");
     ProductEdit.prototype.template = "product-edit";
 
     return ProductEdit;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.ProductPhotos = (function(_super) {
+
+    __extends(ProductPhotos, _super);
+
+    function ProductPhotos() {
+      return ProductPhotos.__super__.constructor.apply(this, arguments);
+    }
+
+    ProductPhotos.prototype.initialize = function(options, _id) {};
+
+    ProductPhotos.prototype.add = function(id) {
+      var _base;
+      return this.$el.append(typeof (_base = this.getTemplate()) === "function" ? _base({
+        id: id
+      }) : void 0);
+    };
+
+    ProductPhotos.prototype.render = function() {
+      var photo, _i, _len, _ref;
+      this.$el.empty();
+      if (this.model.get("photos")) {
+        _ref = this.model.get("photos");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          photo = _ref[_i];
+          this.add(photo.id);
+        }
+      }
+      return this;
+    };
+
+    ProductPhotos.prototype.template = "product-photos";
+
+    return ProductPhotos;
 
   })(Witness.View);
 
