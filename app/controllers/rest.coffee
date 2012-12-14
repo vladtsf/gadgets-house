@@ -95,6 +95,24 @@ class RestController
 
             res.json doc
 
+  complete: ( req, res ) ->
+    field = req.route.params.field
+    limit = parseInt( req.query.limit ) || 10
+
+    return res.send 400 unless field in @fields and req.query.query?
+
+    query = {}
+    query[ field ] = new RegExp "^#{ req.query.query }", [ "i" ]
+
+    @model
+      .find( query )
+      .select( "_id #{ field }" )
+      .limit( limit )
+      .exec ( err, docs ) =>
+        return res.send( 500 ) if err
+
+        res.json docs
+
   rescue: ( err, req, res ) ->
     res.json 500, errors: [ err.message ]
 
