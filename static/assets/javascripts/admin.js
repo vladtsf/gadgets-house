@@ -19166,7 +19166,7 @@ buf.push('</label>');
 if ( field.multiline)
 {
 buf.push('<textarea');
-buf.push(attrs({ 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'rows':("3") }, {"name":true,"placeholder":true,"rows":true}));
+buf.push(attrs({ 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'rows':("3"), "class": ('b-custom-field') }, {"name":true,"placeholder":true,"rows":true}));
 buf.push('>');
 var __val__ = locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]
 buf.push(escape(null == __val__ ? "" : __val__));
@@ -19175,7 +19175,7 @@ buf.push('</textarea>');
 else
 {
 buf.push('<input');
-buf.push(attrs({ 'type':("text"), 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'value':(locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push(attrs({ 'type':("text"), 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'value':(locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]), "class": ('b-custom-field') }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/>');
 }
 buf.push('</div>');
@@ -19193,7 +19193,7 @@ buf.push('</label>');
 if ( field.multiline)
 {
 buf.push('<textarea');
-buf.push(attrs({ 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'rows':("3") }, {"name":true,"placeholder":true,"rows":true}));
+buf.push(attrs({ 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'rows':("3"), "class": ('b-custom-field') }, {"name":true,"placeholder":true,"rows":true}));
 buf.push('>');
 var __val__ = locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]
 buf.push(escape(null == __val__ ? "" : __val__));
@@ -19202,7 +19202,7 @@ buf.push('</textarea>');
 else
 {
 buf.push('<input');
-buf.push(attrs({ 'type':("text"), 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'value':(locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push(attrs({ 'type':("text"), 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'value':(locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]), "class": ('b-custom-field') }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/>');
 }
 buf.push('</div>');
@@ -19223,8 +19223,8 @@ var buf = [];
 with (locals || {}) {
 var interp;
 buf.push('<div class="container b-product"><div class="row"><h1>Товар</h1></div><form><fieldset><div class="row"><legend>Основное</legend><div class="span6"><div class="control-group"><label class="control-label">Название</label><input type="text" name="name" placeholder="Название" value=""/></div><div class="control-group"><label class="control-label">Категория</label><input');
-buf.push(attrs({ 'type':("text"), 'autocomplete':("off"), 'placeholder':("Категория"), 'data-provide':("typeahead"), 'data-source':(locals.categoriesSource), 'data-items':(4), "class": ('b-category-select') }, {"type":true,"autocomplete":true,"placeholder":true,"data-provide":true,"data-source":true,"data-items":true}));
-buf.push('/></div><div class="control-group"><label class="control-label">Производитель</label><input type="text" name="manufacturer" placeholder="Производитель" data-provide="typeahead" data-items="4" class="b-manufacturers-autocomplete"/></div><div class="control-group"><label class="control-label">Цена</label><input type="text" name="price" placeholder="Цена" value=""/></div></div><div class="span6"><div class="control-group"><div class="control-group"><label class="control-label">Фото</label><div class="uploaded-photo-placeholder"></div><br/><div class="upload-photo"></div></div></div><div class="control-group"><label class="control-label">Опубликовать</label><div class="b-published b-toggle-button"><input type="checkbox" name="published"/></div></div><div class="control-group"><label class="control-label">Наличие</label><div class="b-published b-toggle-button"><input type="checkbox" checked="checked" name="onStock"/></div></div><div class="control-group"><label class="control-label">Описание</label><textarea name="description" placeholder="Описание" rows="3"></textarea></div></div></div><div class="row"><div class="span12"><legend>Дополнительно</legend><div class="b-custom-fields"></div></div></div><div class="row"><div class="span12"><legend>Фотографии</legend><div class="control-group"><div class="upload-photos pull-right"></div><br/></div><div class="control-group"><ul class="uploaded-photos-placeholder thumbnails"></ul></div></div></div><div class="row"><div class="span12"><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
+buf.push(attrs({ 'name':("category"), 'type':("text"), 'autocomplete':("off"), 'placeholder':("Категория"), 'data-provide':("typeahead"), 'data-source':(locals.categoriesSource), 'data-items':(4), "class": ('b-category-select') }, {"name":true,"type":true,"autocomplete":true,"placeholder":true,"data-provide":true,"data-source":true,"data-items":true}));
+buf.push('/></div><div class="control-group"><label class="control-label">Производитель</label><input type="text" name="manufacturer" placeholder="Производитель" data-provide="typeahead" data-items="4" class="b-manufacturers-autocomplete"/></div><div class="control-group"><label class="control-label">Цена</label><input type="text" name="price" placeholder="Цена" value=""/></div></div><div class="span6"><div class="control-group"><div class="control-group"><label class="control-label">Фото</label><div class="uploaded-photo-placeholder"></div><br/><div class="upload-photo"></div></div></div><div class="control-group"><label class="control-label">Опубликовать</label><div class="b-published b-toggle-button"><input type="checkbox" name="published"/></div></div><div class="control-group"><label class="control-label">Наличие</label><div class="b-published b-toggle-button"><input type="checkbox" checked="checked" name="onStock"/></div></div><div class="control-group"><label class="control-label">Описание</label><textarea name="description" placeholder="Описание" rows="3"></textarea></div></div></div><div class="row"><div class="span12"><legend>Дополнительно</legend><div class="b-custom-fields"></div></div></div><div class="row"><div class="span12"><legend>Фотографии</legend><div class="control-group"><div class="upload-photos pull-right"></div><br/></div><div class="control-group"><ul class="uploaded-photos-placeholder thumbnails"></ul></div></div></div><div class="row"><div class="span12"><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-product__save btn btn-primary">Сохранить</button>');
 if ( locals._id)
 {
 buf.push('&nbsp;<button type="button" name="delete" value="on" class="b-category__delete btn">Удалить</button>');
@@ -19812,7 +19812,30 @@ return buf.join("");
 
     Product.prototype.idAttribute = "_id";
 
-    Product.prototype.initialize = function() {};
+    Product.prototype.initialize = function() {
+      var _this = this;
+      return this.validation = (function() {
+        return {
+          name: {
+            required: true,
+            msg: "Поле не может быть пустым"
+          },
+          category: {
+            required: true,
+            msg: "Выберите категорию"
+          },
+          manufacturer: {
+            required: true,
+            msg: "Выберите производителя"
+          },
+          price: {
+            required: false,
+            pattern: "number",
+            msg: "Цена должна быть числом"
+          }
+        };
+      })();
+    };
 
     Product.prototype.url = function() {
       var _ref;
@@ -20432,9 +20455,8 @@ return buf.join("");
         name: $ct.val()
       }))[0];
       if (category != null) {
-        this.renderFields(category.toJSON());
+        return this.renderFields(category.toJSON());
       }
-      return false;
     };
 
     ProductEdit.prototype.renderFields = function(category) {
@@ -20570,9 +20592,129 @@ return buf.join("");
       return this.photos.remove($(e.currentTarget.parentNode).data("id"));
     };
 
+    ProductEdit.prototype.data = function() {
+      var $field, data, field, key, photo, _i, _len, _ref, _ref1, _ref2;
+      data = {
+        name: "name",
+        category: "category",
+        manufacturer: "manufacturer",
+        price: "price",
+        published: "published",
+        onStock: "onStock",
+        description: "description"
+      };
+      for (key in data) {
+        if (!__hasProp.call(data, key)) continue;
+        field = data[key];
+        data[key] = this.$("[name=\"" + field + "\"]").val();
+      }
+      data.published = data.published === "on";
+      data.onStock = data.onStock === "on";
+      data.category = (_ref = this.categories.where({
+        name: data.category
+      })[0]) != null ? _ref.id : void 0;
+      data.manufacturer = (_ref1 = this._manufacturersCache) != null ? _ref1[data.manufacturer] : void 0;
+      _ref2 = this.$(".b-custom-field");
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        field = _ref2[_i];
+        $field = $(field);
+        data[$field.attr("name")] = $field.val();
+      }
+      data.photo = this.model.get("photo");
+      data.photos = (function() {
+        var _j, _len1, _ref3, _results;
+        _ref3 = this.photos.toJSON();
+        _results = [];
+        for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+          photo = _ref3[_j];
+          _results.push(photo.id);
+        }
+        return _results;
+      }).call(this);
+      return data;
+    };
+
+    ProductEdit.prototype.buttonMsg = function($button, msg, success, cb) {
+      var oldText;
+      oldText = $button.text();
+      $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(msg);
+      setTimeout(function() {
+        $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(oldText);
+        if (typeof cb === "function") {
+          return cb();
+        }
+      }, 2e3);
+      return this;
+    };
+
+    ProductEdit.prototype.save = function(e) {
+      var $buttons, $save, processing,
+        _this = this;
+      this.validate();
+      if (this.model.isValid()) {
+        $buttons = this.$el.find("button");
+        $buttons.attr("disabled", true);
+        $save = $buttons.filter(".b-product__save");
+        processing = this.model.save();
+        processing.fail(function() {
+          return _this.buttonMsg($save, "Ошибка", false, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+        processing.then(function() {
+          location.hash = "products/" + _this.model.id;
+          return _this.buttonMsg($save, "Сохранено", true, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+      }
+      return false;
+    };
+
+    ProductEdit.prototype.del = function() {
+      var $buttons, $delete, processing,
+        _this = this;
+      $buttons = this.$el.find("button");
+      $buttons.attr("disabled", true);
+      $delete = $buttons.filter(".b-product__delete");
+      processing = this.model.destroy({
+        wait: true
+      });
+      processing.fail(function() {
+        return _this.buttonMsg($delete, "Ошибка", false, function() {
+          return $buttons.attr("disabled", false);
+        });
+      });
+      return processing.then(function() {
+        return location.hash = "products";
+      });
+    };
+
+    ProductEdit.prototype.validate = function(e) {
+      var $errField, field, msg, _ref, _results;
+      this.model.set(this.data(), {
+        silent: true
+      });
+      this.$el.find(".control-group").removeClass("error").find(".help-inline").remove();
+      _ref = this.model.validate();
+      _results = [];
+      for (field in _ref) {
+        if (!__hasProp.call(_ref, field)) continue;
+        msg = _ref[field];
+        $errField = this.$el.find("form .control-group:has([name=\"" + field + "\"])");
+        _results.push($errField.addClass("error").append("<span class=\"help-inline\">" + msg + "</span>"));
+      }
+      return _results;
+    };
+
     ProductEdit.prototype.events = {
       "change .b-category-select": "switchCategory",
-      "click .b-remove-photo-button": "removePhoto"
+      "click .b-remove-photo-button": "removePhoto",
+      "submit": "save",
+      "click .b-product__delete": "del",
+      "focusout": "validate",
+      "change": "validate",
+      "input": "validate"
     };
 
     ProductEdit.prototype.template = "product-edit";

@@ -3,6 +3,6 @@ each field in locals.category.fields
   .control-group
     label.control-label= field.name
     if field.multiline
-      textarea(name="custom_#{ locals.category.machineName }_#{ field.machineName }", placeholder=field.name, rows="3")= locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]
+      textarea.b-custom-field(name="custom_#{ locals.category.machineName }_#{ field.machineName }", placeholder=field.name, rows="3")= locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]
     else
-      input(type="text", name="custom_#{ locals.category.machineName }_#{ field.machineName }", placeholder=field.name, value=locals[ "custom_" + locals.category.machineName + "_" + field.machineName ])
+      input.b-custom-field(type="text", name="custom_#{ locals.category.machineName }_#{ field.machineName }", placeholder=field.name, value=locals[ "custom_" + locals.category.machineName + "_" + field.machineName ])

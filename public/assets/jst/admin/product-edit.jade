@@ -15,7 +15,7 @@
           //- category
           .control-group
             label.control-label Категория
-            input.b-category-select(type="text", autocomplete="off", placeholder="Категория", data-provide="typeahead", data-source=locals.categoriesSource, data-items=4)
+            input.b-category-select(name="category", type="text", autocomplete="off", placeholder="Категория", data-provide="typeahead", data-source=locals.categoriesSource, data-items=4)
 
           //- manufacturer
           .control-group
@@ -74,7 +74,7 @@
         .span12
           legend Действия
           .control-group
-            button.b-profile__save.btn.btn-primary(type="submit", name="save", value="on") Сохранить
+            button.b-product__save.btn.btn-primary(type="submit", name="save", value="on") Сохранить
             if locals._id
               &nbsp;
               button.b-category__delete.btn(type="button", name="delete", value="on") Удалить

@@ -38,8 +38,6 @@ class Witness.views.ProductEdit extends Witness.View
 
     @renderFields category.toJSON() if category?
 
-    off
-
   renderFields: ( category ) ->
     locals = _.extend @model.toJSON(), category: category
     @$( ".b-custom-fields" ).html _.trim jade.templates[ "product-custom-fields" ] locals
@@ -124,91 +122,103 @@ class Witness.views.ProductEdit extends Witness.View
   removePhoto: ( e ) ->
     @photos.remove $( e.currentTarget.parentNode ).data "id"
 
-  # data: ->
-  #   "name": @$el.find( "[name=\"category-name\"]" ).val()
-  #   "machineName": @$el.find( "[name=\"category-machineName\"]" ).val()
+  data: ->
+    data =
+      name: "name"
+      category: "category"
+      manufacturer: "manufacturer"
+      price: "price"
+      published: "published"
+      onStock: "onStock"
+      description: "description"
 
-  # buttonMsg: ( $button, msg, success, cb ) ->
-  #   oldText = $button.text()
-  #   $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( msg )
+    for own key, field of data
+      data[ key ] = @$( """[name="#{ field }"]""" ).val()
 
-  #   setTimeout ->
-  #     $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( oldText )
+    data.published = data.published is "on"
+    data.onStock = data.onStock is "on"
+    data.category = @categories.where( name: data.category )[ 0 ]?.id
+    data.manufacturer = @_manufacturersCache?[ data.manufacturer ]
 
-  #     cb() if typeof cb is "function"
-  #   , 2e3
+    for own field in @$ ".b-custom-field"
+      $field = $( field )
+      data[ $field.attr "name" ] = $field.val()
 
-  #   @
+    data.photo = @model.get "photo"
+    data.photos = ( photo.id for own photo in @photos.toJSON() )
 
-  # save: ( e ) ->
-  #   @validate()
+    data
 
-  #   fields = []
+  buttonMsg: ( $button, msg, success, cb ) ->
+    oldText = $button.text()
+    $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( msg )
 
-  #   for own model in @fields.models
-  #     model.validate()
-  #     return off unless model.isValid()
-  #     fields.push( model.toJSON() )
+    setTimeout ->
+      $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( oldText )
 
-  #   @model.set( "fields", fields, silent: on )
+      cb() if typeof cb is "function"
+    , 2e3
 
-  #   if @model.isValid()
-  #     $buttons = @$el.find( "button" )
+    @
 
-  #     $buttons.attr( "disabled", on )
-  #     $save = $buttons.filter( ".b-profile__save" )
+  save: ( e ) ->
+    @validate()
 
-  #     processing = @model.save()
+    if @model.isValid()
+      $buttons = @$el.find( "button" )
 
-  #     processing.fail =>
-  #       @buttonMsg $save, "Ошибка", false, ->
-  #         $buttons.attr( "disabled", off )
+      $buttons.attr( "disabled", on )
+      $save = $buttons.filter( ".b-product__save" )
 
-  #     processing.then =>
-  #       location.hash = "categories/#{ @model.id }"
-  #       @buttonMsg $save, "Сохранено", true, ->
-  #         $buttons.attr( "disabled", off )
+      processing = @model.save()
 
-  #   off
+      processing.fail =>
+        @buttonMsg $save, "Ошибка", false, ->
+          $buttons.attr( "disabled", off )
 
-  # del: ->
-  #   $buttons = @$el.find( "button" )
-  #   $buttons.attr( "disabled", on )
-  #   $delete = $buttons.filter( ".b-category__delete" )
+      processing.then =>
+        location.hash = "products/#{ @model.id }"
+        @buttonMsg $save, "Сохранено", true, ->
+          $buttons.attr( "disabled", off )
 
-  #   processing = @model.destroy( wait: on )
+    off
 
-  #   processing.fail =>
-  #     @buttonMsg $delete, "Ошибка", false, ->
-  #       $buttons.attr( "disabled", off )
+  del: ->
+    $buttons = @$el.find( "button" )
+    $buttons.attr( "disabled", on )
+    $delete = $buttons.filter( ".b-product__delete" )
 
-  #   processing.then =>
-  #     location.hash = "categories"
+    processing = @model.destroy( wait: on )
 
-  # addField: ->
-  #   @fields.add( new Witness.models.CategoryField() )
+    processing.fail =>
+      @buttonMsg $delete, "Ошибка", false, ->
+        $buttons.attr( "disabled", off )
 
-  # validate: ( e ) ->
-  #   @model.set( @data(), silent: on )
+    processing.then =>
+      location.hash = "products"
 
-  #   @$el.find( ".control-group" )
-  #     .removeClass( "error" )
-  #     .find( ".help-inline" )
-  #     .remove()
+  validate: ( e ) ->
+    @model.set( @data(), silent: on )
 
-  #   for own field, msg of @model.validate()
-  #     $errField = @$el.find( "form .control-group:has([name=\"category-#{ field }\"])" )
+    @$el.find( ".control-group" )
+      .removeClass( "error" )
+      .find( ".help-inline" )
+      .remove()
 
-  #     $errField
-  #       .addClass( "error" )
-  #       .append( """<span class="help-inline">#{ msg }</span>""" )
+    for own field, msg of @model.validate()
+      $errField = @$el.find( "form .control-group:has([name=\"#{ field }\"])" )
+
+      $errField
+        .addClass( "error" )
+        .append( """<span class="help-inline">#{ msg }</span>""" )
 
   events:
     "change .b-category-select": "switchCategory"
     "click .b-remove-photo-button": "removePhoto"
-    # "change .b-category-select": "switchCategory"
-    # "click .b-category__delete": "del"
-    # "click .b-category__add-field": "addField"
-    # "focusout": "validate"
+    "submit": "save"
+    "click .b-product__delete": "del"
+    "focusout": "validate"
+    "change": "validate"
+    "input": "validate"
 
   template: "product-edit"
