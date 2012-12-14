@@ -14,6 +14,7 @@ class Witness.views.ProductEdit extends Witness.View
       photos: new Witness.views.ProductPhotos
         model: @model
         partialPath: ".uploaded-photos-placeholder"
+        collection: @photos
 
     @model.on "change:photo", =>
       @partials.photo.render()
@@ -77,7 +78,10 @@ class Witness.views.ProductEdit extends Witness.View
     def
 
   render: ->
-    @categories.fetch( add: on, data: limit: 100 ).then =>
+    if manufacturerName = @model.get( "manufacturer" )?.name
+      completion = @complete manufacturerName, ->
+
+    $.when( @categories.fetch( add: on, data: limit: 100 ), completion ).then =>
 
       Witness.View::render.call @,
         categoriesSource: _.escape JSON.stringify ( category.name for own category in @categories.toJSON() )
@@ -103,21 +107,19 @@ class Witness.views.ProductEdit extends Witness.View
     @
 
   complete: ( query, process ) ->
-    clearTimeout @_completeTimeout
     @_completeRequest?.abort()
+    @_completeRequest = $.get "/admin/manufacturers/complete/name?query=#{ encodeURIComponent query }"
 
-    @_completeTimeout = setTimeout =>
-      @_completeRequest = $.get "/admin/manufacturers/complete/name?query=#{ encodeURIComponent query }"
+    @_completeRequest.then ( res ) =>
+      @_manufacturersCache = {}
 
-      @_completeRequest.then ( res ) =>
-        @_manufacturersCache = {}
+      for own item in res
+        @_manufacturersCache[ item.name ] = item._id
 
-        for own item in res
-          @_manufacturersCache[ item.name ] = item._id
+      process ( item.name for own item in res )
 
-        process ( item.name for own item in res )
+    @_completeRequest
 
-    , 300
 
   removePhoto: ( e ) ->
     @photos.remove $( e.currentTarget.parentNode ).data "id"
@@ -140,9 +142,11 @@ class Witness.views.ProductEdit extends Witness.View
     data.category = @categories.where( name: data.category )[ 0 ]?.id
     data.manufacturer = @_manufacturersCache?[ data.manufacturer ]
 
+    data.custom = {}
+
     for own field in @$ ".b-custom-field"
       $field = $( field )
-      data[ $field.attr "name" ] = $field.val()
+      data.custom[ $field.attr( "name" ).replace "custom_", "" ] = $field.val()
 
     data.photo = @model.get "photo"
     data.photos = ( photo.id for own photo in @photos.toJSON() )

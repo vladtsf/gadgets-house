@@ -10,7 +10,7 @@ class Witness.views.ProductPhotos extends Witness.View
 
     if @model.get "photos"
       for own photo in @model.get "photos"
-        @add photo.id
+        @options.collection.add id: photo
 
     @
 

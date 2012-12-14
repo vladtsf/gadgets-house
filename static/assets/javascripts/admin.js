@@ -14072,7 +14072,7 @@ Backbone.Validation = (function(_){
     // view becomes valid. Removes any error message.
     // Should be overridden with custom functionality.
     valid: function(view, attr, selector) {
-      view.$('[' + selector + '~=' + attr + ']')
+      view.$('[' + selector + '~="' + attr + '"]')
           .removeClass('invalid')
           .removeAttr('data-error');
     },
@@ -14081,7 +14081,7 @@ Backbone.Validation = (function(_){
     // Adds a error message.
     // Should be overridden with custom functionality.
     invalid: function(view, attr, error, selector) {
-      view.$('[' + selector + '~=' + attr + ']')
+      view.$('[' + selector + '~="' + attr + '"]')
           .addClass('invalid')
           .attr('data-error', error);
     }
@@ -19163,19 +19163,21 @@ buf.push('<div class="control-group"><label class="control-label">');
 var __val__ = field.name
 buf.push(escape(null == __val__ ? "" : __val__));
 buf.push('</label>');
+var value = (locals.custom ? locals.custom[ locals.category.machineName + "_" + field.machineName ] : "");
+var name = ("custom_" + locals.category.machineName + "_" + field.machineName);
 if ( field.multiline)
 {
 buf.push('<textarea');
-buf.push(attrs({ 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'rows':("3"), "class": ('b-custom-field') }, {"name":true,"placeholder":true,"rows":true}));
+buf.push(attrs({ 'name':(name), 'placeholder':(field.name), 'rows':("3"), "class": ('b-custom-field') }, {"name":true,"placeholder":true,"rows":true}));
 buf.push('>');
-var __val__ = locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]
+var __val__ = value
 buf.push(escape(null == __val__ ? "" : __val__));
 buf.push('</textarea>');
 }
 else
 {
 buf.push('<input');
-buf.push(attrs({ 'type':("text"), 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'value':(locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]), "class": ('b-custom-field') }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push(attrs({ 'type':("text"), 'name':(name), 'placeholder':(field.name), 'value':(value), "class": ('b-custom-field') }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/>');
 }
 buf.push('</div>');
@@ -19190,19 +19192,21 @@ buf.push('<div class="control-group"><label class="control-label">');
 var __val__ = field.name
 buf.push(escape(null == __val__ ? "" : __val__));
 buf.push('</label>');
+var value = (locals.custom ? locals.custom[ locals.category.machineName + "_" + field.machineName ] : "");
+var name = ("custom_" + locals.category.machineName + "_" + field.machineName);
 if ( field.multiline)
 {
 buf.push('<textarea');
-buf.push(attrs({ 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'rows':("3"), "class": ('b-custom-field') }, {"name":true,"placeholder":true,"rows":true}));
+buf.push(attrs({ 'name':(name), 'placeholder':(field.name), 'rows':("3"), "class": ('b-custom-field') }, {"name":true,"placeholder":true,"rows":true}));
 buf.push('>');
-var __val__ = locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]
+var __val__ = value
 buf.push(escape(null == __val__ ? "" : __val__));
 buf.push('</textarea>');
 }
 else
 {
 buf.push('<input');
-buf.push(attrs({ 'type':("text"), 'name':("custom_" + ( locals.category.machineName ) + "_" + ( field.machineName ) + ""), 'placeholder':(field.name), 'value':(locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]), "class": ('b-custom-field') }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push(attrs({ 'type':("text"), 'name':(name), 'placeholder':(field.name), 'value':(value), "class": ('b-custom-field') }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/>');
 }
 buf.push('</div>');
@@ -19222,12 +19226,25 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
-buf.push('<div class="container b-product"><div class="row"><h1>Товар</h1></div><form><fieldset><div class="row"><legend>Основное</legend><div class="span6"><div class="control-group"><label class="control-label">Название</label><input type="text" name="name" placeholder="Название" value=""/></div><div class="control-group"><label class="control-label">Категория</label><input');
-buf.push(attrs({ 'name':("category"), 'type':("text"), 'autocomplete':("off"), 'placeholder':("Категория"), 'data-provide':("typeahead"), 'data-source':(locals.categoriesSource), 'data-items':(4), "class": ('b-category-select') }, {"name":true,"type":true,"autocomplete":true,"placeholder":true,"data-provide":true,"data-source":true,"data-items":true}));
-buf.push('/></div><div class="control-group"><label class="control-label">Производитель</label><input type="text" name="manufacturer" placeholder="Производитель" data-provide="typeahead" data-items="4" class="b-manufacturers-autocomplete"/></div><div class="control-group"><label class="control-label">Цена</label><input type="text" name="price" placeholder="Цена" value=""/></div></div><div class="span6"><div class="control-group"><div class="control-group"><label class="control-label">Фото</label><div class="uploaded-photo-placeholder"></div><br/><div class="upload-photo"></div></div></div><div class="control-group"><label class="control-label">Опубликовать</label><div class="b-published b-toggle-button"><input type="checkbox" name="published"/></div></div><div class="control-group"><label class="control-label">Наличие</label><div class="b-published b-toggle-button"><input type="checkbox" checked="checked" name="onStock"/></div></div><div class="control-group"><label class="control-label">Описание</label><textarea name="description" placeholder="Описание" rows="3"></textarea></div></div></div><div class="row"><div class="span12"><legend>Дополнительно</legend><div class="b-custom-fields"></div></div></div><div class="row"><div class="span12"><legend>Фотографии</legend><div class="control-group"><div class="upload-photos pull-right"></div><br/></div><div class="control-group"><ul class="uploaded-photos-placeholder thumbnails"></ul></div></div></div><div class="row"><div class="span12"><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-product__save btn btn-primary">Сохранить</button>');
+buf.push('<div class="container b-product"><div class="row"><h1>Товар</h1></div><form><fieldset><div class="row"><legend>Основное</legend><div class="span6"><div class="control-group"><label class="control-label">Название</label><input');
+buf.push(attrs({ 'type':("text"), 'name':("name"), 'placeholder':("Название"), 'value':(locals.name) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push('/></div><div class="control-group"><label class="control-label">Категория</label><input');
+buf.push(attrs({ 'name':("category"), 'type':("text"), 'autocomplete':("off"), 'placeholder':("Категория"), 'data-provide':("typeahead"), 'data-source':(locals.categoriesSource), 'data-items':(4), 'value':(locals.category ? locals.category.name : ""), "class": ('b-category-select') }, {"name":true,"type":true,"autocomplete":true,"placeholder":true,"data-provide":true,"data-source":true,"data-items":true,"value":true}));
+buf.push('/></div><div class="control-group"><label class="control-label">Производитель</label><input');
+buf.push(attrs({ 'type':("text"), 'name':("manufacturer"), 'placeholder':("Производитель"), 'data-provide':("typeahead"), 'data-items':("4"), 'value':(locals.manufacturer ? locals.manufacturer.name : ""), "class": ('b-manufacturers-autocomplete') }, {"type":true,"name":true,"placeholder":true,"data-provide":true,"data-items":true,"value":true}));
+buf.push('/></div><div class="control-group"><label class="control-label">Цена</label><input');
+buf.push(attrs({ 'type':("text"), 'name':("price"), 'placeholder':("Цена"), 'value':(locals.price) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push('/></div></div><div class="span6"><div class="control-group"><div class="control-group"><label class="control-label">Фото</label><div class="uploaded-photo-placeholder"></div><br/><div class="upload-photo"></div></div></div><div class="control-group"><label class="control-label">Опубликовать</label><div class="b-published b-toggle-button"><input');
+buf.push(attrs({ 'type':("checkbox"), 'checked':(locals.published), 'name':("published") }, {"type":true,"checked":true,"name":true}));
+buf.push('/></div></div><div class="control-group"><label class="control-label">Наличие</label><div class="b-published b-toggle-button"><input');
+buf.push(attrs({ 'type':("checkbox"), 'checked':(locals.onStock), 'name':("onStock") }, {"type":true,"checked":true,"name":true}));
+buf.push('/></div></div><div class="control-group"><label class="control-label">Описание</label><textarea name="description" placeholder="Описание" rows="3">');
+var __val__ = locals.description
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</textarea></div></div></div><div class="row"><div class="span12"><legend>Дополнительно</legend><div class="b-custom-fields"></div></div></div><div class="row"><div class="span12"><legend>Фотографии</legend><div class="control-group"><div class="upload-photos pull-right"></div><br/></div><div class="control-group"><ul class="uploaded-photos-placeholder thumbnails"></ul></div></div></div><div class="row"><div class="span12"><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-product__save btn btn-primary">Сохранить</button>');
 if ( locals._id)
 {
-buf.push('&nbsp;<button type="button" name="delete" value="on" class="b-category__delete btn">Удалить</button>');
+buf.push('&nbsp;<button type="button" name="delete" value="on" class="b-product__delete btn">Удалить</button>');
 }
 buf.push('</div></div></div></fieldset></form></div>');
 }
@@ -19568,7 +19585,8 @@ return buf.join("");
       "categories/page/:page": "listCategories",
       "categories/:id": "category",
       "manufacturers": "listManufacturers",
-      "products/new": "product"
+      "products/new": "product",
+      "products/:id": "product"
     };
 
     return AdminApplication;
@@ -20422,7 +20440,8 @@ return buf.join("");
         }),
         photos: new Witness.views.ProductPhotos({
           model: this.model,
-          partialPath: ".uploaded-photos-placeholder"
+          partialPath: ".uploaded-photos-placeholder",
+          collection: this.photos
         })
       };
       this.model.on("change:photo", function() {
@@ -20513,30 +20532,34 @@ return buf.join("");
     };
 
     ProductEdit.prototype.render = function() {
-      var _this = this;
-      this.categories.fetch({
+      var completion, manufacturerName, _ref,
+        _this = this;
+      if (manufacturerName = (_ref = this.model.get("manufacturer")) != null ? _ref.name : void 0) {
+        completion = this.complete(manufacturerName, function() {});
+      }
+      $.when(this.categories.fetch({
         add: true,
         data: {
           limit: 100
         }
-      }).then(function() {
-        var category, key, partial, _ref;
+      }), completion).then(function() {
+        var category, key, partial, _ref1;
         Witness.View.prototype.render.call(_this, {
           categoriesSource: _.escape(JSON.stringify((function() {
-            var _i, _len, _ref, _results;
-            _ref = this.categories.toJSON();
+            var _i, _len, _ref1, _results;
+            _ref1 = this.categories.toJSON();
             _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              category = _ref[_i];
+            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+              category = _ref1[_i];
               _results.push(category.name);
             }
             return _results;
           }).call(_this)))
         });
-        _ref = _this.partials;
-        for (key in _ref) {
-          if (!__hasProp.call(_ref, key)) continue;
-          partial = _ref[key];
+        _ref1 = _this.partials;
+        for (key in _ref1) {
+          if (!__hasProp.call(_ref1, key)) continue;
+          partial = _ref1[key];
           partial.setElement(_this.$(partial.options.partialPath));
           partial.render();
         }
@@ -20562,30 +20585,28 @@ return buf.join("");
     ProductEdit.prototype.complete = function(query, process) {
       var _ref,
         _this = this;
-      clearTimeout(this._completeTimeout);
       if ((_ref = this._completeRequest) != null) {
         _ref.abort();
       }
-      return this._completeTimeout = setTimeout(function() {
-        _this._completeRequest = $.get("/admin/manufacturers/complete/name?query=" + (encodeURIComponent(query)));
-        return _this._completeRequest.then(function(res) {
-          var item, _i, _len;
-          _this._manufacturersCache = {};
-          for (_i = 0, _len = res.length; _i < _len; _i++) {
-            item = res[_i];
-            _this._manufacturersCache[item.name] = item._id;
+      this._completeRequest = $.get("/admin/manufacturers/complete/name?query=" + (encodeURIComponent(query)));
+      this._completeRequest.then(function(res) {
+        var item, _i, _len;
+        _this._manufacturersCache = {};
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          item = res[_i];
+          _this._manufacturersCache[item.name] = item._id;
+        }
+        return process((function() {
+          var _j, _len1, _results;
+          _results = [];
+          for (_j = 0, _len1 = res.length; _j < _len1; _j++) {
+            item = res[_j];
+            _results.push(item.name);
           }
-          return process((function() {
-            var _j, _len1, _results;
-            _results = [];
-            for (_j = 0, _len1 = res.length; _j < _len1; _j++) {
-              item = res[_j];
-              _results.push(item.name);
-            }
-            return _results;
-          })());
-        });
-      }, 300);
+          return _results;
+        })());
+      });
+      return this._completeRequest;
     };
 
     ProductEdit.prototype.removePhoto = function(e) {
@@ -20614,11 +20635,12 @@ return buf.join("");
         name: data.category
       })[0]) != null ? _ref.id : void 0;
       data.manufacturer = (_ref1 = this._manufacturersCache) != null ? _ref1[data.manufacturer] : void 0;
+      data.custom = {};
       _ref2 = this.$(".b-custom-field");
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         field = _ref2[_i];
         $field = $(field);
-        data[$field.attr("name")] = $field.val();
+        data.custom[$field.attr("name").replace("custom_", "")] = $field.val();
       }
       data.photo = this.model.get("photo");
       data.photos = (function() {
@@ -20753,7 +20775,9 @@ return buf.join("");
         _ref = this.model.get("photos");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           photo = _ref[_i];
-          this.add(photo.id);
+          this.options.collection.add({
+            id: photo
+          });
         }
       }
       return this;

@@ -133,6 +133,7 @@ class window.AdminApplication extends Backbone.Router
     "manufacturers": "listManufacturers"
 
     "products/new": "product"
+    "products/:id": "product"
 
 
 window.admin = new AdminApplication()

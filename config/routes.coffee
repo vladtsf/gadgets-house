@@ -27,6 +27,13 @@ module.exports = (app, route) ->
       route "delete", "/:id", "admin_manufacturers#del"
       route "get", "/complete/:field", "admin_manufacturers#complete"
 
+    app.namespace "/products", ->
+      route "get", "/", "admin_products#list"
+      route "post", "/", "admin_products#create"
+      route "get", "/:id", "admin_products#show"
+      route "put", "/:id", "admin_products#update"
+      route "delete", "/:id", "admin_products#del"
+
     app.namespace "/images", ->
       route "get", "/", "admin_images#list"
       route "post", "/(:width?x:height?)?", "admin_images#create"

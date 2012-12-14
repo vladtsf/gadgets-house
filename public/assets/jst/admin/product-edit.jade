@@ -10,22 +10,22 @@
           //- name
           .control-group
             label.control-label Название
-            input(type="text", name="name", placeholder="Название", value="")
+            input(type="text", name="name", placeholder="Название", value=locals.name)
 
           //- category
           .control-group
             label.control-label Категория
-            input.b-category-select(name="category", type="text", autocomplete="off", placeholder="Категория", data-provide="typeahead", data-source=locals.categoriesSource, data-items=4)
+            input.b-category-select(name="category", type="text", autocomplete="off", placeholder="Категория", data-provide="typeahead", data-source=locals.categoriesSource, data-items=4, value=locals.category ? locals.category.name : "" )
 
           //- manufacturer
           .control-group
             label.control-label Производитель
-            input.b-manufacturers-autocomplete( type="text", name="manufacturer", placeholder="Производитель", data-provide="typeahead", data-items="4" )
+            input.b-manufacturers-autocomplete( type="text", name="manufacturer", placeholder="Производитель", data-provide="typeahead", data-items="4", value=locals.manufacturer ? locals.manufacturer.name : "" )
 
           //- price
           .control-group
             label.control-label Цена
-            input(type="text", name="price", placeholder="Цена", value="")
+            input(type="text", name="price", placeholder="Цена", value=locals.price)
 
         .span6
           //- photo
@@ -40,18 +40,18 @@
           .control-group
             label.control-label Опубликовать
             .b-published.b-toggle-button
-              input(type="checkbox", checked=false, name="published")
+              input(type="checkbox", checked=locals.published, name="published")
 
           //- on stock
           .control-group
             label.control-label Наличие
             .b-published.b-toggle-button
-              input(type="checkbox", checked=true, name="onStock")
+              input(type="checkbox", checked=locals.onStock, name="onStock")
 
           //- description
           .control-group
             label.control-label Описание
-            textarea(name="description", placeholder="Описание", rows="3")
+            textarea(name="description", placeholder="Описание", rows="3")= locals.description
 
       .row
         .span12
@@ -77,5 +77,5 @@
             button.b-product__save.btn.btn-primary(type="submit", name="save", value="on") Сохранить
             if locals._id
               &nbsp;
-              button.b-category__delete.btn(type="button", name="delete", value="on") Удалить
+              button.b-product__delete.btn(type="button", name="delete", value="on") Удалить
 

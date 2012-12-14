@@ -2,7 +2,9 @@ each field in locals.category.fields
   //- inline
   .control-group
     label.control-label= field.name
+    value = locals.custom ? locals.custom[ locals.category.machineName + "_" + field.machineName ] : ""
+    name = "custom_" + locals.category.machineName + "_" + field.machineName
     if field.multiline
-      textarea.b-custom-field(name="custom_#{ locals.category.machineName }_#{ field.machineName }", placeholder=field.name, rows="3")= locals[ "custom_" + locals.category.machineName + "_" + field.machineName ]
+      textarea.b-custom-field(name=name, placeholder=field.name, rows="3")= value
     else
-      input.b-custom-field(type="text", name="custom_#{ locals.category.machineName }_#{ field.machineName }", placeholder=field.name, value=locals[ "custom_" + locals.category.machineName + "_" + field.machineName ])
+      input.b-custom-field(type="text", name=name, placeholder=field.name, value=value)

@@ -4,6 +4,7 @@ _ = require "underscore"
 class RestController
 
   fields: []
+  populate: []
   model: {}
 
   validate: ->
@@ -27,9 +28,14 @@ class RestController
     @model
       .count()
       .exec ( err, count ) =>
-        @model
+        query = @model
           .find()
           .select( _.union( "_id", @fields ).join " "  )
+
+        for own field in @populate
+          query.populate( field )
+
+        query
           .sort( "#{ order }_id" )
           .skip( offset )
           .limit( limit )
@@ -40,9 +46,14 @@ class RestController
               res.json { offset, limit, count, docs }
 
   show: ( req, res ) ->
-    @model
+    query = @model
       .findOne( _id: req.route.params.id )
       .select( _.union( "_id", @fields ).join " " )
+
+    for own field in @populate
+      query.populate( field )
+
+    query
       .exec ( err, doc ) =>
         return res.send( 500 ) if err
         return res.send( 404 ) unless doc
@@ -67,7 +78,6 @@ class RestController
       changeset[ field ] = req.body[ field ]
 
     new @model( changeset ).save ( err, doc ) =>
-      console.log err
       return res.send( 500 ) if err
 
       res.json doc
