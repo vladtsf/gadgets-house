@@ -19258,7 +19258,9 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
-buf.push('<li class="span3"><a');
+buf.push('<li');
+buf.push(attrs({ 'data-id':(id), "class": ('b-photos__thumb') + ' ' + ('span3') }, {"data-id":true}));
+buf.push('><button type="button" class="pull-right btn btn-mini b-remove-photo-button"><i class="icon-remove"></i></button><a');
 buf.push(attrs({ 'href':("" + ( AdminApplication.settings.get("cdn") ) + "/images/" + ( id ) + "/original"), "class": ('thumbnail') }, {"href":true}));
 buf.push('><img');
 buf.push(attrs({ 'src':("" + ( AdminApplication.settings.get("cdn") ) + "/images/" + ( id ) + "/thumb") }, {"src":true}));
@@ -20406,6 +20408,9 @@ return buf.join("");
       this.photos.on("add", function(model, collection) {
         return _this.partials.photos.add(model.id);
       });
+      this.photos.on("remove", function(model, collection) {
+        return _this.$(".b-photos__thumb[data-id=\"" + model.id + "\"]").remove();
+      });
       return Backbone.Validation.bind(this);
     };
 
@@ -20561,8 +20566,13 @@ return buf.join("");
       }, 300);
     };
 
+    ProductEdit.prototype.removePhoto = function(e) {
+      return this.photos.remove($(e.currentTarget.parentNode).data("id"));
+    };
+
     ProductEdit.prototype.events = {
-      "change .b-category-select": "switchCategory"
+      "change .b-category-select": "switchCategory",
+      "click .b-remove-photo-button": "removePhoto"
     };
 
     ProductEdit.prototype.template = "product-edit";

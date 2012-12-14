@@ -1,3 +1,5 @@
-li.span3
-    a.thumbnail(href="#{ AdminApplication.settings.get("cdn") }/images/#{ id }/original")
-      img(src="#{ AdminApplication.settings.get("cdn") }/images/#{ id }/thumb")
+li.b-photos__thumb.span3(data-id=id)
+  button.pull-right.btn.btn-mini.b-remove-photo-button(type="button")
+    i.icon-remove
+  a.thumbnail(href="#{ AdminApplication.settings.get("cdn") }/images/#{ id }/original")
+    img(src="#{ AdminApplication.settings.get("cdn") }/images/#{ id }/thumb")

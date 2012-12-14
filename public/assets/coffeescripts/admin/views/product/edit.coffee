@@ -21,6 +21,9 @@ class Witness.views.ProductEdit extends Witness.View
     @photos.on "add", ( model, collection ) =>
       @partials.photos.add model.id
 
+    @photos.on "remove", ( model, collection ) =>
+      @$( """.b-photos__thumb[data-id="#{ model.id }"]""" ).remove()
+
     Backbone.Validation.bind( @ )
 
   destroy: ->
@@ -118,6 +121,8 @@ class Witness.views.ProductEdit extends Witness.View
 
     , 300
 
+  removePhoto: ( e ) ->
+    @photos.remove $( e.currentTarget.parentNode ).data "id"
 
   # data: ->
   #   "name": @$el.find( "[name=\"category-name\"]" ).val()
@@ -200,6 +205,7 @@ class Witness.views.ProductEdit extends Witness.View
 
   events:
     "change .b-category-select": "switchCategory"
+    "click .b-remove-photo-button": "removePhoto"
     # "change .b-category-select": "switchCategory"
     # "click .b-category__delete": "del"
     # "click .b-category__add-field": "addField"
