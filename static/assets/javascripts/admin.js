@@ -19224,9 +19224,7 @@ with (locals || {}) {
 var interp;
 buf.push('<div class="container b-product"><div class="row"><h1>Товар</h1></div><form><fieldset><div class="row"><legend>Основное</legend><div class="span6"><div class="control-group"><label class="control-label">Название</label><input type="text" name="name" placeholder="Название" value=""/></div><div class="control-group"><label class="control-label">Категория</label><input');
 buf.push(attrs({ 'type':("text"), 'autocomplete':("off"), 'placeholder':("Категория"), 'data-provide':("typeahead"), 'data-source':(locals.categoriesSource), 'data-items':(4), "class": ('b-category-select') }, {"type":true,"autocomplete":true,"placeholder":true,"data-provide":true,"data-source":true,"data-items":true}));
-buf.push('/></div><div class="control-group"><label class="control-label">Производитель</label><input');
-buf.push(attrs({ 'type':("text"), 'name':("manufacturer"), 'placeholder':("Производитель"), 'data-provide':("typeahead"), 'data-items':("4"), 'data-source':(JSON.stringify(["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Dakota","North Carolina","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"])) }, {"type":true,"name":true,"placeholder":true,"data-provide":true,"data-items":true,"data-source":true}));
-buf.push('/></div><div class="control-group"><label class="control-label">Цена</label><input type="text" name="price" placeholder="Цена" value=""/></div></div><div class="span6"><div class="control-group"><div class="control-group"><label class="control-label">Фото</label><div class="uploaded-photo-placeholder"></div><br/><div class="upload-photo"></div></div></div><div class="control-group"><label class="control-label">Опубликовать</label><div class="b-published b-toggle-button"><input type="checkbox" name="published"/></div></div><div class="control-group"><label class="control-label">Наличие</label><div class="b-published b-toggle-button"><input type="checkbox" checked="checked" name="onStock"/></div></div><div class="control-group"><label class="control-label">Описание</label><textarea name="description" placeholder="Описание" rows="3"></textarea></div></div></div><div class="row"><div class="span12"><legend>Дополнительно</legend><div class="b-custom-fields"></div></div></div><div class="row"><div class="span12"><legend>Фотографии</legend><div class="control-group"><div class="upload-photos pull-right"></div><br/></div><div class="control-group"><ul class="uploaded-photos-placeholder thumbnails"></ul></div></div></div><div class="row"><div class="span12"><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
+buf.push('/></div><div class="control-group"><label class="control-label">Производитель</label><input type="text" name="manufacturer" placeholder="Производитель" data-provide="typeahead" data-items="4" class="b-manufacturers-autocomplete"/></div><div class="control-group"><label class="control-label">Цена</label><input type="text" name="price" placeholder="Цена" value=""/></div></div><div class="span6"><div class="control-group"><div class="control-group"><label class="control-label">Фото</label><div class="uploaded-photo-placeholder"></div><br/><div class="upload-photo"></div></div></div><div class="control-group"><label class="control-label">Опубликовать</label><div class="b-published b-toggle-button"><input type="checkbox" name="published"/></div></div><div class="control-group"><label class="control-label">Наличие</label><div class="b-published b-toggle-button"><input type="checkbox" checked="checked" name="onStock"/></div></div><div class="control-group"><label class="control-label">Описание</label><textarea name="description" placeholder="Описание" rows="3"></textarea></div></div></div><div class="row"><div class="span12"><legend>Дополнительно</legend><div class="b-custom-fields"></div></div></div><div class="row"><div class="span12"><legend>Фотографии</legend><div class="control-group"><div class="upload-photos pull-right"></div><br/></div><div class="control-group"><ul class="uploaded-photos-placeholder thumbnails"></ul></div></div></div><div class="row"><div class="span12"><legend>Действия</legend><div class="control-group"><button type="submit" name="save" value="on" class="b-profile__save btn btn-primary">Сохранить</button>');
 if ( locals._id)
 {
 buf.push('&nbsp;<button type="button" name="delete" value="on" class="b-category__delete btn">Удалить</button>');
@@ -20388,6 +20386,9 @@ return buf.join("");
       });
       this.categories = new Witness.models.Categories();
       this.photos = new Backbone.Collection();
+      this.manufacturers = new Backbone.Collection({
+        url: "/admin/manufacturers/name"
+      });
       this.partials = {
         photo: new Witness.View({
           model: this.model,
@@ -20519,13 +20520,45 @@ return buf.join("");
         _this.uploader(".upload-photo").progress(function(id) {
           return _this.model.set("photo", id);
         });
-        return _this.uploader(".upload-photos", true, "260x180").progress(function(id) {
+        _this.uploader(".upload-photos", true, "260x180").progress(function(id) {
           return _this.photos.add({
             id: id
           });
         });
+        return _this.$(".b-manufacturers-autocomplete").data("source", function() {
+          return _this.complete.apply(_this, arguments);
+        });
       });
       return this;
+    };
+
+    ProductEdit.prototype.complete = function(query, process) {
+      var _ref,
+        _this = this;
+      clearTimeout(this._completeTimeout);
+      if ((_ref = this._completeRequest) != null) {
+        _ref.abort();
+      }
+      return this._completeTimeout = setTimeout(function() {
+        _this._completeRequest = $.get("/admin/manufacturers/complete/name?query=" + (encodeURIComponent(query)));
+        return _this._completeRequest.then(function(res) {
+          var item, _i, _len;
+          _this._manufacturersCache = {};
+          for (_i = 0, _len = res.length; _i < _len; _i++) {
+            item = res[_i];
+            _this._manufacturersCache[item.name] = item._id;
+          }
+          return process((function() {
+            var _j, _len1, _results;
+            _results = [];
+            for (_j = 0, _len1 = res.length; _j < _len1; _j++) {
+              item = res[_j];
+              _results.push(item.name);
+            }
+            return _results;
+          })());
+        });
+      }, 300);
     };
 
     ProductEdit.prototype.events = {

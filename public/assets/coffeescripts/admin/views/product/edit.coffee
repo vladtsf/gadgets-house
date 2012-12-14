@@ -4,6 +4,7 @@ class Witness.views.ProductEdit extends Witness.View
     @model = @model ? new Witness.models.Product( { _id } )
     @categories = new Witness.models.Categories()
     @photos = new Backbone.Collection()
+    @manufacturers = new Backbone.Collection( url: "/admin/manufacturers/name" )
 
     @partials =
       photo: new Witness.View
@@ -96,7 +97,26 @@ class Witness.views.ProductEdit extends Witness.View
       @uploader( ".upload-photos", on, "260x180" ).progress ( id ) =>
         @photos.add { id }
 
+      @$(".b-manufacturers-autocomplete").data "source", => @complete.apply @, arguments
+
     @
+
+  complete: ( query, process ) ->
+    clearTimeout @_completeTimeout
+    @_completeRequest?.abort()
+
+    @_completeTimeout = setTimeout =>
+      @_completeRequest = $.get "/admin/manufacturers/complete/name?query=#{ encodeURIComponent query }"
+
+      @_completeRequest.then ( res ) =>
+        @_manufacturersCache = {}
+
+        for own item in res
+          @_manufacturersCache[ item.name ] = item._id
+
+        process ( item.name for own item in res )
+
+    , 300
 
 
   # data: ->
