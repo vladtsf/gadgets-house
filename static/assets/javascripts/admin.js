@@ -22680,7 +22680,10 @@ return buf.join("");
         },
         request: {
           endpoint: "/admin/images/" + size + "/",
-          forceMultipart: true
+          forceMultipart: true,
+          customHeaders: {
+            "X-CSRF-Token": $("meta[name=\"csrf\"]").attr("content")
+          }
         },
         text: {
           uploadButton: "Upload"
@@ -22912,7 +22915,7 @@ return buf.join("");
       "submit": "save",
       "click .b-product__delete": "del",
       "focusout": "validate",
-      "change": "validate",
+      "change:not(.upload-photo, .upload-photos)": "validate",
       "input": "validate"
     };
 

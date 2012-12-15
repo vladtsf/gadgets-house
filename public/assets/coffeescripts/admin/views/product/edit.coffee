@@ -57,6 +57,8 @@ class Witness.views.ProductEdit extends Witness.View
       request:
         endpoint: "/admin/images/#{ size }/"
         forceMultipart: on
+        customHeaders:
+          "X-CSRF-Token": $( "meta[name=\"csrf\"]" ).attr( "content" )
       text:
         uploadButton: """Upload"""
       template: """<div class="qq-uploader">
@@ -225,7 +227,7 @@ class Witness.views.ProductEdit extends Witness.View
     "submit": "save"
     "click .b-product__delete": "del"
     "focusout": "validate"
-    "change": "validate"
+    "change:not(.upload-photo, .upload-photos)": "validate"
     "input": "validate"
 
   template: "product-edit"
