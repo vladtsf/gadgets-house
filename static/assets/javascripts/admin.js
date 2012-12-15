@@ -22915,7 +22915,7 @@ return buf.join("");
       "submit": "save",
       "click .b-product__delete": "del",
       "focusout": "validate",
-      "change:not(.upload-photo, .upload-photos)": "validate",
+      "change *:not(.upload-photo, .upload-photos)": "validate",
       "input": "validate"
     };
 
