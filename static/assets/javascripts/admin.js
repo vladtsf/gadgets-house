@@ -21107,7 +21107,7 @@ var buf = [];
 with (locals || {}) {
 var interp;
 buf.push('<span class="add-on b-category-field__valid"><i></i></span><input');
-buf.push(attrs({ 'type':("text"), 'name':("machine-name"), 'placeholder':("Системное имя"), 'value':(locals.name), "class": ('span') }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push(attrs({ 'type':("text"), 'name':("machine-name"), 'placeholder':("Системное имя"), 'value':(locals.machineName), "class": ('span') }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/><input');
 buf.push(attrs({ 'type':("text"), 'name':("name"), 'placeholder':("Название"), 'value':(locals.name), "class": ('span') }, {"type":true,"name":true,"placeholder":true,"value":true}));
 buf.push('/><button');
