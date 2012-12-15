@@ -22800,8 +22800,6 @@ return buf.join("");
         category: "category",
         manufacturer: "manufacturer",
         price: "price",
-        published: "published",
-        onStock: "onStock",
         description: "description"
       };
       for (key in data) {
@@ -22809,8 +22807,8 @@ return buf.join("");
         field = data[key];
         data[key] = this.$("[name=\"" + field + "\"]").val();
       }
-      data.published = data.published === "on";
-      data.onStock = data.onStock === "on";
+      data.published = this.$("[name=\"published\"]").prop("checked");
+      data.onStock = this.$("[name=\"onStock\"]").prop("checked");
       data.category = (_ref = this.categories.where({
         name: data.category
       })[0]) != null ? _ref.id : void 0;
@@ -22833,6 +22831,7 @@ return buf.join("");
         }
         return _results;
       }).call(this);
+      console.log(data);
       return data;
     };
 

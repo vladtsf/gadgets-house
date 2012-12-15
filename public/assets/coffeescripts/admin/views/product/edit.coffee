@@ -135,15 +135,13 @@ class Witness.views.ProductEdit extends Witness.View
       category: "category"
       manufacturer: "manufacturer"
       price: "price"
-      published: "published"
-      onStock: "onStock"
       description: "description"
 
     for own key, field of data
       data[ key ] = @$( """[name="#{ field }"]""" ).val()
 
-    data.published = data.published is "on"
-    data.onStock = data.onStock is "on"
+    data.published = @$( """[name="published"]""" ).prop "checked"
+    data.onStock = @$( """[name="onStock"]""" ).prop "checked"
     data.category = @categories.where( name: data.category )[ 0 ]?.id
     data.manufacturer = @_manufacturersCache?[ data.manufacturer ]
 
@@ -155,6 +153,8 @@ class Witness.views.ProductEdit extends Witness.View
 
     data.photo = @model.get "photo"
     data.photos = ( photo.id for own photo in @photos.toJSON() )
+
+    console.log data
 
     data
 
