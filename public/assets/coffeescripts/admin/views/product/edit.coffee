@@ -104,6 +104,9 @@ class Witness.views.ProductEdit extends Witness.View
 
       @$(".b-manufacturers-autocomplete").data "source", => @complete.apply @, arguments
 
+      @$( ".fancybox" ).fancybox
+        type: "image"
+
     @
 
   complete: ( query, process ) ->

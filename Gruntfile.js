@@ -35,6 +35,7 @@ module.exports = function(grunt) {
           "static/assets/stylesheets/admin.css": [
             "vendor/assets/fileuploader/client/fineuploader.css",
             "vendor/assets/bootstrap-toggle-buttons/static/stylesheets/bootstrap-toggle-buttons.css",
+            "vendor/assets/fancybox/source/jquery.fancybox.css",
             "public/assets/stylesheets/admin.less"
           ],
           "static/assets/stylesheets/application.css": [
@@ -51,6 +52,7 @@ module.exports = function(grunt) {
           "static/assets/stylesheets/admin.css": [
             "vendor/assets/fileuploader/client/fineuploader.css",
             "vendor/assets/bootstrap-toggle-buttons/static/stylesheets/bootstrap-toggle-buttons.css",
+            "vendor/assets/fancybox/source/jquery.fancybox.css",
             "public/assets/stylesheets/admin.less"
           ],
           "static/assets/stylesheets/application.css": [
@@ -82,6 +84,8 @@ module.exports = function(grunt) {
       witness: {
         src: [
           "vendor/assets/javascripts/jquery-1.8.2.js",
+          "vendor/assets/fancybox/lib/jquery.mousewheel-3.0.6.pack.js",
+          "vendor/assets/fancybox/source/jquery.fancybox.js",
           "vendor/assets/javascripts/jquery.form.js",
           "vendor/assets/javascripts/underscore.js",
           "vendor/assets/javascripts/underscore.string.js",
