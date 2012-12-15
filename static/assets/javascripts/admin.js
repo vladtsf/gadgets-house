@@ -19287,6 +19287,125 @@ return buf.join("");
 };
 })();
 jade.templates = jade.templates || {};
+jade.templates['products-list'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div class="container b-products"><div class="row"><h1>Товары</h1></div><div class="row b-products__list">');
+if ( _.keys( locals ).length)
+{
+buf.push('<table class="table table-bordered table-striped b-products-table"><thead><tr><th>Название</th><th>Категория</th><th>Производитель</th><th>Видимость</th><th>Наличие</th><th>Цена</th></tr></thead><tbody class="b-products-table__body">');
+// iterate locals
+;(function(){
+  if ('number' == typeof locals.length) {
+
+    for (var idx = 0, $$l = locals.length; idx < $$l; idx++) {
+      var product = locals[idx];
+
+buf.push('<tr><td><a');
+buf.push(attrs({ 'href':("#products/" + ( product._id ) + "") }, {"href":true}));
+buf.push('>');
+var __val__ = product.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</a></td><td><a');
+buf.push(attrs({ 'href':("#categories/" + ( product.category._id ) + "") }, {"href":true}));
+buf.push('>');
+var __val__ = product.category.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</a></td><td>');
+var __val__ = product.manufacturer.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</td><td><span');
+buf.push(attrs({ "class": ('label') + ' ' + ("label-" + ( product.published ? "success" : "warning" ) + "") }, {"class":true}));
+buf.push('>');
+var __val__ = product.published ? "опубликовано" : "скрыто"
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</span></td><td><span');
+buf.push(attrs({ "class": ('label') + ' ' + ("label-" + ( product.onStock ? "success" : "warning" ) + "") }, {"class":true}));
+buf.push('>');
+var __val__ = product.onStock ? "есть" : "нет"
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</span></td><td>');
+var __val__ = product.price
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</td></tr>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var idx in locals) {
+      $$l++;      var product = locals[idx];
+
+buf.push('<tr><td><a');
+buf.push(attrs({ 'href':("#products/" + ( product._id ) + "") }, {"href":true}));
+buf.push('>');
+var __val__ = product.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</a></td><td><a');
+buf.push(attrs({ 'href':("#categories/" + ( product.category._id ) + "") }, {"href":true}));
+buf.push('>');
+var __val__ = product.category.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</a></td><td>');
+var __val__ = product.manufacturer.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</td><td><span');
+buf.push(attrs({ "class": ('label') + ' ' + ("label-" + ( product.published ? "success" : "warning" ) + "") }, {"class":true}));
+buf.push('>');
+var __val__ = product.published ? "опубликовано" : "скрыто"
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</span></td><td><span');
+buf.push(attrs({ "class": ('label') + ' ' + ("label-" + ( product.onStock ? "success" : "warning" ) + "") }, {"class":true}));
+buf.push('>');
+var __val__ = product.onStock ? "есть" : "нет"
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</span></td><td>');
+var __val__ = product.price
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</td></tr>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</tbody></table>');
+}
+else
+{
+buf.push('<div class="alert"><strong>Список пуст</strong></div>');
+}
+buf.push('</div><div class="row b-products__pagination"></div></div>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['products-pager'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<ul class="pager b-products-pager">');
+var page = (~~(offset / 10));
+var previousDisabled = (offset === 0);
+var nextDisabled = (count - offset < 10);
+buf.push('<li');
+buf.push(attrs({ "class": ('previous') + ' ' + (previousDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':(page > 0 ? "#products/page/" + ( previousDisabled ? page : page - 1 ) + "" : "#products") }, {"href":true}));
+buf.push('>&larr; Prev</a></li><li');
+buf.push(attrs({ "class": ('next') + ' ' + (nextDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':("#products/page/" + ( nextDisabled ? page : page + 1 ) + "") }, {"href":true}));
+buf.push('>Next &rarr;</a></li></ul>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
 jade.templates['user'] = (function(){
   return function anonymous(locals, attrs, escape, rethrow, merge) {
 attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
@@ -19536,6 +19655,29 @@ return buf.join("");
       });
     };
 
+    AdminApplication.prototype.listProducts = function(page) {
+      var oldEntity, products,
+        _this = this;
+      if (page == null) {
+        page = 0;
+      }
+      this.switchNavBar(["products", "products-list"]);
+      oldEntity = this.currentEntity;
+      products = this.currentEntity = new Witness.views.ProductsList();
+      return products.model.fetch({
+        add: true,
+        data: {
+          offset: page * 10
+        }
+      }).then(function() {
+        if (oldEntity != null) {
+          oldEntity.destroy();
+        }
+        products.render();
+        return _this.setLayout(products);
+      });
+    };
+
     AdminApplication.prototype.listManufacturers = function(page) {
       var manufacturers, oldEntity,
         _this = this;
@@ -19585,6 +19727,7 @@ return buf.join("");
       "categories/page/:page": "listCategories",
       "categories/:id": "category",
       "manufacturers": "listManufacturers",
+      "products": "listProducts",
       "products/new": "product",
       "products/:id": "product"
     };
@@ -19863,6 +20006,39 @@ return buf.join("");
     return Product;
 
   })(Backbone.Model);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.models.Products = (function(_super) {
+
+    __extends(Products, _super);
+
+    function Products() {
+      return Products.__super__.constructor.apply(this, arguments);
+    }
+
+    Products.prototype.model = Witness.models.Product;
+
+    Products.prototype.initialize = function() {};
+
+    Products.prototype.parse = function(res) {
+      this.offset = res.offset;
+      this.count = res.count;
+      this.limit = res.limit;
+      return res.docs;
+    };
+
+    Products.prototype.url = function() {
+      return "/admin/products/";
+    };
+
+    return Products;
+
+  })(Backbone.Collection);
 
 }).call(this);
 
@@ -20744,6 +20920,66 @@ return buf.join("");
     return ProductEdit;
 
   })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.ProductsList = (function(_super) {
+
+    __extends(ProductsList, _super);
+
+    function ProductsList() {
+      return ProductsList.__super__.constructor.apply(this, arguments);
+    }
+
+    ProductsList.prototype.initialize = function(options, _id) {
+      return this.model = new Witness.models.Products();
+    };
+
+    ProductsList.prototype.destroy = function() {
+      return this.remove();
+    };
+
+    ProductsList.prototype.render = function() {
+      var count, offset, _ref, _ref1;
+      Witness.View.prototype.render.apply(this, arguments);
+      if ((_ref = this.pager) == null) {
+        this.pager = new Witness.views.ProductsPager();
+      }
+      this.pager.setElement(this.$el.find(".b-products__pagination"));
+      return this.pager.render((_ref1 = this.model, offset = _ref1.offset, count = _ref1.count, _ref1));
+    };
+
+    ProductsList.prototype.template = "products-list";
+
+    return ProductsList;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.views.ProductsPager = (function(_super) {
+
+    __extends(ProductsPager, _super);
+
+    function ProductsPager() {
+      return ProductsPager.__super__.constructor.apply(this, arguments);
+    }
+
+    ProductsPager.prototype.initialize = function() {};
+
+    ProductsPager.prototype.template = "products-pager";
+
+    return ProductsPager;
+
+  })(Witness.views.CategoriesPager);
 
 }).call(this);
 

@@ -1,0 +1,33 @@
+.container.b-products
+  .row
+    h1 Товары
+
+  .row.b-products__list
+    if _.keys( locals ).length
+      table.table.table-bordered.table-striped.b-products-table
+        thead
+          tr
+            th Название
+            th Категория
+            th Производитель
+            th Видимость
+            th Наличие
+            th Цена
+        tbody.b-products-table__body
+          each product, idx in locals
+            tr
+              td
+                a( href="#products/#{ product._id }" )= product.name
+              td
+                a( href="#categories/#{ product.category._id }" )= product.category.name
+              td= product.manufacturer.name
+              td
+                span.label(class="label-#{ product.published ? "success" : "warning" }")= product.published ? "опубликовано" : "скрыто"
+              td
+                span.label(class="label-#{ product.onStock ? "success" : "warning" }")= product.onStock ? "есть" : "нет"
+              td= product.price
+    else
+      .alert
+        strong Список пуст
+
+  .row.b-products__pagination

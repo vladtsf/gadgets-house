@@ -93,6 +93,18 @@ class window.AdminApplication extends Backbone.Router
       categories.render()
       @setLayout( categories )
 
+  listProducts: ( page = 0 ) ->
+    @switchNavBar( [ "products", "products-list" ] )
+
+    oldEntity = @currentEntity
+
+    products = @currentEntity = new Witness.views.ProductsList()
+
+    products.model.fetch( add: on, data: offset: page * 10 ).then =>
+      oldEntity?.destroy()
+      products.render()
+      @setLayout( products )
+
   listManufacturers: ( page = 0 ) ->
     @switchNavBar( [ "categories", "manufacturers" ] )
 
@@ -132,6 +144,7 @@ class window.AdminApplication extends Backbone.Router
 
     "manufacturers": "listManufacturers"
 
+    "products": "listProducts"
     "products/new": "product"
     "products/:id": "product"
 
