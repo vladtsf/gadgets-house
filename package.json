@@ -1,6 +1,6 @@
 {
   "name": "gadgets-house",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "scripts": {
     "start": "node app",
@@ -39,5 +39,6 @@
   "engines": {
     "node": "0.8.x",
     "npm": "1.1.x"
-  }
+  },
+  "subdomain": "vtsvang.gadgets-house"
 }
