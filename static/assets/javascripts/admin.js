@@ -16558,6 +16558,86 @@ exports.rethrow = function rethrow(err, filename, lineno){
 
 }).call(this);
 
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.EntityView = (function(_super) {
+
+    __extends(EntityView, _super);
+
+    function EntityView() {
+      EntityView.__super__.constructor.apply(this, arguments);
+    }
+
+    EntityView.prototype.buttonMsg = function($button, msg, success, cb) {
+      var oldText;
+      oldText = $button.text();
+      $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(msg);
+      setTimeout(function() {
+        $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(oldText);
+        if (typeof cb === "function") {
+          return cb();
+        }
+      }, 2e3);
+      return this;
+    };
+
+    EntityView.prototype.save = function(e) {
+      var $buttons, $save, processing,
+        _this = this;
+      this.validate();
+      if (this.model.isValid()) {
+        $buttons = this.$el.find("button");
+        $buttons.attr("disabled", true);
+        $save = $buttons.filter(".b-product__save");
+        processing = this.model.save();
+        processing.fail(function() {
+          return _this.buttonMsg($save, "Ошибка", false, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+        processing.then(function() {
+          location.hash = "" + _this.root + "/" + _this.model.id;
+          return _this.buttonMsg($save, "Сохранено", true, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+      }
+      return false;
+    };
+
+    EntityView.prototype.del = function() {
+      var $buttons, $delete, processing,
+        _this = this;
+      $buttons = this.$el.find("button");
+      $buttons.attr("disabled", true);
+      $delete = $buttons.filter(".b-product__delete");
+      processing = this.model.destroy({
+        wait: true
+      });
+      processing.fail(function() {
+        return _this.buttonMsg($delete, "Ошибка", false, function() {
+          return $buttons.attr("disabled", false);
+        });
+      });
+      return processing.then(function() {
+        return location.hash = _this.root;
+      });
+    };
+
+    EntityView.prototype.render = function(params) {
+      var _base, _ref;
+      this.$el.html(typeof (_base = this.getTemplate()) === "function" ? _base(_.extend({}, params, (_ref = this.model) != null ? _ref.toJSON() : void 0)) : void 0);
+      return this;
+    };
+
+    return EntityView;
+
+  })(Witness.View);
+
+}).call(this);
+
 /* ===================================================
  * bootstrap-transition.js v2.2.1
  * http://twitter.github.com/bootstrap/javascript.html#transitions
@@ -22221,6 +22301,8 @@ return buf.join("");
       return Backbone.Validation.bind(this);
     };
 
+    CategoryEdit.prototype.root = "categories";
+
     CategoryEdit.prototype.destroy = function() {
       return this.remove();
     };
@@ -22241,22 +22323,8 @@ return buf.join("");
       };
     };
 
-    CategoryEdit.prototype.buttonMsg = function($button, msg, success, cb) {
-      var oldText;
-      oldText = $button.text();
-      $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(msg);
-      setTimeout(function() {
-        $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(oldText);
-        if (typeof cb === "function") {
-          return cb();
-        }
-      }, 2e3);
-      return this;
-    };
-
     CategoryEdit.prototype.save = function(e) {
-      var $buttons, $save, fields, model, processing, _i, _len, _ref,
-        _this = this;
+      var fields, model, _i, _len, _ref;
       this.validate();
       fields = [];
       _ref = this.fields.models;
@@ -22268,46 +22336,8 @@ return buf.join("");
         }
         fields.push(model.toJSON());
       }
-      this.model.set("fields", fields, {
-        silent: true
-      });
-      if (this.model.isValid()) {
-        $buttons = this.$el.find("button");
-        $buttons.attr("disabled", true);
-        $save = $buttons.filter(".b-profile__save");
-        processing = this.model.save();
-        processing.fail(function() {
-          return _this.buttonMsg($save, "Ошибка", false, function() {
-            return $buttons.attr("disabled", false);
-          });
-        });
-        processing.then(function() {
-          location.hash = "categories/" + _this.model.id;
-          return _this.buttonMsg($save, "Сохранено", true, function() {
-            return $buttons.attr("disabled", false);
-          });
-        });
-      }
+      Witness.View.prototype.save.call(this, e);
       return false;
-    };
-
-    CategoryEdit.prototype.del = function() {
-      var $buttons, $delete, processing,
-        _this = this;
-      $buttons = this.$el.find("button");
-      $buttons.attr("disabled", true);
-      $delete = $buttons.filter(".b-category__delete");
-      processing = this.model.destroy({
-        wait: true
-      });
-      processing.fail(function() {
-        return _this.buttonMsg($delete, "Ошибка", false, function() {
-          return $buttons.attr("disabled", false);
-        });
-      });
-      return processing.then(function() {
-        return location.hash = "categories";
-      });
     };
 
     CategoryEdit.prototype.addField = function() {
@@ -22342,7 +22372,7 @@ return buf.join("");
 
     return CategoryEdit;
 
-  })(Witness.View);
+  })(Witness.EntityView);
 
 }).call(this);
 
@@ -22630,6 +22660,8 @@ return buf.join("");
       return Backbone.Validation.bind(this);
     };
 
+    ProductEdit.prototype.root = "products";
+
     ProductEdit.prototype.destroy = function() {
       var key, partial, _ref;
       _ref = this.partials;
@@ -22835,62 +22867,6 @@ return buf.join("");
       return data;
     };
 
-    ProductEdit.prototype.buttonMsg = function($button, msg, success, cb) {
-      var oldText;
-      oldText = $button.text();
-      $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(msg);
-      setTimeout(function() {
-        $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(oldText);
-        if (typeof cb === "function") {
-          return cb();
-        }
-      }, 2e3);
-      return this;
-    };
-
-    ProductEdit.prototype.save = function(e) {
-      var $buttons, $save, processing,
-        _this = this;
-      this.validate();
-      if (this.model.isValid()) {
-        $buttons = this.$el.find("button");
-        $buttons.attr("disabled", true);
-        $save = $buttons.filter(".b-product__save");
-        processing = this.model.save();
-        processing.fail(function() {
-          return _this.buttonMsg($save, "Ошибка", false, function() {
-            return $buttons.attr("disabled", false);
-          });
-        });
-        processing.then(function() {
-          location.hash = "products/" + _this.model.id;
-          return _this.buttonMsg($save, "Сохранено", true, function() {
-            return $buttons.attr("disabled", false);
-          });
-        });
-      }
-      return false;
-    };
-
-    ProductEdit.prototype.del = function() {
-      var $buttons, $delete, processing,
-        _this = this;
-      $buttons = this.$el.find("button");
-      $buttons.attr("disabled", true);
-      $delete = $buttons.filter(".b-product__delete");
-      processing = this.model.destroy({
-        wait: true
-      });
-      processing.fail(function() {
-        return _this.buttonMsg($delete, "Ошибка", false, function() {
-          return $buttons.attr("disabled", false);
-        });
-      });
-      return processing.then(function() {
-        return location.hash = "products";
-      });
-    };
-
     ProductEdit.prototype.validate = function(e) {
       var $errField, field, msg, _ref, _results;
       this.model.set(this.data(), {
@@ -22922,7 +22898,7 @@ return buf.join("");
 
     return ProductEdit;
 
-  })(Witness.View);
+  })(Witness.EntityView);
 
 }).call(this);
 
@@ -23034,6 +23010,73 @@ return buf.join("");
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+  Witness.views.UsersProfile = (function(_super) {
+
+    __extends(UsersProfile, _super);
+
+    function UsersProfile() {
+      return UsersProfile.__super__.constructor.apply(this, arguments);
+    }
+
+    UsersProfile.prototype.initialize = function(options, _id) {
+      this.model = new Witness.models.UserProfile({
+        _id: _id
+      });
+      return Backbone.Validation.bind(this);
+    };
+
+    UsersProfile.prototype.root = "users";
+
+    UsersProfile.prototype.destroy = function() {
+      return this.remove();
+    };
+
+    UsersProfile.prototype.data = function() {
+      var data, field, _i, _len, _ref;
+      data = {};
+      _ref = this.$el.find("form").serializeArray();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        field = _ref[_i];
+        data[field.name] = field.value;
+      }
+      return data;
+    };
+
+    UsersProfile.prototype.validate = function(e) {
+      var $errField, field, msg, _ref, _results;
+      this.model.set(this.data(), {
+        silent: true
+      });
+      this.$el.find("form .control-group").removeClass("error").find(".help-inline").remove();
+      _ref = this.model.validate();
+      _results = [];
+      for (field in _ref) {
+        if (!__hasProp.call(_ref, field)) continue;
+        msg = _ref[field];
+        $errField = this.$el.find("form .control-group:has([name=\"" + field + "\"])");
+        _results.push($errField.addClass("error").append("<span class=\"help-inline\">" + msg + "</span>"));
+      }
+      return _results;
+    };
+
+    UsersProfile.prototype.events = {
+      "submit form": "save",
+      "click .b-profile__delete": "del",
+      "focusout": "validate"
+    };
+
+    UsersProfile.prototype.template = "users-profile";
+
+    return UsersProfile;
+
+  })(Witness.EntityView);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   Witness.views.Users = (function(_super) {
 
     __extends(Users, _super);
@@ -23079,126 +23122,6 @@ return buf.join("");
     };
 
     return UsersPager;
-
-  })(Witness.View);
-
-}).call(this);
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  Witness.views.UsersProfile = (function(_super) {
-
-    __extends(UsersProfile, _super);
-
-    function UsersProfile() {
-      return UsersProfile.__super__.constructor.apply(this, arguments);
-    }
-
-    UsersProfile.prototype.initialize = function(options, _id) {
-      this.model = new Witness.models.UserProfile({
-        _id: _id
-      });
-      return Backbone.Validation.bind(this);
-    };
-
-    UsersProfile.prototype.destroy = function() {
-      return this.remove();
-    };
-
-    UsersProfile.prototype.data = function() {
-      var data, field, _i, _len, _ref;
-      data = {};
-      _ref = this.$el.find("form").serializeArray();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        field = _ref[_i];
-        data[field.name] = field.value;
-      }
-      return data;
-    };
-
-    UsersProfile.prototype.buttonMsg = function($button, msg, success, cb) {
-      var oldText;
-      oldText = $button.text();
-      $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(msg);
-      setTimeout(function() {
-        $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(oldText);
-        if (typeof cb === "function") {
-          return cb();
-        }
-      }, 2e3);
-      return this;
-    };
-
-    UsersProfile.prototype.save = function(e) {
-      var $buttons, $save, processing,
-        _this = this;
-      this.validate();
-      if (this.model.isValid()) {
-        $buttons = this.$el.find("button");
-        $buttons.attr("disabled", true);
-        $save = $buttons.filter(".b-profile__save");
-        processing = this.model.save();
-        processing.fail(function() {
-          return _this.buttonMsg($save, "Ошибка", false, function() {
-            return $buttons.attr("disabled", false);
-          });
-        });
-        processing.then(function() {
-          return _this.buttonMsg($save, "Сохранено", true, function() {
-            return $buttons.attr("disabled", false);
-          });
-        });
-      }
-      return false;
-    };
-
-    UsersProfile.prototype.removeAccount = function() {
-      var $buttons, $delete, processing,
-        _this = this;
-      $buttons = this.$el.find("button");
-      $buttons.attr("disabled", true);
-      $delete = $buttons.filter(".b-profile__delete");
-      processing = this.model.destroy({
-        wait: true
-      });
-      processing.fail(function() {
-        return _this.buttonMsg($delete, "Ошибка", false, function() {
-          return $buttons.attr("disabled", false);
-        });
-      });
-      return processing.then(function() {
-        return location.hash = "users";
-      });
-    };
-
-    UsersProfile.prototype.validate = function(e) {
-      var $errField, field, msg, _ref, _results;
-      this.model.set(this.data(), {
-        silent: true
-      });
-      this.$el.find("form .control-group").removeClass("error").find(".help-inline").remove();
-      _ref = this.model.validate();
-      _results = [];
-      for (field in _ref) {
-        if (!__hasProp.call(_ref, field)) continue;
-        msg = _ref[field];
-        $errField = this.$el.find("form .control-group:has([name=\"" + field + "\"])");
-        _results.push($errField.addClass("error").append("<span class=\"help-inline\">" + msg + "</span>"));
-      }
-      return _results;
-    };
-
-    UsersProfile.prototype.events = {
-      "submit form": "save",
-      "click .b-profile__delete": "removeAccount",
-      "focusout": "validate"
-    };
-
-    UsersProfile.prototype.template = "users-profile";
-
-    return UsersProfile;
 
   })(Witness.View);
 

@@ -1,19 +1,7 @@
-class Witness.views.UsersProfile extends Witness.View
+class Witness.EntityView extends Witness.View
 
-  initialize: ( options, _id ) ->
-    @model = new Witness.models.UserProfile( { _id } )
-    Backbone.Validation.bind( @ )
-
-  destroy: ->
-    @remove()
-
-  data: ->
-    data = {}
-
-    for own field in @$el.find( "form" ).serializeArray()
-      data[ field.name ] = field.value
-
-    data
+  constructor: ->
+    super
 
   buttonMsg: ( $button, msg, success, cb ) ->
     oldText = $button.text()
@@ -34,7 +22,7 @@ class Witness.views.UsersProfile extends Witness.View
       $buttons = @$el.find( "button" )
 
       $buttons.attr( "disabled", on )
-      $save = $buttons.filter( ".b-profile__save" )
+      $save = $buttons.filter( ".b-product__save" )
 
       processing = @model.save()
 
@@ -43,15 +31,16 @@ class Witness.views.UsersProfile extends Witness.View
           $buttons.attr( "disabled", off )
 
       processing.then =>
+        location.hash = "#{ @root }/#{ @model.id }"
         @buttonMsg $save, "Сохранено", true, ->
           $buttons.attr( "disabled", off )
 
     off
 
-  removeAccount: ->
+  del: ->
     $buttons = @$el.find( "button" )
     $buttons.attr( "disabled", on )
-    $delete = $buttons.filter( ".b-profile__delete" )
+    $delete = $buttons.filter( ".b-product__delete" )
 
     processing = @model.destroy( wait: on )
 
@@ -60,26 +49,9 @@ class Witness.views.UsersProfile extends Witness.View
         $buttons.attr( "disabled", off )
 
     processing.then =>
-      location.hash = "users"
+      location.hash = @root
 
-  validate: ( e ) ->
-    @model.set( @data(), silent: on )
+  render: ( params ) ->
+    @$el.html @getTemplate()?( _.extend( {}, params, @model?.toJSON() ) )
 
-    @$el.find( "form .control-group" )
-      .removeClass( "error" )
-      .find( ".help-inline" )
-      .remove()
-
-    for own field, msg of @model.validate()
-      $errField = @$el.find( "form .control-group:has([name=\"#{ field }\"])" )
-
-      $errField
-        .addClass( "error" )
-        .append( """<span class="help-inline">#{ msg }</span>""" )
-
-  events:
-    "submit form": "save"
-    "click .b-profile__delete": "removeAccount"
-    "focusout": "validate"
-
-  template: "users-profile"
+    @

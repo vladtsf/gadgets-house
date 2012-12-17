@@ -92,6 +92,9 @@ module.exports = function(grunt) {
           "vendor/assets/javascripts/backbone.js",
           "vendor/assets/javascripts/backbone-validation.js",
           "vendor/assets/javascripts/jade-runtime.js",
+
+          "tmp/javascripts/witness/intro.js",
+          "tmp/javascripts/witness/view.js",
           "tmp/javascripts/witness/*.js",
         ],
         dest: "tmp/javascripts/witness.js",

@@ -1,4 +1,4 @@
-class Witness.views.CategoryEdit extends Witness.View
+class Witness.views.CategoryEdit extends Witness.EntityView
 
   initialize: ( options, _id ) ->
     @fields = new Witness.models.CategoryFields()
@@ -9,6 +9,8 @@ class Witness.views.CategoryEdit extends Witness.View
       @$el.find( ".b-category-fields" ).append( view.render().el )
 
     Backbone.Validation.bind( @ )
+
+  root: "categories"
 
   destroy: ->
     @remove()
@@ -25,18 +27,6 @@ class Witness.views.CategoryEdit extends Witness.View
     "name": @$el.find( "[name=\"category-name\"]" ).val()
     "machineName": @$el.find( "[name=\"category-machineName\"]" ).val()
 
-  buttonMsg: ( $button, msg, success, cb ) ->
-    oldText = $button.text()
-    $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( msg )
-
-    setTimeout ->
-      $button.toggleClass( "btn-#{ if success then "success" else "danger" } btn-primary" ).text( oldText )
-
-      cb() if typeof cb is "function"
-    , 2e3
-
-    @
-
   save: ( e ) ->
     @validate()
 
@@ -47,40 +37,9 @@ class Witness.views.CategoryEdit extends Witness.View
       return off unless model.isValid()
       fields.push( model.toJSON() )
 
-    @model.set( "fields", fields, silent: on )
-
-    if @model.isValid()
-      $buttons = @$el.find( "button" )
-
-      $buttons.attr( "disabled", on )
-      $save = $buttons.filter( ".b-profile__save" )
-
-      processing = @model.save()
-
-      processing.fail =>
-        @buttonMsg $save, "Ошибка", false, ->
-          $buttons.attr( "disabled", off )
-
-      processing.then =>
-        location.hash = "categories/#{ @model.id }"
-        @buttonMsg $save, "Сохранено", true, ->
-          $buttons.attr( "disabled", off )
+    Witness.View::save.call( @, e )
 
     off
-
-  del: ->
-    $buttons = @$el.find( "button" )
-    $buttons.attr( "disabled", on )
-    $delete = $buttons.filter( ".b-category__delete" )
-
-    processing = @model.destroy( wait: on )
-
-    processing.fail =>
-      @buttonMsg $delete, "Ошибка", false, ->
-        $buttons.attr( "disabled", off )
-
-    processing.then =>
-      location.hash = "categories"
 
   addField: ->
     @fields.add( new Witness.models.CategoryField() )

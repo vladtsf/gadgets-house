@@ -16559,6 +16559,86 @@ exports.rethrow = function rethrow(err, filename, lineno){
 }).call(this);
 
 (function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Witness.EntityView = (function(_super) {
+
+    __extends(EntityView, _super);
+
+    function EntityView() {
+      EntityView.__super__.constructor.apply(this, arguments);
+    }
+
+    EntityView.prototype.buttonMsg = function($button, msg, success, cb) {
+      var oldText;
+      oldText = $button.text();
+      $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(msg);
+      setTimeout(function() {
+        $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").text(oldText);
+        if (typeof cb === "function") {
+          return cb();
+        }
+      }, 2e3);
+      return this;
+    };
+
+    EntityView.prototype.save = function(e) {
+      var $buttons, $save, processing,
+        _this = this;
+      this.validate();
+      if (this.model.isValid()) {
+        $buttons = this.$el.find("button");
+        $buttons.attr("disabled", true);
+        $save = $buttons.filter(".b-product__save");
+        processing = this.model.save();
+        processing.fail(function() {
+          return _this.buttonMsg($save, "Ошибка", false, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+        processing.then(function() {
+          location.hash = "" + _this.root + "/" + _this.model.id;
+          return _this.buttonMsg($save, "Сохранено", true, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+      }
+      return false;
+    };
+
+    EntityView.prototype.del = function() {
+      var $buttons, $delete, processing,
+        _this = this;
+      $buttons = this.$el.find("button");
+      $buttons.attr("disabled", true);
+      $delete = $buttons.filter(".b-product__delete");
+      processing = this.model.destroy({
+        wait: true
+      });
+      processing.fail(function() {
+        return _this.buttonMsg($delete, "Ошибка", false, function() {
+          return $buttons.attr("disabled", false);
+        });
+      });
+      return processing.then(function() {
+        return location.hash = _this.root;
+      });
+    };
+
+    EntityView.prototype.render = function(params) {
+      var _base, _ref;
+      this.$el.html(typeof (_base = this.getTemplate()) === "function" ? _base(_.extend({}, params, (_ref = this.model) != null ? _ref.toJSON() : void 0)) : void 0);
+      return this;
+    };
+
+    return EntityView;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
 
 
 
