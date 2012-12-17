@@ -11,4 +11,4 @@ set :app_environment, "AMAZON_CLOUD_FRONT_URL=http://static.gadgets-house.net AM
 set :app_command, "app.js"
 set :node_user, "deploy"
 
-role :app, "54.246.87.171"
+role :app, "54.243.156.15"
