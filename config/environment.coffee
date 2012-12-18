@@ -28,6 +28,7 @@ module.exports = (app) ->
     app.set "port", process.env.PORT or 3000
     app.set "views", fs.realpathSync(path.join __dirname, "..", "app", "views")
     app.set "view engine", "jade"
+    app.set "revision", pkg.version
 
     app.use express.favicon fs.realpathSync(path.join __dirname, "..", "static", "assets", "images", "favicon.ico")
     app.use "/admin/", express.favicon fs.realpathSync(path.join __dirname, "..", "static", "assets", "images", "favicon.ico")

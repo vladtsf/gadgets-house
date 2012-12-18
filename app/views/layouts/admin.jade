@@ -3,8 +3,8 @@ html
   head
     meta(content="width=device-width, initial-scale=1.0", name="viewport")
     title Gadgets House | Admin
-    link(rel="stylesheet", type="text/css", href="/assets/stylesheets/admin.css")
-    link(rel="icon", type="image/png", href="favicon.ico")
+    link(rel="stylesheet", type="text/css", href="/assets/stylesheets/admin.css?v#{ locals.settings.revision }")
+    link(rel="icon", type="image/png", href="favicon.ico?v#{ locals.settings.revision }")
     meta(name="csrf", content=request.session._csrf)
     block styles
       style(type="text/css")
@@ -21,7 +21,7 @@ html
       #layout
 
     block footer
-      script(type="text/javascript", src="/assets/javascripts/admin#{ request.app.settings.env === 'production' ? '.min' : '' }.js")
+      script(type="text/javascript", src="/assets/javascripts/admin#{ request.app.settings.env === 'production' ? '.min' : '' }.js?v#{ locals.settings.revision }")
       script
         AdminApplication.settings.set( "cdn", !{ JSON.stringify( locals.settings.amazonCloudFont ) } )
 
