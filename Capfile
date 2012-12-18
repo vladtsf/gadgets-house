@@ -1,7 +1,7 @@
 require "capistrano/node-deploy"
 
 set :application, "gadgets-house"
-set :repository,  "git@bitbucket.org:vtsvang/gadgets-house.git"
+set :repository,  "git@bitbucket.org:crimescene/gadgets-house.git"
 set :user, "deploy"
 set :scm, :git
 set :git_enable_submodules, 1
