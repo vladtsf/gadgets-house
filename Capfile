@@ -1,5 +1,6 @@
 require "capistrano/node-deploy"
 
+set :branch, fetch(:branch, "master")
 set :application, "gadgets-house"
 set :repository,  "git@bitbucket.org:crimescene/gadgets-house.git"
 set :user, "deploy"
