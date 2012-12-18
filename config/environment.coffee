@@ -10,8 +10,8 @@ module.exports = (app) ->
     app.use express.errorHandler()
     app.set 'mongodb', "mongodb://vovan:123@alex.mongohq.com:10058/gadgets-test"
     app.set "amazonS3",
-        key: "AKIAIXGSWTV5UYWWC2GA"
-        secret: "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"
+        key: "AKIAJ4FKRGWTKJAH5GYA"
+        secret: "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"
         bucket: "gadgets-house-test"
     app.set "amazonCloudFont", "http://gadgets-house-test.s3.amazonaws.com"
 
