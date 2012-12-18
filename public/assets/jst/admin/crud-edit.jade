@@ -1,0 +1,47 @@
+.container.b-entity
+  form.b-entity-form
+    .row-fluid
+      .span12
+        h1.pull-left= locals.title
+        a.btn.btn-primary.pull-right(href="##{ locals.entity }")
+          i.icon-white.icon-list
+          | &nbsp;
+          | К списку
+
+    .row-fluid.b-entities__list
+      .span12
+        if locals.doc
+          fieldset
+            legend #{ !!locals.doc._id ? "Редактирование" : "Создание" }
+
+            each field, key in locals.fields
+              fieldName = field.split( ":" )[ 0 ]
+              fieldType = field.split( ":" )[ 1 ]
+              fieldPlaceholder = field.split( ":" )[ 2 ]
+
+              div.control-group
+                label.control-label= field.split( ":" )[ 0 ]
+                case fieldType
+                  when "multiline"
+                    textarea( name=key, placeholder=fieldPlaceholder )= locals.doc[ key ]
+                  default
+                    input( type="text", name=key, placeholder=fieldPlaceholder, value=locals.doc[ key ] )
+        else
+          .alert.alert-block.alert-error
+            strong Страница не найдена
+
+    if locals.doc
+      .row-fluid
+        .span12
+          legend Действия
+          .control-group
+            button.b-entity__save.btn.btn-primary(type="submit")
+              i.icon-white.icon-hdd
+              | &nbsp;
+              | Сохранить
+            if locals.doc._id
+              &nbsp;
+              button.b-entity__delete.btn(type="button")
+                i.icon-trash
+                | &nbsp;
+                | Удалить

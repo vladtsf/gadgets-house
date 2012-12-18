@@ -52,5 +52,17 @@
                   a(href="#products", data-action="products-list") Список
                 li
                   a(href="#products/new", data-action="products-create") Создать
-          li
-            a(href='#') Заказы
+          li.dropdown
+            a.dropdown-toggle(href="#", data-toggle="dropdown", data-action="orders")
+                | Заказы
+                b.caret
+              ul.dropdown-menu
+                //- li
+                //-   a(href="#orders", data-action="orders-list") Список
+                //- li
+                //-   a(href="#orders/new", data-action="orders-create") Создать
+                //- li.divider
+                li
+                  a(href="#shipment", data-action="shipment") Способы доставки
+                li
+                  a(href="#payment", data-action="payment") Способы оплаты

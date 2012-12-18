@@ -16562,6 +16562,238 @@ exports.rethrow = function rethrow(err, filename, lineno){
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+  Witness.CRUDView = (function(_super) {
+
+    __extends(CRUDView, _super);
+
+    function CRUDView() {
+      var Collection, Model, _base, _entity, _ref, _validation;
+      CRUDView.__super__.constructor.apply(this, arguments);
+      if ((_ref = (_base = this.options).model) == null) {
+        _base.model = Backbone.Model;
+      }
+      _entity = this.options.entity;
+      _validation = this.options.validation;
+      Model = (function(_super1) {
+
+        __extends(Model, _super1);
+
+        function Model() {
+          return Model.__super__.constructor.apply(this, arguments);
+        }
+
+        Model.prototype.idAttribute = "_id";
+
+        Model.prototype.initialize = function() {
+          return this.validation = typeof _validation === "function" ? _validation.call(this) : _validation;
+        };
+
+        Model.prototype.url = function() {
+          var _ref1;
+          return "/admin/" + _entity + "/" + ((_ref1 = this.id) != null ? _ref1 : "");
+        };
+
+        return Model;
+
+      })(this.options.model);
+      Collection = (function(_super1) {
+
+        __extends(Collection, _super1);
+
+        function Collection() {
+          Collection.__super__.constructor.apply(this, arguments);
+        }
+
+        Collection.prototype.model = Model;
+
+        Collection.prototype.parse = function(res) {
+          this.offset = res.offset;
+          this.count = res.count;
+          this.limit = res.limit;
+          return res.docs;
+        };
+
+        Collection.prototype.url = function() {
+          return "/admin/" + _entity;
+        };
+
+        return Collection;
+
+      })(Backbone.Collection);
+      this.Model = Model;
+      this.Collection = Collection;
+    }
+
+    CRUDView.prototype.getTemplate = function() {
+      var _ref, _ref1, _ref2, _ref3;
+      return jade.templates[(_ref = (_ref1 = this.templates) != null ? _ref1 : (_ref2 = this.options) != null ? _ref2.templates : void 0) != null ? _ref[(_ref3 = this.options.action) != null ? _ref3 : "list"] : void 0];
+    };
+
+    CRUDView.prototype.render = function(params) {
+      var _base;
+      this.$el.html(typeof (_base = this.getTemplate()) === "function" ? _base(_.extend({}, params, this.options)) : void 0);
+      return this;
+    };
+
+    CRUDView.prototype.serialize = function() {
+      var field, result, _i, _len, _ref;
+      result = {};
+      _ref = this.$(".b-entity-form").serializeArray();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        field = _ref[_i];
+        result[field.name] = field.value;
+      }
+      return result;
+    };
+
+    CRUDView.prototype.destroy = Witness.View.prototype.remove;
+
+    CRUDView.prototype.validate = function() {
+      var $errField, field, msg, _ref, _results;
+      this.model.set(this.serialize(), {
+        silent: true
+      });
+      this.$(".control-group").removeClass("error").find(".help-inline").remove();
+      _ref = this.model.validate();
+      _results = [];
+      for (field in _ref) {
+        if (!__hasProp.call(_ref, field)) continue;
+        msg = _ref[field];
+        $errField = this.$(".b-entity-form .control-group:has([name=\"" + field + "\"])");
+        _results.push($errField.addClass("error").append("<span class=\"help-inline\">" + msg + "</span>"));
+      }
+      return _results;
+    };
+
+    CRUDView.prototype.list = function(page) {
+      var _this = this;
+      this.page = page;
+      this.model = new this.Collection();
+      return this.model.fetch({
+        add: true,
+        data: {
+          offset: this.page * 10
+        }
+      }).then(function() {
+        var _ref;
+        return _this.render({
+          offset: _this.model.offset,
+          count: _this.model.count,
+          limit: _this.model.limit,
+          docs: (_ref = _this.model) != null ? _ref.toJSON() : void 0
+        });
+      });
+    };
+
+    CRUDView.prototype.edit = function(_id) {
+      var fetch, _ref,
+        _this = this;
+      this._id = _id;
+      this.model = new this.Model({
+        _id: this._id
+      });
+      Backbone.Validation.bind(this);
+      if (this._id != null) {
+        fetch = this.model.fetch();
+        fetch.then(function() {
+          var _ref;
+          return _this.render({
+            doc: (_ref = _this.model) != null ? _ref.toJSON() : void 0
+          });
+        });
+        fetch.fail(function() {
+          return _this.render({
+            doc: null
+          });
+        });
+      } else {
+        this.render({
+          doc: (_ref = this.model) != null ? _ref.toJSON() : void 0
+        });
+        fetch = new $.Deferred().resolve();
+      }
+      return fetch;
+    };
+
+    CRUDView.prototype.buttonMsg = function($button, msg, success, cb) {
+      var oldText;
+      oldText = $button.html();
+      $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").html("<i class=\"" + ($button.hasClass("b-entity__save") ? "icon-hdd" : "icon-trash") + "\"></i>\n&nbsp;\n" + (_.escape(msg)));
+      setTimeout(function() {
+        $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").html(oldText);
+        if (typeof cb === "function") {
+          return cb();
+        }
+      }, 2e3);
+      return this;
+    };
+
+    CRUDView.prototype.save = function(e) {
+      var $buttons, $save, processing,
+        _this = this;
+      this.validate();
+      if (this.model.isValid()) {
+        $buttons = this.$(".btn");
+        $buttons.attr("disabled", true);
+        $save = $buttons.filter(".b-entity__save");
+        processing = this.model.save();
+        processing.fail(function() {
+          return _this.buttonMsg($save, "Ошибка", false, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+        processing.then(function() {
+          location.hash = "" + _this.options.entity + "/" + _this.model.id;
+          return _this.buttonMsg($save, "Сохранено", true, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+      }
+      return false;
+    };
+
+    CRUDView.prototype.del = function() {
+      var $buttons, $delete, processing,
+        _this = this;
+      $buttons = this.$(".btn");
+      $buttons.attr("disabled", true);
+      $delete = $buttons.filter(".b-entity__delete");
+      processing = this.model.destroy({
+        wait: true
+      });
+      processing.fail(function() {
+        return _this.buttonMsg($delete, "Ошибка", false, function() {
+          return $buttons.attr("disabled", false);
+        });
+      });
+      return processing.then(function() {
+        return location.hash = _this.options.entity;
+      });
+    };
+
+    CRUDView.prototype.templates = {
+      list: "crud-list",
+      edit: "crud-edit"
+    };
+
+    CRUDView.prototype.events = {
+      "submit .b-entity-form": "save",
+      "click .b-entity__delete": "del",
+      "focusout": "validate",
+      "change": "validate",
+      "input": "validate"
+    };
+
+    return CRUDView;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   Witness.EntityView = (function(_super) {
 
     __extends(EntityView, _super);
@@ -21198,6 +21430,256 @@ return buf.join("");
 };
 })();
 jade.templates = jade.templates || {};
+jade.templates['crud-edit'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div class="container b-entity"><form class="b-entity-form"><div class="row-fluid"><div class="span12"><h1 class="pull-left">');
+var __val__ = locals.title
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</h1><a');
+buf.push(attrs({ 'href':("#" + ( locals.entity ) + ""), "class": ('btn') + ' ' + ('btn-primary') + ' ' + ('pull-right') }, {"href":true}));
+buf.push('><i class="icon-white icon-list"></i>&nbsp;\nК списку</a></div></div><div class="row-fluid b-entities__list"><div class="span12">');
+if ( locals.doc)
+{
+buf.push('<fieldset><legend>' + escape((interp =  !!locals.doc._id ? "Редактирование" : "Создание" ) == null ? '' : interp) + '</legend>');
+// iterate locals.fields
+;(function(){
+  if ('number' == typeof locals.fields.length) {
+
+    for (var key = 0, $$l = locals.fields.length; key < $$l; key++) {
+      var field = locals.fields[key];
+
+var fieldName = (field.split( ":" )[ 0 ]);
+var fieldType = (field.split( ":" )[ 1 ]);
+var fieldPlaceholder = (field.split( ":" )[ 2 ]);
+buf.push('<div class="control-group"><label class="control-label">');
+var __val__ = field.split( ":" )[ 0 ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</label>');
+switch (fieldType){
+case "multiline":
+buf.push('<textarea');
+buf.push(attrs({ 'name':(key), 'placeholder':(fieldPlaceholder) }, {"name":true,"placeholder":true}));
+buf.push('>');
+var __val__ = locals.doc[ key ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</textarea>');
+  break;
+default:
+buf.push('<input');
+buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(fieldPlaceholder), 'value':(locals.doc[ key ]) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push('/>');
+  break;
+}
+buf.push('</div>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var key in locals.fields) {
+      $$l++;      var field = locals.fields[key];
+
+var fieldName = (field.split( ":" )[ 0 ]);
+var fieldType = (field.split( ":" )[ 1 ]);
+var fieldPlaceholder = (field.split( ":" )[ 2 ]);
+buf.push('<div class="control-group"><label class="control-label">');
+var __val__ = field.split( ":" )[ 0 ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</label>');
+switch (fieldType){
+case "multiline":
+buf.push('<textarea');
+buf.push(attrs({ 'name':(key), 'placeholder':(fieldPlaceholder) }, {"name":true,"placeholder":true}));
+buf.push('>');
+var __val__ = locals.doc[ key ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</textarea>');
+  break;
+default:
+buf.push('<input');
+buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(fieldPlaceholder), 'value':(locals.doc[ key ]) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push('/>');
+  break;
+}
+buf.push('</div>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</fieldset>');
+}
+else
+{
+buf.push('<div class="alert alert-block alert-error"><strong>Страница не найдена</strong></div>');
+}
+buf.push('</div></div>');
+if ( locals.doc)
+{
+buf.push('<div class="row-fluid"><div class="span12"><legend>Действия</legend><div class="control-group"><button type="submit" class="b-entity__save btn btn-primary"><i class="icon-white icon-hdd"></i>&nbsp;\nСохранить</button>');
+if ( locals.doc._id)
+{
+buf.push('&nbsp;<button type="button" class="b-entity__delete btn"><i class="icon-trash"></i>&nbsp;\nУдалить</button>');
+}
+buf.push('</div></div></div>');
+}
+buf.push('</form></div>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['crud-list'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div class="container b-entities"><div class="row-fluid"><div class="span12"><h1 class="pull-left">');
+var __val__ = locals.title
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</h1><a');
+buf.push(attrs({ 'href':("#" + ( locals.entity ) + "/new"), "class": ('btn') + ' ' + ('btn-primary') + ' ' + ('pull-right') }, {"href":true}));
+buf.push('><i class="icon-white icon-pencil"></i>&nbsp;\nСоздать</a></div></div><div class="row-fluid b-entities__list"><div class="span12">');
+if ( locals.docs.length)
+{
+buf.push('<table class="table table-bordered table-striped b-entities-table"><thead><tr>');
+// iterate locals.fields
+;(function(){
+  if ('number' == typeof locals.fields.length) {
+
+    for (var $index = 0, $$l = locals.fields.length; $index < $$l; $index++) {
+      var field = locals.fields[$index];
+
+buf.push('<th>');
+var __val__ = field.split( ":" )[ 0 ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</th>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in locals.fields) {
+      $$l++;      var field = locals.fields[$index];
+
+buf.push('<th>');
+var __val__ = field.split( ":" )[ 0 ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</th>');
+    }
+
+  }
+}).call(this);
+
+buf.push('<th class="span1">Редактировать</th></tr></thead><tbody class="b-entities-table__body">');
+// iterate locals.docs
+;(function(){
+  if ('number' == typeof locals.docs.length) {
+
+    for (var idx = 0, $$l = locals.docs.length; idx < $$l; idx++) {
+      var entity = locals.docs[idx];
+
+buf.push('<tr>');
+// iterate locals.fields
+;(function(){
+  if ('number' == typeof locals.fields.length) {
+
+    for (var key = 0, $$l = locals.fields.length; key < $$l; key++) {
+      var field = locals.fields[key];
+
+buf.push('<td>');
+var __val__ = entity[ key ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</td>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var key in locals.fields) {
+      $$l++;      var field = locals.fields[key];
+
+buf.push('<td>');
+var __val__ = entity[ key ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</td>');
+    }
+
+  }
+}).call(this);
+
+buf.push('<td class="span1"><a');
+buf.push(attrs({ 'href':("#" + ( locals.entity ) + "/" + ( entity._id ) + "") }, {"href":true}));
+buf.push('><i class="icon-edit"></i></a></td></tr>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var idx in locals.docs) {
+      $$l++;      var entity = locals.docs[idx];
+
+buf.push('<tr>');
+// iterate locals.fields
+;(function(){
+  if ('number' == typeof locals.fields.length) {
+
+    for (var key = 0, $$l = locals.fields.length; key < $$l; key++) {
+      var field = locals.fields[key];
+
+buf.push('<td>');
+var __val__ = entity[ key ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</td>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var key in locals.fields) {
+      $$l++;      var field = locals.fields[key];
+
+buf.push('<td>');
+var __val__ = entity[ key ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</td>');
+    }
+
+  }
+}).call(this);
+
+buf.push('<td class="span1"><a');
+buf.push(attrs({ 'href':("#" + ( locals.entity ) + "/" + ( entity._id ) + "") }, {"href":true}));
+buf.push('><i class="icon-edit"></i></a></td></tr>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</tbody></table>');
+}
+else
+{
+buf.push('<div class="alert"><strong>Список пуст</strong></div>');
+}
+buf.push('</div></div><div class="row-fluid b-entities__pagination"><div class="span12"><ul class="pager b-entities-pager">');
+var page = (~~(locals.offset / locals.limit));
+var previousDisabled = (locals.offset === 0);
+var nextDisabled = (locals.count - offset < locals.limit);
+buf.push('<li');
+buf.push(attrs({ "class": ('previous') + ' ' + (previousDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':(page > 0 ? "#" + ( locals.entity ) + "/page/" + ( previousDisabled ? page : page - 1 ) + "" : "#products") }, {"href":true}));
+buf.push('>&larr; Prev</a></li><li');
+buf.push(attrs({ "class": ('next') + ' ' + (nextDisabled ? "disabled" : "") }, {"class":true}));
+buf.push('><a');
+buf.push(attrs({ 'href':("#" + ( locals.entity ) + "/page/" + ( nextDisabled ? page : page + 1 ) + "") }, {"href":true}));
+buf.push('>Next &rarr;</a></li></ul></div></div></div>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
 jade.templates['manufacturers-item'] = (function(){
   return function anonymous(locals, attrs, escape, rethrow, merge) {
 attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
@@ -21597,7 +22079,8 @@ return buf.join("");
 })();
 (function() {
   var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __slice = [].slice;
 
   window.AdminApplication = (function(_super) {
 
@@ -21607,7 +22090,15 @@ return buf.join("");
       return AdminApplication.__super__.constructor.apply(this, arguments);
     }
 
-    AdminApplication.prototype.initialize = function() {};
+    AdminApplication.prototype.initialize = function() {
+      return this.on("all", function() {
+        var args, matched, route;
+        route = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+        if (matched = route.match(/^route:(list|edit):(\w+)$/)) {
+          return this[matched[1]].apply(this, _.union(matched[2], args));
+        }
+      });
+    };
 
     AdminApplication.settings = new Backbone.Model();
 
@@ -21627,6 +22118,110 @@ return buf.join("");
 
     AdminApplication.prototype.setLayout = function(view) {
       return $("#layout").empty().append(view.el);
+    };
+
+    AdminApplication.prototype._routes = {
+      shipment: {
+        list: {
+          navBar: ["orders", "shipment"],
+          title: "Способы доставки",
+          fields: {
+            name: "Название:inline",
+            price: "Цена:inline"
+          }
+        },
+        edit: {
+          navBar: ["orders", "shipment"],
+          title: "Способ доставки",
+          validation: {
+            name: {
+              required: true,
+              msg: "Поле не может быть пустым"
+            },
+            price: {
+              required: false,
+              pattern: "number",
+              msg: "Значение должно быть числовым"
+            }
+          },
+          fields: {
+            name: "Название:inline",
+            price: "Цена:inline"
+          }
+        }
+      },
+      payment: {
+        list: {
+          navBar: ["orders", "payment"],
+          title: "Способы оплаты",
+          fields: {
+            name: "Название:inline",
+            commission: "Комиссия:inline"
+          }
+        },
+        edit: {
+          navBar: ["orders", "payment"],
+          title: "Способ оплаты",
+          validation: {
+            name: {
+              required: true,
+              msg: "Поле не может быть пустым"
+            },
+            commission: {
+              required: false,
+              pattern: "number",
+              msg: "Значение должно быть числовым"
+            }
+          },
+          fields: {
+            name: "Название:inline",
+            commission: "Комиссия:inline"
+          }
+        }
+      }
+    };
+
+    AdminApplication.prototype.list = function(entity, page) {
+      var oldEntity, route, _ref,
+        _this = this;
+      if (page == null) {
+        page = 0;
+      }
+      route = (_ref = this._routes[entity]) != null ? _ref.list : void 0;
+      if (route.navBar != null) {
+        this.switchNavBar(route.navBar);
+      }
+      oldEntity = this.currentEntity;
+      entity = this.currentEntity = new Witness.CRUDView(_.extend({
+        action: "list",
+        entity: entity
+      }, route));
+      return entity.list(page).then(function() {
+        if (oldEntity != null) {
+          oldEntity.destroy();
+        }
+        return _this.setLayout(entity);
+      });
+    };
+
+    AdminApplication.prototype.edit = function(entity, id) {
+      var oldEntity, route, _ref,
+        _this = this;
+      route = (_ref = this._routes[entity]) != null ? _ref.edit : void 0;
+      if (route.navBar != null) {
+        this.switchNavBar(route.navBar);
+      }
+      oldEntity = this.currentEntity;
+      entity = this.currentEntity = new Witness.CRUDView(_.extend({
+        action: "edit",
+        entity: entity
+      }, route));
+      return entity.edit(id).then(function() {
+        if (oldEntity != null) {
+          oldEntity.destroy();
+        }
+        return _this.setLayout(entity);
+      });
     };
 
     AdminApplication.prototype.dashboard = function() {
@@ -21806,8 +22401,17 @@ return buf.join("");
       "categories/:id": "category",
       "manufacturers": "listManufacturers",
       "products": "listProducts",
+      "products/page/:page": "listProducts",
       "products/new": "product",
-      "products/:id": "product"
+      "products/:id": "product",
+      "shipment": "list:shipment",
+      "shipment/page/:page": "list:shipment",
+      "shipment/new": "edit:shipment",
+      "shipment/:id": "edit:shipment",
+      "payment": "list:payment",
+      "payment/page/:page": "list:payment",
+      "payment/new": "edit:payment",
+      "payment/:id": "edit:payment"
     };
 
     return AdminApplication;

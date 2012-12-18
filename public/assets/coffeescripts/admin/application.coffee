@@ -1,6 +1,9 @@
 class window.AdminApplication extends Backbone.Router
 
   initialize: ->
+    @on "all", ( route, args... ) ->
+      if matched = route.match /^route:(list|edit):(\w+)$/
+        @[ matched[ 1 ] ].apply @, _.union matched[ 2 ], args
 
   @settings = new Backbone.Model()
 
@@ -19,6 +22,71 @@ class window.AdminApplication extends Backbone.Router
 
   setLayout: ( view ) ->
     $( "#layout" ).empty().append( view.el )
+
+  _routes:
+    shipment:
+      list:
+        navBar: [ "orders", "shipment" ]
+        title: "Способы доставки"
+        fields:
+          name: "Название:inline"
+          price: "Цена:inline"
+      edit:
+        navBar: [ "orders", "shipment" ]
+        title: "Способ доставки"
+        validation:
+          name:
+            required: on
+            msg: "Поле не может быть пустым"
+          price:
+            required: off
+            pattern: "number"
+            msg: "Значение должно быть числовым"
+        fields:
+          name: "Название:inline"
+          price: "Цена:inline"
+    payment:
+      list:
+        navBar: [ "orders", "payment" ]
+        title: "Способы оплаты"
+        fields:
+          name: "Название:inline"
+          commission: "Комиссия:inline"
+      edit:
+        navBar: [ "orders", "payment" ]
+        title: "Способ оплаты"
+        validation:
+          name:
+            required: on
+            msg: "Поле не может быть пустым"
+          commission:
+            required: off
+            pattern: "number"
+            msg: "Значение должно быть числовым"
+        fields:
+          name: "Название:inline"
+          commission: "Комиссия:inline"
+
+
+  list: ( entity, page = 0 ) ->
+    route = @_routes[ entity ]?.list
+
+    @switchNavBar route.navBar if route.navBar?
+    oldEntity = @currentEntity
+    entity = @currentEntity = new Witness.CRUDView _.extend { action: "list", entity: entity }, route
+    entity.list( page ).then =>
+      oldEntity?.destroy()
+      @setLayout entity
+
+  edit: ( entity, id ) ->
+    route = @_routes[ entity ]?.edit
+
+    @switchNavBar route.navBar if route.navBar?
+    oldEntity = @currentEntity
+    entity = @currentEntity = new Witness.CRUDView _.extend { action: "edit", entity: entity }, route
+    entity.edit( id ).then =>
+      oldEntity?.destroy()
+      @setLayout entity
 
   dashboard: ->
     @switchNavBar( "dashboard" )
@@ -145,8 +213,19 @@ class window.AdminApplication extends Backbone.Router
     "manufacturers": "listManufacturers"
 
     "products": "listProducts"
+    "products/page/:page": "listProducts"
     "products/new": "product"
     "products/:id": "product"
+
+    "shipment": "list:shipment"
+    "shipment/page/:page": "list:shipment"
+    "shipment/new": "edit:shipment"
+    "shipment/:id": "edit:shipment"
+
+    "payment": "list:payment"
+    "payment/page/:page": "list:payment"
+    "payment/new": "edit:payment"
+    "payment/:id": "edit:payment"
 
 
 window.admin = new AdminApplication()

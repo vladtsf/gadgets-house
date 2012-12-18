@@ -1,0 +1,40 @@
+.container.b-entities
+  .row-fluid
+    .span12
+      h1.pull-left= locals.title
+      a.btn.btn-primary.pull-right(href="##{ locals.entity }/new")
+        i.icon-white.icon-pencil
+        | &nbsp;
+        | Создать
+  .row-fluid.b-entities__list
+    .span12
+      if locals.docs.length
+        table.table.table-bordered.table-striped.b-entities-table
+          thead
+            tr
+              each field in locals.fields
+                th= field.split( ":" )[ 0 ]
+              th.span1 Редактировать
+          tbody.b-entities-table__body
+            each entity, idx in locals.docs
+              tr
+                each field, key in locals.fields
+                  td= entity[ key ]
+                td.span1
+                  a( href="##{ locals.entity }/#{ entity._id }" )
+                    i.icon-edit
+      else
+        .alert
+          strong Список пуст
+
+  .row-fluid.b-entities__pagination
+    .span12
+      ul.pager.b-entities-pager
+        page = ~~(locals.offset / locals.limit)
+        previousDisabled = locals.offset === 0
+        nextDisabled = locals.count - offset < locals.limit
+
+        li.previous(class=previousDisabled ? "disabled" : "")
+          a(href= page > 0 ? "##{ locals.entity }/page/#{ previousDisabled ? page : page - 1 }" : "#products") &larr; Prev
+        li.next(class=nextDisabled ? "disabled" : "")
+          a(href="##{ locals.entity }/page/#{ nextDisabled ? page : page + 1 }") Next &rarr;

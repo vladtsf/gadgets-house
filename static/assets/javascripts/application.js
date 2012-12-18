@@ -16562,6 +16562,238 @@ exports.rethrow = function rethrow(err, filename, lineno){
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+  Witness.CRUDView = (function(_super) {
+
+    __extends(CRUDView, _super);
+
+    function CRUDView() {
+      var Collection, Model, _base, _entity, _ref, _validation;
+      CRUDView.__super__.constructor.apply(this, arguments);
+      if ((_ref = (_base = this.options).model) == null) {
+        _base.model = Backbone.Model;
+      }
+      _entity = this.options.entity;
+      _validation = this.options.validation;
+      Model = (function(_super1) {
+
+        __extends(Model, _super1);
+
+        function Model() {
+          return Model.__super__.constructor.apply(this, arguments);
+        }
+
+        Model.prototype.idAttribute = "_id";
+
+        Model.prototype.initialize = function() {
+          return this.validation = typeof _validation === "function" ? _validation.call(this) : _validation;
+        };
+
+        Model.prototype.url = function() {
+          var _ref1;
+          return "/admin/" + _entity + "/" + ((_ref1 = this.id) != null ? _ref1 : "");
+        };
+
+        return Model;
+
+      })(this.options.model);
+      Collection = (function(_super1) {
+
+        __extends(Collection, _super1);
+
+        function Collection() {
+          Collection.__super__.constructor.apply(this, arguments);
+        }
+
+        Collection.prototype.model = Model;
+
+        Collection.prototype.parse = function(res) {
+          this.offset = res.offset;
+          this.count = res.count;
+          this.limit = res.limit;
+          return res.docs;
+        };
+
+        Collection.prototype.url = function() {
+          return "/admin/" + _entity;
+        };
+
+        return Collection;
+
+      })(Backbone.Collection);
+      this.Model = Model;
+      this.Collection = Collection;
+    }
+
+    CRUDView.prototype.getTemplate = function() {
+      var _ref, _ref1, _ref2, _ref3;
+      return jade.templates[(_ref = (_ref1 = this.templates) != null ? _ref1 : (_ref2 = this.options) != null ? _ref2.templates : void 0) != null ? _ref[(_ref3 = this.options.action) != null ? _ref3 : "list"] : void 0];
+    };
+
+    CRUDView.prototype.render = function(params) {
+      var _base;
+      this.$el.html(typeof (_base = this.getTemplate()) === "function" ? _base(_.extend({}, params, this.options)) : void 0);
+      return this;
+    };
+
+    CRUDView.prototype.serialize = function() {
+      var field, result, _i, _len, _ref;
+      result = {};
+      _ref = this.$(".b-entity-form").serializeArray();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        field = _ref[_i];
+        result[field.name] = field.value;
+      }
+      return result;
+    };
+
+    CRUDView.prototype.destroy = Witness.View.prototype.remove;
+
+    CRUDView.prototype.validate = function() {
+      var $errField, field, msg, _ref, _results;
+      this.model.set(this.serialize(), {
+        silent: true
+      });
+      this.$(".control-group").removeClass("error").find(".help-inline").remove();
+      _ref = this.model.validate();
+      _results = [];
+      for (field in _ref) {
+        if (!__hasProp.call(_ref, field)) continue;
+        msg = _ref[field];
+        $errField = this.$(".b-entity-form .control-group:has([name=\"" + field + "\"])");
+        _results.push($errField.addClass("error").append("<span class=\"help-inline\">" + msg + "</span>"));
+      }
+      return _results;
+    };
+
+    CRUDView.prototype.list = function(page) {
+      var _this = this;
+      this.page = page;
+      this.model = new this.Collection();
+      return this.model.fetch({
+        add: true,
+        data: {
+          offset: this.page * 10
+        }
+      }).then(function() {
+        var _ref;
+        return _this.render({
+          offset: _this.model.offset,
+          count: _this.model.count,
+          limit: _this.model.limit,
+          docs: (_ref = _this.model) != null ? _ref.toJSON() : void 0
+        });
+      });
+    };
+
+    CRUDView.prototype.edit = function(_id) {
+      var fetch, _ref,
+        _this = this;
+      this._id = _id;
+      this.model = new this.Model({
+        _id: this._id
+      });
+      Backbone.Validation.bind(this);
+      if (this._id != null) {
+        fetch = this.model.fetch();
+        fetch.then(function() {
+          var _ref;
+          return _this.render({
+            doc: (_ref = _this.model) != null ? _ref.toJSON() : void 0
+          });
+        });
+        fetch.fail(function() {
+          return _this.render({
+            doc: null
+          });
+        });
+      } else {
+        this.render({
+          doc: (_ref = this.model) != null ? _ref.toJSON() : void 0
+        });
+        fetch = new $.Deferred().resolve();
+      }
+      return fetch;
+    };
+
+    CRUDView.prototype.buttonMsg = function($button, msg, success, cb) {
+      var oldText;
+      oldText = $button.html();
+      $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").html("<i class=\"" + ($button.hasClass("b-entity__save") ? "icon-hdd" : "icon-trash") + "\"></i>\n&nbsp;\n" + (_.escape(msg)));
+      setTimeout(function() {
+        $button.toggleClass("btn-" + (success ? "success" : "danger") + " btn-primary").html(oldText);
+        if (typeof cb === "function") {
+          return cb();
+        }
+      }, 2e3);
+      return this;
+    };
+
+    CRUDView.prototype.save = function(e) {
+      var $buttons, $save, processing,
+        _this = this;
+      this.validate();
+      if (this.model.isValid()) {
+        $buttons = this.$(".btn");
+        $buttons.attr("disabled", true);
+        $save = $buttons.filter(".b-entity__save");
+        processing = this.model.save();
+        processing.fail(function() {
+          return _this.buttonMsg($save, "Ошибка", false, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+        processing.then(function() {
+          location.hash = "" + _this.options.entity + "/" + _this.model.id;
+          return _this.buttonMsg($save, "Сохранено", true, function() {
+            return $buttons.attr("disabled", false);
+          });
+        });
+      }
+      return false;
+    };
+
+    CRUDView.prototype.del = function() {
+      var $buttons, $delete, processing,
+        _this = this;
+      $buttons = this.$(".btn");
+      $buttons.attr("disabled", true);
+      $delete = $buttons.filter(".b-entity__delete");
+      processing = this.model.destroy({
+        wait: true
+      });
+      processing.fail(function() {
+        return _this.buttonMsg($delete, "Ошибка", false, function() {
+          return $buttons.attr("disabled", false);
+        });
+      });
+      return processing.then(function() {
+        return location.hash = _this.options.entity;
+      });
+    };
+
+    CRUDView.prototype.templates = {
+      list: "crud-list",
+      edit: "crud-edit"
+    };
+
+    CRUDView.prototype.events = {
+      "submit .b-entity-form": "save",
+      "click .b-entity__delete": "del",
+      "focusout": "validate",
+      "change": "validate",
+      "input": "validate"
+    };
+
+    return CRUDView;
+
+  })(Witness.View);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   Witness.EntityView = (function(_super) {
 
     __extends(EntityView, _super);
