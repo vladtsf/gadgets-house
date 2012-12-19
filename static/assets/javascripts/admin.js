@@ -22178,6 +22178,28 @@ return buf.join("");
             commission: "Комиссия:inline"
           }
         }
+      },
+      statuses: {
+        list: {
+          navBar: ["orders", "statuses"],
+          title: "Статусы обработки",
+          fields: {
+            name: "Название:inline"
+          }
+        },
+        edit: {
+          navBar: ["orders", "statuses"],
+          title: "Статус обработки",
+          validation: {
+            name: {
+              required: true,
+              msg: "Поле не может быть пустым"
+            }
+          },
+          fields: {
+            name: "Название:inline"
+          }
+        }
       }
     };
 
@@ -22411,7 +22433,11 @@ return buf.join("");
       "payment": "list:payment",
       "payment/page/:page": "list:payment",
       "payment/new": "edit:payment",
-      "payment/:id": "edit:payment"
+      "payment/:id": "edit:payment",
+      "statuses": "list:statuses",
+      "statuses/page/:page": "list:statuses",
+      "statuses/new": "edit:statuses",
+      "statuses/:id": "edit:statuses"
     };
 
     return AdminApplication;
