@@ -11,6 +11,10 @@ schema = new mongoose.Schema
     type: String
     required: on
   roles: Array
+  addresses: [
+    type: mongoose.Schema.Types.ObjectId
+    ref: "Address"
+  ]
 
 schema.pre "save", ( next ) ->
   # only hash the password if it has been modified (or is new)
