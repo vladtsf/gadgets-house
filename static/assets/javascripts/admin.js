@@ -22200,6 +22200,44 @@ return buf.join("");
             name: "Название:inline"
           }
         }
+      },
+      addresses: {
+        list: {
+          navBar: ["users", "addresses"],
+          title: "Адреса",
+          fields: {
+            name: "Название:inline",
+            city: "Город:inline",
+            street: "Улица:inline",
+            house: "Дом:inline",
+            building: "Строение:inline",
+            housing: "Корпус:inline",
+            flat: "Квартира:inline"
+          }
+        },
+        edit: {
+          navBar: ["users", "addresses"],
+          title: "Адрес",
+          validation: {
+            name: {
+              required: true,
+              msg: "Имя адреса не может быть не заполнено"
+            },
+            city: {
+              required: true,
+              msg: "Не указан город"
+            }
+          },
+          fields: {
+            name: "Название:inline",
+            city: "Город:inline",
+            street: "Улица:inline",
+            house: "Дом:inline",
+            building: "Строение:inline",
+            housing: "Корпус:inline",
+            flat: "Квартира:inline"
+          }
+        }
       }
     };
 
@@ -22437,7 +22475,11 @@ return buf.join("");
       "statuses": "list:statuses",
       "statuses/page/:page": "list:statuses",
       "statuses/new": "edit:statuses",
-      "statuses/:id": "edit:statuses"
+      "statuses/:id": "edit:statuses",
+      "addresses": "list:addresses",
+      "addresses/page/:page": "list:addresses",
+      "addresses/new": "edit:addresses",
+      "addresses/:id": "edit:addresses"
     };
 
     return AdminApplication;
