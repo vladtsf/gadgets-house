@@ -24,13 +24,14 @@ class RestController
     offset = parseInt( req.query.offset ) || 0
     limit = parseInt( req.query.limit ) || 10
     order = if req.query.order is "+" then "+" else "-"
+    fields = if req.query.fields? then _.intersection( @fields, req.query.fields ) else @fields
 
     @model
       .count()
       .exec ( err, count ) =>
         query = @model
           .find()
-          .select( _.union( "_id", @fields ).join " "  )
+          .select( _.union( "_id", fields ).join " "  )
 
         for own field in @populate
           query.populate( field )
