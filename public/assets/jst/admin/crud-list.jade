@@ -13,7 +13,7 @@
           thead
             tr
               each field in locals.fields
-                th= field.split( ":" )[ 0 ]
+                th= field.name
               th.span1 Редактировать
           tbody.b-entities-table__body
             each entity, idx in locals.docs

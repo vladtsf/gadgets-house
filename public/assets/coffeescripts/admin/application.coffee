@@ -81,6 +81,8 @@ class window.AdminApplication extends Backbone.Router
             msg: "Поле не может быть пустым"
         fields:
           name: "Название:inline"
+          # user: "Доставка:select:Доставка:/admin/shipment?fields[]=name&limit=100"
+          # user: "Доставка:autocomplete:Доставка:/admin/shipment?fields[]=name&limit=100"
     addresses:
       list:
         navBar: [ "users", "addresses" ]

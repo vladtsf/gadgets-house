@@ -35,8 +35,34 @@ class Witness.CRUDView extends Witness.View
   getTemplate: ->
     jade.templates[ ( @templates ? @options?.templates )?[ @options.action ? "list" ] ]
 
+  parseFields: ( fields ) ->
+    results = {}
+
+    for own key, field of fields
+      splitted = field.split /\s*:\s*/
+      results[ key ] =
+        name: splitted[ 0 ]
+        type: splitted[ 1 ]
+        placeholder: splitted[ 2 ]
+        ref: splitted[ 3 ]
+
+    results
+
   render: ( params ) ->
-    @$el.html @getTemplate()?( _.extend( {}, params, @options ) )
+    fields = @parseFields @options.fields
+
+    defs = for own key, field of fields when field.ref
+      class collection extends Backbone.Collection
+        initialize: ->
+        url: field.ref
+        parse: ( res ) -> res.docs
+        model: Backbone.Model.extend( idAttribute: "_id" )
+
+      field.options = new collection
+      field.options.fetch()
+
+    $.when.apply( $, defs ).then =>
+      @$el.html @getTemplate()?( _.extend( {}, params, @options, fields: fields ) )
 
     @
 
@@ -45,6 +71,10 @@ class Witness.CRUDView extends Witness.View
 
     for own field in @$( ".b-entity-form" ).serializeArray()
       result[ field.name ] = field.value
+
+    for own typeahead in @$ ".b-typeahead"
+      $tah = $( typeahead )
+      result[ $tah.attr "name" ] = $tah.data( "cache" ).byName[ $tah.val() ]
 
     result
 
@@ -157,6 +187,6 @@ class Witness.CRUDView extends Witness.View
   events:
     "submit .b-entity-form": "save"
     "click .b-entity__delete": "del"
-    "focusout": "validate"
-    "change": "validate"
-    "input": "validate"
+    "focusout *:not(.b-typeahead)": "validate"
+    "change *:not(.b-typeahead)": "validate"
+    "input *:not(.b-typeahead)": "validate"

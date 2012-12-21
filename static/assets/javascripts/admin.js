@@ -16629,19 +16629,86 @@ exports.rethrow = function rethrow(err, filename, lineno){
       return jade.templates[(_ref = (_ref1 = this.templates) != null ? _ref1 : (_ref2 = this.options) != null ? _ref2.templates : void 0) != null ? _ref[(_ref3 = this.options.action) != null ? _ref3 : "list"] : void 0];
     };
 
+    CRUDView.prototype.parseFields = function(fields) {
+      var field, key, results, splitted;
+      results = {};
+      for (key in fields) {
+        if (!__hasProp.call(fields, key)) continue;
+        field = fields[key];
+        splitted = field.split(/\s*:\s*/);
+        results[key] = {
+          name: splitted[0],
+          type: splitted[1],
+          placeholder: splitted[2],
+          ref: splitted[3]
+        };
+      }
+      return results;
+    };
+
     CRUDView.prototype.render = function(params) {
-      var _base;
-      this.$el.html(typeof (_base = this.getTemplate()) === "function" ? _base(_.extend({}, params, this.options)) : void 0);
+      var collection, defs, field, fields, key,
+        _this = this;
+      fields = this.parseFields(this.options.fields);
+      defs = (function() {
+        var _results;
+        _results = [];
+        for (key in fields) {
+          if (!__hasProp.call(fields, key)) continue;
+          field = fields[key];
+          if (!field.ref) {
+            continue;
+          }
+          collection = (function(_super1) {
+
+            __extends(collection, _super1);
+
+            function collection() {
+              return collection.__super__.constructor.apply(this, arguments);
+            }
+
+            collection.prototype.initialize = function() {};
+
+            collection.prototype.url = field.ref;
+
+            collection.prototype.parse = function(res) {
+              return res.docs;
+            };
+
+            collection.prototype.model = Backbone.Model.extend({
+              idAttribute: "_id"
+            });
+
+            return collection;
+
+          })(Backbone.Collection);
+          field.options = new collection;
+          _results.push(field.options.fetch());
+        }
+        return _results;
+      })();
+      $.when.apply($, defs).then(function() {
+        var _base;
+        return _this.$el.html(typeof (_base = _this.getTemplate()) === "function" ? _base(_.extend({}, params, _this.options, {
+          fields: fields
+        })) : void 0);
+      });
       return this;
     };
 
     CRUDView.prototype.serialize = function() {
-      var field, result, _i, _len, _ref;
+      var $tah, field, result, typeahead, _i, _j, _len, _len1, _ref, _ref1;
       result = {};
       _ref = this.$(".b-entity-form").serializeArray();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         field = _ref[_i];
         result[field.name] = field.value;
+      }
+      _ref1 = this.$(".b-typeahead");
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        typeahead = _ref1[_j];
+        $tah = $(typeahead);
+        result[$tah.attr("name")] = $tah.data("cache").byName[$tah.val()];
       }
       return result;
     };
@@ -16779,9 +16846,9 @@ exports.rethrow = function rethrow(err, filename, lineno){
     CRUDView.prototype.events = {
       "submit .b-entity-form": "save",
       "click .b-entity__delete": "del",
-      "focusout": "validate",
-      "change": "validate",
-      "input": "validate"
+      "focusout *:not(.b-typeahead)": "validate",
+      "change *:not(.b-typeahead)": "validate",
+      "input *:not(.b-typeahead)": "validate"
     };
 
     return CRUDView;
@@ -21436,6 +21503,75 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
+var crud_field_mixin = function( key, field, doc ){
+var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
+buf.push('<div class="control-group"><label class="control-label">');
+var __val__ = field.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</label>');
+switch (field.type){
+case "multiline":
+buf.push('<textarea');
+buf.push(attrs({ 'name':(key), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
+buf.push('>');
+var __val__ = doc[ key ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</textarea>');
+  break;
+case "select":
+buf.push('<select');
+buf.push(attrs({ 'name':(key), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
+buf.push('>');
+// iterate field.options.models
+;(function(){
+  if ('number' == typeof field.options.models.length) {
+
+    for (var $index = 0, $$l = field.options.models.length; $index < $$l; $index++) {
+      var option = field.options.models[$index];
+
+buf.push('<option');
+buf.push(attrs({ 'value':(option.id), 'selected':(option.id === doc[ key ]) }, {"value":true,"selected":true}));
+buf.push('>');
+var __val__ = option.get( "name" )
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</option>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in field.options.models) {
+      $$l++;      var option = field.options.models[$index];
+
+buf.push('<option');
+buf.push(attrs({ 'value':(option.id), 'selected':(option.id === doc[ key ]) }, {"value":true,"selected":true}));
+buf.push('>');
+var __val__ = option.get( "name" )
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</option>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</select>');
+  break;
+case "autocomplete":
+var cache = ({});
+ cache.byName = {}
+ cache.byId = {}
+ _.each( field.options.toJSON(), function(field) { cache.byName[ field.name ] = field._id; cache.byId[ field._id ] = field.name } )
+buf.push('<input');
+buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(field.placeholder), 'value':(cache.byId[ doc[ key ] ]), 'data-provide':("typeahead"), 'data-items':("4"), 'data-cache':(cache), 'data-source':(_.pluck(field.options.toJSON(), "name")), "class": ('b-typeahead') }, {"type":true,"name":true,"placeholder":true,"value":true,"data-provide":true,"data-items":true,"data-cache":true,"data-source":true}));
+buf.push('/>');
+  break;
+default:
+buf.push('<input');
+buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(field.placeholder), 'value':(doc[ key ]) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push('/>');
+  break;
+}
+buf.push('</div>');
+};
 buf.push('<div class="container b-entity"><form class="b-entity-form"><div class="row-fluid"><div class="span12"><h1 class="pull-left">');
 var __val__ = locals.title
 buf.push(escape(null == __val__ ? "" : __val__));
@@ -21452,29 +21588,7 @@ buf.push('<fieldset><legend>' + escape((interp =  !!locals.doc._id ? "Редак
     for (var key = 0, $$l = locals.fields.length; key < $$l; key++) {
       var field = locals.fields[key];
 
-var fieldName = (field.split( ":" )[ 0 ]);
-var fieldType = (field.split( ":" )[ 1 ]);
-var fieldPlaceholder = (field.split( ":" )[ 2 ]);
-buf.push('<div class="control-group"><label class="control-label">');
-var __val__ = field.split( ":" )[ 0 ]
-buf.push(escape(null == __val__ ? "" : __val__));
-buf.push('</label>');
-switch (fieldType){
-case "multiline":
-buf.push('<textarea');
-buf.push(attrs({ 'name':(key), 'placeholder':(fieldPlaceholder) }, {"name":true,"placeholder":true}));
-buf.push('>');
-var __val__ = locals.doc[ key ]
-buf.push(escape(null == __val__ ? "" : __val__));
-buf.push('</textarea>');
-  break;
-default:
-buf.push('<input');
-buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(fieldPlaceholder), 'value':(locals.doc[ key ]) }, {"type":true,"name":true,"placeholder":true,"value":true}));
-buf.push('/>');
-  break;
-}
-buf.push('</div>');
+crud_field_mixin( key, field, locals.doc );
     }
 
   } else {
@@ -21482,29 +21596,7 @@ buf.push('</div>');
     for (var key in locals.fields) {
       $$l++;      var field = locals.fields[key];
 
-var fieldName = (field.split( ":" )[ 0 ]);
-var fieldType = (field.split( ":" )[ 1 ]);
-var fieldPlaceholder = (field.split( ":" )[ 2 ]);
-buf.push('<div class="control-group"><label class="control-label">');
-var __val__ = field.split( ":" )[ 0 ]
-buf.push(escape(null == __val__ ? "" : __val__));
-buf.push('</label>');
-switch (fieldType){
-case "multiline":
-buf.push('<textarea');
-buf.push(attrs({ 'name':(key), 'placeholder':(fieldPlaceholder) }, {"name":true,"placeholder":true}));
-buf.push('>');
-var __val__ = locals.doc[ key ]
-buf.push(escape(null == __val__ ? "" : __val__));
-buf.push('</textarea>');
-  break;
-default:
-buf.push('<input');
-buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(fieldPlaceholder), 'value':(locals.doc[ key ]) }, {"type":true,"name":true,"placeholder":true,"value":true}));
-buf.push('/>');
-  break;
-}
-buf.push('</div>');
+crud_field_mixin( key, field, locals.doc );
     }
 
   }
@@ -21527,6 +21619,86 @@ buf.push('&nbsp;<button type="button" class="b-entity__delete btn"><i class="ico
 buf.push('</div></div></div>');
 }
 buf.push('</form></div>');
+}
+return buf.join("");
+};
+})();
+jade.templates = jade.templates || {};
+jade.templates['crud-field'] = (function(){
+  return function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+var crud_field_mixin = function( key, field, doc ){
+var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
+buf.push('<div class="control-group"><label class="control-label">');
+var __val__ = field.name
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</label>');
+switch (field.type){
+case "multiline":
+buf.push('<textarea');
+buf.push(attrs({ 'name':(key), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
+buf.push('>');
+var __val__ = doc[ key ]
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</textarea>');
+  break;
+case "select":
+buf.push('<select');
+buf.push(attrs({ 'name':(key), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
+buf.push('>');
+// iterate field.options.models
+;(function(){
+  if ('number' == typeof field.options.models.length) {
+
+    for (var $index = 0, $$l = field.options.models.length; $index < $$l; $index++) {
+      var option = field.options.models[$index];
+
+buf.push('<option');
+buf.push(attrs({ 'value':(option.id), 'selected':(option.id === doc[ key ]) }, {"value":true,"selected":true}));
+buf.push('>');
+var __val__ = option.get( "name" )
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</option>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in field.options.models) {
+      $$l++;      var option = field.options.models[$index];
+
+buf.push('<option');
+buf.push(attrs({ 'value':(option.id), 'selected':(option.id === doc[ key ]) }, {"value":true,"selected":true}));
+buf.push('>');
+var __val__ = option.get( "name" )
+buf.push(escape(null == __val__ ? "" : __val__));
+buf.push('</option>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</select>');
+  break;
+case "autocomplete":
+var cache = ({});
+ cache.byName = {}
+ cache.byId = {}
+ _.each( field.options.toJSON(), function(field) { cache.byName[ field.name ] = field._id; cache.byId[ field._id ] = field.name } )
+buf.push('<input');
+buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(field.placeholder), 'value':(cache.byId[ doc[ key ] ]), 'data-provide':("typeahead"), 'data-items':("4"), 'data-cache':(cache), 'data-source':(_.pluck(field.options.toJSON(), "name")), "class": ('b-typeahead') }, {"type":true,"name":true,"placeholder":true,"value":true,"data-provide":true,"data-items":true,"data-cache":true,"data-source":true}));
+buf.push('/>');
+  break;
+default:
+buf.push('<input');
+buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(field.placeholder), 'value':(doc[ key ]) }, {"type":true,"name":true,"placeholder":true,"value":true}));
+buf.push('/>');
+  break;
+}
+buf.push('</div>');
+};
 }
 return buf.join("");
 };
@@ -21555,7 +21727,7 @@ buf.push('<table class="table table-bordered table-striped b-entities-table"><th
       var field = locals.fields[$index];
 
 buf.push('<th>');
-var __val__ = field.split( ":" )[ 0 ]
+var __val__ = field.name
 buf.push(escape(null == __val__ ? "" : __val__));
 buf.push('</th>');
     }
@@ -21566,7 +21738,7 @@ buf.push('</th>');
       $$l++;      var field = locals.fields[$index];
 
 buf.push('<th>');
-var __val__ = field.split( ":" )[ 0 ]
+var __val__ = field.name
 buf.push(escape(null == __val__ ? "" : __val__));
 buf.push('</th>');
     }

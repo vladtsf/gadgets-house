@@ -16629,19 +16629,86 @@ exports.rethrow = function rethrow(err, filename, lineno){
       return jade.templates[(_ref = (_ref1 = this.templates) != null ? _ref1 : (_ref2 = this.options) != null ? _ref2.templates : void 0) != null ? _ref[(_ref3 = this.options.action) != null ? _ref3 : "list"] : void 0];
     };
 
+    CRUDView.prototype.parseFields = function(fields) {
+      var field, key, results, splitted;
+      results = {};
+      for (key in fields) {
+        if (!__hasProp.call(fields, key)) continue;
+        field = fields[key];
+        splitted = field.split(/\s*:\s*/);
+        results[key] = {
+          name: splitted[0],
+          type: splitted[1],
+          placeholder: splitted[2],
+          ref: splitted[3]
+        };
+      }
+      return results;
+    };
+
     CRUDView.prototype.render = function(params) {
-      var _base;
-      this.$el.html(typeof (_base = this.getTemplate()) === "function" ? _base(_.extend({}, params, this.options)) : void 0);
+      var collection, defs, field, fields, key,
+        _this = this;
+      fields = this.parseFields(this.options.fields);
+      defs = (function() {
+        var _results;
+        _results = [];
+        for (key in fields) {
+          if (!__hasProp.call(fields, key)) continue;
+          field = fields[key];
+          if (!field.ref) {
+            continue;
+          }
+          collection = (function(_super1) {
+
+            __extends(collection, _super1);
+
+            function collection() {
+              return collection.__super__.constructor.apply(this, arguments);
+            }
+
+            collection.prototype.initialize = function() {};
+
+            collection.prototype.url = field.ref;
+
+            collection.prototype.parse = function(res) {
+              return res.docs;
+            };
+
+            collection.prototype.model = Backbone.Model.extend({
+              idAttribute: "_id"
+            });
+
+            return collection;
+
+          })(Backbone.Collection);
+          field.options = new collection;
+          _results.push(field.options.fetch());
+        }
+        return _results;
+      })();
+      $.when.apply($, defs).then(function() {
+        var _base;
+        return _this.$el.html(typeof (_base = _this.getTemplate()) === "function" ? _base(_.extend({}, params, _this.options, {
+          fields: fields
+        })) : void 0);
+      });
       return this;
     };
 
     CRUDView.prototype.serialize = function() {
-      var field, result, _i, _len, _ref;
+      var $tah, field, result, typeahead, _i, _j, _len, _len1, _ref, _ref1;
       result = {};
       _ref = this.$(".b-entity-form").serializeArray();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         field = _ref[_i];
         result[field.name] = field.value;
+      }
+      _ref1 = this.$(".b-typeahead");
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        typeahead = _ref1[_j];
+        $tah = $(typeahead);
+        result[$tah.attr("name")] = $tah.data("cache").byName[$tah.val()];
       }
       return result;
     };
@@ -16779,9 +16846,9 @@ exports.rethrow = function rethrow(err, filename, lineno){
     CRUDView.prototype.events = {
       "submit .b-entity-form": "save",
       "click .b-entity__delete": "del",
-      "focusout": "validate",
-      "change": "validate",
-      "input": "validate"
+      "focusout *:not(.b-typeahead)": "validate",
+      "change *:not(.b-typeahead)": "validate",
+      "input *:not(.b-typeahead)": "validate"
     };
 
     return CRUDView;

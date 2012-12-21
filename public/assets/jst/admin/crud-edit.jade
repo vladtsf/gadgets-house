@@ -1,3 +1,5 @@
+include crud-field
+
 .container.b-entity
   form.b-entity-form
     .row-fluid
@@ -15,17 +17,7 @@
             legend #{ !!locals.doc._id ? "Редактирование" : "Создание" }
 
             each field, key in locals.fields
-              fieldName = field.split( ":" )[ 0 ]
-              fieldType = field.split( ":" )[ 1 ]
-              fieldPlaceholder = field.split( ":" )[ 2 ]
-
-              div.control-group
-                label.control-label= field.split( ":" )[ 0 ]
-                case fieldType
-                  when "multiline"
-                    textarea( name=key, placeholder=fieldPlaceholder )= locals.doc[ key ]
-                  default
-                    input( type="text", name=key, placeholder=fieldPlaceholder, value=locals.doc[ key ] )
+              mixin crud-field( key, field, locals.doc )
         else
           .alert.alert-block.alert-error
             strong Страница не найдена

@@ -1,0 +1,19 @@
+mixin crud-field( key, field, doc )
+  .control-group
+    label.control-label= field.name
+    case field.type
+      when "multiline"
+        textarea( name=key, placeholder=field.placeholder )= doc[ key ]
+      when "select"
+        select( name=key, placeholder=field.placeholder )
+          each option in field.options.models
+            option( value=option.id, selected=option.id === doc[ key ] )= option.get( "name" )
+      when "autocomplete"
+        cache = {}
+        - cache.byName = {}
+        - cache.byId = {}
+        - _.each( field.options.toJSON(), function(field) { cache.byName[ field.name ] = field._id; cache.byId[ field._id ] = field.name } )
+
+        input.b-typeahead( type="text", name=key, placeholder=field.placeholder, value=cache.byId[ doc[ key ] ], data-provide="typeahead", data-items="4", data-cache=cache, data-source=_.pluck(field.options.toJSON(), "name") )
+      default
+        input( type="text", name=key, placeholder=field.placeholder, value=doc[ key ] )
