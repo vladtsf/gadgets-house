@@ -39,12 +39,19 @@ class Witness.CRUDView extends Witness.View
     results = {}
 
     for own key, field of fields
-      splitted = field.split /\s*:\s*/
-      results[ key ] =
-        name: splitted[ 0 ]
-        type: splitted[ 1 ]
-        placeholder: splitted[ 2 ]
-        ref: splitted[ 3 ]
+      if typeof field is "string"
+        splitted = field.split /\s*:\s*/
+        field =
+          name: splitted[ 0 ]
+          type: splitted[ 1 ]
+          placeholder: splitted[ 2 ] ? splitted[ 0 ]
+          ref: splitted[ 3 ]
+          completionField: "name"
+
+      if Array.isArray field.children
+        field.children = @parseFields field.children
+
+      results[ key ] = field
 
     results
 

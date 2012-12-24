@@ -64,6 +64,7 @@ module.exports = (app, route) ->
 
     app.namespace "/addresses", ->
       route "get", "/", "admin_addresses#list"
+      route "get", "/autocomplete", "admin_addresses#autocomplete"
       route "post", "/", "admin_addresses#create"
       route "get", "/:id", "admin_addresses#show"
       route "put", "/:id", "admin_addresses#update"

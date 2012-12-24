@@ -11,7 +11,6 @@ class AdminOrders extends AdminController
     "address"
   ]
   fields: [
-    "name"
     "customer"
     "address"
     "phoneNumber"
@@ -24,9 +23,6 @@ class AdminOrders extends AdminController
   ]
 
   validation:
-    name:
-      required: on
-      msg: "Поле не может быть пустым"
     address:
       required: on
       msg: "Не указан адрес"

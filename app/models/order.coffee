@@ -1,15 +1,12 @@
 mongoose = require "mongoose"
 
 schema = new mongoose.Schema
-  name:
-    type: String
-    required: on
   customer:
     required: on
     type: mongoose.Schema.Types.ObjectId
     ref: "User"
   address:
-    required: on
+    required: off
     type: mongoose.Schema.Types.ObjectId
     ref: "Address"
   phoneNumber:

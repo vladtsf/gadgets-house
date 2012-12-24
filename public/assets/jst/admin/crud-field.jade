@@ -12,8 +12,8 @@ mixin crud-field( key, field, doc )
         cache = {}
         - cache.byName = {}
         - cache.byId = {}
-        - _.each( field.options.toJSON(), function(field) { cache.byName[ field.name ] = field._id; cache.byId[ field._id ] = field.name } )
+        - _.each( field.options.toJSON(), function(f) { cache.byName[ f[ field.completionField ] ] = f._id; cache.byId[ f._id ] = f[ field.completionField ] } )
 
-        input.b-typeahead( type="text", name=key, placeholder=field.placeholder, value=cache.byId[ doc[ key ] ], data-provide="typeahead", data-items="4", data-cache=cache, data-source=_.pluck(field.options.toJSON(), "name") )
+        input.b-typeahead( type="text", name=key, placeholder=field.placeholder, value=cache.byId[ doc[ key ] ], data-provide="typeahead", data-items="4", data-cache=cache, data-source=_.pluck(field.options.toJSON(), field.completionField) )
       default
         input( type="text", name=key, placeholder=field.placeholder, value=doc[ key ] )

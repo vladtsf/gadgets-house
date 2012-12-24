@@ -16630,18 +16630,25 @@ exports.rethrow = function rethrow(err, filename, lineno){
     };
 
     CRUDView.prototype.parseFields = function(fields) {
-      var field, key, results, splitted;
+      var field, key, results, splitted, _ref;
       results = {};
       for (key in fields) {
         if (!__hasProp.call(fields, key)) continue;
         field = fields[key];
-        splitted = field.split(/\s*:\s*/);
-        results[key] = {
-          name: splitted[0],
-          type: splitted[1],
-          placeholder: splitted[2],
-          ref: splitted[3]
-        };
+        if (typeof field === "string") {
+          splitted = field.split(/\s*:\s*/);
+          field = {
+            name: splitted[0],
+            type: splitted[1],
+            placeholder: (_ref = splitted[2]) != null ? _ref : splitted[0],
+            ref: splitted[3],
+            completionField: "name"
+          };
+        }
+        if (Array.isArray(field.children)) {
+          field.children = this.parseFields(field.children);
+        }
+        results[key] = field;
       }
       return results;
     };
@@ -21559,9 +21566,9 @@ case "autocomplete":
 var cache = ({});
  cache.byName = {}
  cache.byId = {}
- _.each( field.options.toJSON(), function(field) { cache.byName[ field.name ] = field._id; cache.byId[ field._id ] = field.name } )
+ _.each( field.options.toJSON(), function(f) { cache.byName[ f[ field.completionField ] ] = f._id; cache.byId[ f._id ] = f[ field.completionField ] } )
 buf.push('<input');
-buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(field.placeholder), 'value':(cache.byId[ doc[ key ] ]), 'data-provide':("typeahead"), 'data-items':("4"), 'data-cache':(cache), 'data-source':(_.pluck(field.options.toJSON(), "name")), "class": ('b-typeahead') }, {"type":true,"name":true,"placeholder":true,"value":true,"data-provide":true,"data-items":true,"data-cache":true,"data-source":true}));
+buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(field.placeholder), 'value':(cache.byId[ doc[ key ] ]), 'data-provide':("typeahead"), 'data-items':("4"), 'data-cache':(cache), 'data-source':(_.pluck(field.options.toJSON(), field.completionField)), "class": ('b-typeahead') }, {"type":true,"name":true,"placeholder":true,"value":true,"data-provide":true,"data-items":true,"data-cache":true,"data-source":true}));
 buf.push('/>');
   break;
 default:
@@ -21686,9 +21693,9 @@ case "autocomplete":
 var cache = ({});
  cache.byName = {}
  cache.byId = {}
- _.each( field.options.toJSON(), function(field) { cache.byName[ field.name ] = field._id; cache.byId[ field._id ] = field.name } )
+ _.each( field.options.toJSON(), function(f) { cache.byName[ f[ field.completionField ] ] = f._id; cache.byId[ f._id ] = f[ field.completionField ] } )
 buf.push('<input');
-buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(field.placeholder), 'value':(cache.byId[ doc[ key ] ]), 'data-provide':("typeahead"), 'data-items':("4"), 'data-cache':(cache), 'data-source':(_.pluck(field.options.toJSON(), "name")), "class": ('b-typeahead') }, {"type":true,"name":true,"placeholder":true,"value":true,"data-provide":true,"data-items":true,"data-cache":true,"data-source":true}));
+buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(field.placeholder), 'value':(cache.byId[ doc[ key ] ]), 'data-provide':("typeahead"), 'data-items':("4"), 'data-cache':(cache), 'data-source':(_.pluck(field.options.toJSON(), field.completionField)), "class": ('b-typeahead') }, {"type":true,"name":true,"placeholder":true,"value":true,"data-provide":true,"data-items":true,"data-cache":true,"data-source":true}));
 buf.push('/>');
   break;
 default:
@@ -22318,7 +22325,7 @@ return buf.join("");
           },
           fields: {
             name: "Название:inline",
-            price: "Цена:inline"
+            price: "Цена:inline:$"
           }
         }
       },
@@ -22328,7 +22335,7 @@ return buf.join("");
           title: "Способы оплаты",
           fields: {
             name: "Название:inline",
-            commission: "Комиссия:inline"
+            commission: "Комиссия:inline:$"
           }
         },
         edit: {
@@ -22347,7 +22354,7 @@ return buf.join("");
           },
           fields: {
             name: "Название:inline",
-            commission: "Комиссия:inline"
+            commission: "Комиссия:inline:$"
           }
         }
       },
@@ -22408,6 +22415,73 @@ return buf.join("");
             building: "Строение:inline",
             housing: "Корпус:inline",
             flat: "Квартира:inline"
+          }
+        }
+      },
+      orders: {
+        list: {
+          navBar: ["orders", "orders-list"],
+          title: "Заказы",
+          fields: {
+            customer: "Заказчик",
+            address: "Адрес",
+            phoneNumber: "Номер телефона",
+            shipmentType: "Способ доставки",
+            shipmentDate: "Дата доставки",
+            paymentType: "Способ оплаты",
+            status: "Статус обработки"
+          }
+        },
+        edit: {
+          navBar: ["orders", "orders-edit"],
+          title: "Заказ",
+          validation: {
+            customer: {
+              required: true,
+              msg: "Обозначте заказчика"
+            },
+            phoneNumber: {
+              required: true,
+              msg: "Укажите контактный номер телефона"
+            }
+          },
+          fields: {
+            customer: {
+              name: "Заказчик",
+              type: "autocomplete",
+              placeholder: "Заказчик",
+              ref: "/admin/users?fields[]=email&limit=100",
+              completionField: "email"
+            },
+            address: {
+              name: "Адрес",
+              type: "autocomplete",
+              placeholder: "Адрес",
+              ref: "/admin/addresses/autocomplete?fields[]=address&limit=100",
+              completionField: "address"
+            },
+            phoneNumber: "Номер телефона:inline:38003332232",
+            items: "Товары:inline",
+            shipmentDate: "Дата доставки:inline:15/1/2012",
+            shipmentType: {
+              name: "Способ доставки",
+              type: "select",
+              ref: "/admin/shipment?fields[]=name&limit=100",
+              completionField: "name"
+            },
+            paymentType: {
+              name: "Способ оплаты",
+              type: "select",
+              ref: "/admin/payment?fields[]=name&limit=100",
+              completionField: "name"
+            },
+            status: {
+              name: "Статус обработки",
+              type: "select",
+              ref: "/admin/statuses?fields[]=name&limit=100",
+              completionField: "name"
+            },
+            note: "Примечание:multiline"
           }
         }
       }
@@ -22651,7 +22725,11 @@ return buf.join("");
       "addresses": "list:addresses",
       "addresses/page/:page": "list:addresses",
       "addresses/new": "edit:addresses",
-      "addresses/:id": "edit:addresses"
+      "addresses/:id": "edit:addresses",
+      "orders": "list:orders",
+      "orders/page/:page": "list:orders",
+      "orders/new": "edit:orders",
+      "orders/:id": "edit:orders"
     };
 
     return AdminApplication;

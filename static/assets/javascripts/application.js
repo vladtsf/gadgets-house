@@ -16630,18 +16630,25 @@ exports.rethrow = function rethrow(err, filename, lineno){
     };
 
     CRUDView.prototype.parseFields = function(fields) {
-      var field, key, results, splitted;
+      var field, key, results, splitted, _ref;
       results = {};
       for (key in fields) {
         if (!__hasProp.call(fields, key)) continue;
         field = fields[key];
-        splitted = field.split(/\s*:\s*/);
-        results[key] = {
-          name: splitted[0],
-          type: splitted[1],
-          placeholder: splitted[2],
-          ref: splitted[3]
-        };
+        if (typeof field === "string") {
+          splitted = field.split(/\s*:\s*/);
+          field = {
+            name: splitted[0],
+            type: splitted[1],
+            placeholder: (_ref = splitted[2]) != null ? _ref : splitted[0],
+            ref: splitted[3],
+            completionField: "name"
+          };
+        }
+        if (Array.isArray(field.children)) {
+          field.children = this.parseFields(field.children);
+        }
+        results[key] = field;
       }
       return results;
     };

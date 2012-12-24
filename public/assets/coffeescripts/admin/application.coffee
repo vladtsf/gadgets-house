@@ -44,14 +44,14 @@ class window.AdminApplication extends Backbone.Router
             msg: "Значение должно быть числовым"
         fields:
           name: "Название:inline"
-          price: "Цена:inline"
+          price: "Цена:inline:$"
     payment:
       list:
         navBar: [ "orders", "payment" ]
         title: "Способы оплаты"
         fields:
           name: "Название:inline"
-          commission: "Комиссия:inline"
+          commission: "Комиссия:inline:$"
       edit:
         navBar: [ "orders", "payment" ]
         title: "Способ оплаты"
@@ -65,7 +65,7 @@ class window.AdminApplication extends Backbone.Router
             msg: "Значение должно быть числовым"
         fields:
           name: "Название:inline"
-          commission: "Комиссия:inline"
+          commission: "Комиссия:inline:$"
     statuses:
       list:
         navBar: [ "orders", "statuses" ]
@@ -113,7 +113,60 @@ class window.AdminApplication extends Backbone.Router
           building: "Строение:inline"
           housing: "Корпус:inline"
           flat: "Квартира:inline"
-
+    orders:
+      list:
+        navBar: [ "orders", "orders-list" ]
+        title: "Заказы"
+        fields:
+          customer: "Заказчик"
+          address: "Адрес"
+          phoneNumber: "Номер телефона"
+          shipmentType: "Способ доставки"
+          shipmentDate: "Дата доставки"
+          paymentType: "Способ оплаты"
+          status: "Статус обработки"
+      edit:
+        navBar: [ "orders", "orders-edit" ]
+        title: "Заказ"
+        validation:
+          customer:
+            required: on
+            msg: "Обозначте заказчика"
+          phoneNumber:
+            required: on
+            msg: "Укажите контактный номер телефона"
+        fields:
+          customer:
+            name: "Заказчик"
+            type: "autocomplete"
+            placeholder: "Заказчик"
+            ref: "/admin/users?fields[]=email&limit=100"
+            completionField: "email"
+          address:
+            name: "Адрес"
+            type: "autocomplete"
+            placeholder: "Адрес"
+            ref: "/admin/addresses/autocomplete?fields[]=address&limit=100"
+            completionField: "address"
+          phoneNumber: "Номер телефона:inline:38003332232"
+          items: "Товары:inline"
+          shipmentDate: "Дата доставки:inline:15/1/2012"
+          shipmentType:
+            name: "Способ доставки"
+            type: "select"
+            ref: "/admin/shipment?fields[]=name&limit=100"
+            completionField: "name"
+          paymentType:
+            name: "Способ оплаты"
+            type: "select"
+            ref: "/admin/payment?fields[]=name&limit=100"
+            completionField: "name"
+          status:
+            name: "Статус обработки"
+            type: "select"
+            ref: "/admin/statuses?fields[]=name&limit=100"
+            completionField: "name"
+          note: "Примечание:multiline"
 
   list: ( entity, page = 0 ) ->
     route = @_routes[ entity ]?.list
@@ -283,6 +336,11 @@ class window.AdminApplication extends Backbone.Router
     "addresses/page/:page": "list:addresses"
     "addresses/new": "edit:addresses"
     "addresses/:id": "edit:addresses"
+
+    "orders": "list:orders"
+    "orders/page/:page": "list:orders"
+    "orders/new": "edit:orders"
+    "orders/:id": "edit:orders"
 
 
 window.admin = new AdminApplication()
