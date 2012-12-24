@@ -16653,19 +16653,15 @@ exports.rethrow = function rethrow(err, filename, lineno){
       return results;
     };
 
-    CRUDView.prototype.render = function(params) {
-      var collection, defs, field, fields, key,
-        _this = this;
-      fields = this.parseFields(this.options.fields);
-      defs = (function() {
-        var _results;
-        _results = [];
-        for (key in fields) {
-          if (!__hasProp.call(fields, key)) continue;
-          field = fields[key];
-          if (!field.ref) {
-            continue;
-          }
+    CRUDView.prototype.processRefs = function(fields, defs) {
+      var collection, field, key;
+      if (defs == null) {
+        defs = [];
+      }
+      for (key in fields) {
+        if (!__hasProp.call(fields, key)) continue;
+        field = fields[key];
+        if (field.ref) {
           collection = (function(_super1) {
 
             __extends(collection, _super1);
@@ -16690,11 +16686,20 @@ exports.rethrow = function rethrow(err, filename, lineno){
 
           })(Backbone.Collection);
           field.options = new collection;
-          _results.push(field.options.fetch());
+          defs.push(field.options.fetch());
         }
-        return _results;
-      })();
-      $.when.apply($, defs).then(function() {
+        if (typeof field.children === "object") {
+          this.processRefs(field.children, defs);
+        }
+      }
+      return defs;
+    };
+
+    CRUDView.prototype.render = function(params) {
+      var fields,
+        _this = this;
+      fields = this.parseFields(this.options.fields);
+      $.when.apply($, this.processRefs(fields)).then(function() {
         var _base;
         return _this.$el.html(typeof (_base = _this.getTemplate()) === "function" ? _base(_.extend({}, params, _this.options, {
           fields: fields
@@ -21510,8 +21515,9 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
-var crud_field_mixin = function( key, field, doc ){
+var crud_field_mixin = function( key, field, doc, prefix ){
 var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
+var formKey = (( prefix || "" ) + key);
 buf.push('<div class="control-group"><label class="control-label">');
 var __val__ = field.name
 buf.push(escape(null == __val__ ? "" : __val__));
@@ -21519,7 +21525,7 @@ buf.push('</label>');
 switch (field.type){
 case "multiline":
 buf.push('<textarea');
-buf.push(attrs({ 'name':(key), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
+buf.push(attrs({ 'name':(formKey), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
 buf.push('>');
 var __val__ = doc[ key ]
 buf.push(escape(null == __val__ ? "" : __val__));
@@ -21527,7 +21533,7 @@ buf.push('</textarea>');
   break;
 case "select":
 buf.push('<select');
-buf.push(attrs({ 'name':(key), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
+buf.push(attrs({ 'name':(formKey), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
 buf.push('>');
 // iterate field.options.models
 ;(function(){
@@ -21568,8 +21574,94 @@ var cache = ({});
  cache.byId = {}
  _.each( field.options.toJSON(), function(f) { cache.byName[ f[ field.completionField ] ] = f._id; cache.byId[ f._id ] = f[ field.completionField ] } )
 buf.push('<input');
-buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(field.placeholder), 'value':(cache.byId[ doc[ key ] ]), 'data-provide':("typeahead"), 'data-items':("4"), 'data-cache':(cache), 'data-source':(_.pluck(field.options.toJSON(), field.completionField)), "class": ('b-typeahead') }, {"type":true,"name":true,"placeholder":true,"value":true,"data-provide":true,"data-items":true,"data-cache":true,"data-source":true}));
+buf.push(attrs({ 'type':("text"), 'name':(formKey), 'placeholder':(field.placeholder), 'value':(cache.byId[ doc[ key ] ]), 'data-provide':("typeahead"), 'data-items':("4"), 'data-cache':(cache), 'data-source':(_.pluck(field.options.toJSON(), field.completionField)), "class": ('b-typeahead') }, {"type":true,"name":true,"placeholder":true,"value":true,"data-provide":true,"data-items":true,"data-cache":true,"data-source":true}));
 buf.push('/>');
+  break;
+case "array":
+buf.push('<div class="row-fluid"><div class="span3 b-array-content">');
+if ( doc[key])
+{
+// iterate doc[key]
+;(function(){
+  if ('number' == typeof doc[key].length) {
+
+    for (var $index = 0, $$l = doc[key].length; $index < $$l; $index++) {
+      var childDoc = doc[key][$index];
+
+buf.push('<div class="control-group well well-small">');
+// iterate field.children
+;(function(){
+  if ('number' == typeof field.children.length) {
+
+    for (var childKey = 0, $$l = field.children.length; childKey < $$l; childKey++) {
+      var child = field.children[childKey];
+
+crud_field_mixin( childKey, child, childDoc, key + "[]" );
+buf.push('<button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push('>Удалить</button>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var childKey in field.children) {
+      $$l++;      var child = field.children[childKey];
+
+crud_field_mixin( childKey, child, childDoc, key + "[]" );
+buf.push('<button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push('>Удалить</button>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</div>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in doc[key]) {
+      $$l++;      var childDoc = doc[key][$index];
+
+buf.push('<div class="control-group well well-small">');
+// iterate field.children
+;(function(){
+  if ('number' == typeof field.children.length) {
+
+    for (var childKey = 0, $$l = field.children.length; childKey < $$l; childKey++) {
+      var child = field.children[childKey];
+
+crud_field_mixin( childKey, child, childDoc, key + "[]" );
+buf.push('<button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push('>Удалить</button>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var childKey in field.children) {
+      $$l++;      var child = field.children[childKey];
+
+crud_field_mixin( childKey, child, childDoc, key + "[]" );
+buf.push('<button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push('>Удалить</button>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</div>');
+    }
+
+  }
+}).call(this);
+
+}
+buf.push('</div></div><div class="row-fluid"><div class="span3"><button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), "class": ('b-array-push') + ' ' + ('btn') + ' ' + ('btn-primary') + ' ' + ('pull-left') }, {"type":true,"data-field":true}));
+buf.push('>Добавить</button></div></div>');
   break;
 default:
 buf.push('<input');
@@ -21579,6 +21671,10 @@ buf.push('/>');
 }
 buf.push('</div>');
 };
+if ( locals.render)
+{
+crud_field_mixin( locals.key, locals.field, locals.doc, locals.prefix );
+}
 buf.push('<div class="container b-entity"><form class="b-entity-form"><div class="row-fluid"><div class="span12"><h1 class="pull-left">');
 var __val__ = locals.title
 buf.push(escape(null == __val__ ? "" : __val__));
@@ -21637,8 +21733,9 @@ attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow |
 var buf = [];
 with (locals || {}) {
 var interp;
-var crud_field_mixin = function( key, field, doc ){
+var crud_field_mixin = function( key, field, doc, prefix ){
 var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
+var formKey = (( prefix || "" ) + key);
 buf.push('<div class="control-group"><label class="control-label">');
 var __val__ = field.name
 buf.push(escape(null == __val__ ? "" : __val__));
@@ -21646,7 +21743,7 @@ buf.push('</label>');
 switch (field.type){
 case "multiline":
 buf.push('<textarea');
-buf.push(attrs({ 'name':(key), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
+buf.push(attrs({ 'name':(formKey), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
 buf.push('>');
 var __val__ = doc[ key ]
 buf.push(escape(null == __val__ ? "" : __val__));
@@ -21654,7 +21751,7 @@ buf.push('</textarea>');
   break;
 case "select":
 buf.push('<select');
-buf.push(attrs({ 'name':(key), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
+buf.push(attrs({ 'name':(formKey), 'placeholder':(field.placeholder) }, {"name":true,"placeholder":true}));
 buf.push('>');
 // iterate field.options.models
 ;(function(){
@@ -21695,8 +21792,94 @@ var cache = ({});
  cache.byId = {}
  _.each( field.options.toJSON(), function(f) { cache.byName[ f[ field.completionField ] ] = f._id; cache.byId[ f._id ] = f[ field.completionField ] } )
 buf.push('<input');
-buf.push(attrs({ 'type':("text"), 'name':(key), 'placeholder':(field.placeholder), 'value':(cache.byId[ doc[ key ] ]), 'data-provide':("typeahead"), 'data-items':("4"), 'data-cache':(cache), 'data-source':(_.pluck(field.options.toJSON(), field.completionField)), "class": ('b-typeahead') }, {"type":true,"name":true,"placeholder":true,"value":true,"data-provide":true,"data-items":true,"data-cache":true,"data-source":true}));
+buf.push(attrs({ 'type':("text"), 'name':(formKey), 'placeholder':(field.placeholder), 'value':(cache.byId[ doc[ key ] ]), 'data-provide':("typeahead"), 'data-items':("4"), 'data-cache':(cache), 'data-source':(_.pluck(field.options.toJSON(), field.completionField)), "class": ('b-typeahead') }, {"type":true,"name":true,"placeholder":true,"value":true,"data-provide":true,"data-items":true,"data-cache":true,"data-source":true}));
 buf.push('/>');
+  break;
+case "array":
+buf.push('<div class="row-fluid"><div class="span3 b-array-content">');
+if ( doc[key])
+{
+// iterate doc[key]
+;(function(){
+  if ('number' == typeof doc[key].length) {
+
+    for (var $index = 0, $$l = doc[key].length; $index < $$l; $index++) {
+      var childDoc = doc[key][$index];
+
+buf.push('<div class="control-group well well-small">');
+// iterate field.children
+;(function(){
+  if ('number' == typeof field.children.length) {
+
+    for (var childKey = 0, $$l = field.children.length; childKey < $$l; childKey++) {
+      var child = field.children[childKey];
+
+crud_field_mixin( childKey, child, childDoc, key + "[]" );
+buf.push('<button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push('>Удалить</button>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var childKey in field.children) {
+      $$l++;      var child = field.children[childKey];
+
+crud_field_mixin( childKey, child, childDoc, key + "[]" );
+buf.push('<button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push('>Удалить</button>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</div>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in doc[key]) {
+      $$l++;      var childDoc = doc[key][$index];
+
+buf.push('<div class="control-group well well-small">');
+// iterate field.children
+;(function(){
+  if ('number' == typeof field.children.length) {
+
+    for (var childKey = 0, $$l = field.children.length; childKey < $$l; childKey++) {
+      var child = field.children[childKey];
+
+crud_field_mixin( childKey, child, childDoc, key + "[]" );
+buf.push('<button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push('>Удалить</button>');
+    }
+
+  } else {
+    var $$l = 0;
+    for (var childKey in field.children) {
+      $$l++;      var child = field.children[childKey];
+
+crud_field_mixin( childKey, child, childDoc, key + "[]" );
+buf.push('<button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push('>Удалить</button>');
+    }
+
+  }
+}).call(this);
+
+buf.push('</div>');
+    }
+
+  }
+}).call(this);
+
+}
+buf.push('</div></div><div class="row-fluid"><div class="span3"><button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), "class": ('b-array-push') + ' ' + ('btn') + ' ' + ('btn-primary') + ' ' + ('pull-left') }, {"type":true,"data-field":true}));
+buf.push('>Добавить</button></div></div>');
   break;
 default:
 buf.push('<input');
@@ -21706,6 +21889,10 @@ buf.push('/>');
 }
 buf.push('</div>');
 };
+if ( locals.render)
+{
+crud_field_mixin( locals.key, locals.field, locals.doc, locals.prefix );
+}
 }
 return buf.join("");
 };
@@ -22461,7 +22648,17 @@ return buf.join("");
               completionField: "address"
             },
             phoneNumber: "Номер телефона:inline:38003332232",
-            items: "Товары:inline",
+            items: {
+              name: "Товары",
+              type: "array",
+              children: {
+                item: {
+                  type: "autocomplete",
+                  placeholder: "Товар",
+                  ref: "/admin/products?fields[]=name&limit=100"
+                }
+              }
+            },
             shipmentDate: "Дата доставки:inline:15/1/2012",
             shipmentType: {
               name: "Способ доставки",

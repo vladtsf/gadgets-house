@@ -55,20 +55,26 @@ class Witness.CRUDView extends Witness.View
 
     results
 
+  processRefs: ( fields, defs = [] ) ->
+    for own key, field of fields
+      if field.ref
+        class collection extends Backbone.Collection
+          initialize: ->
+          url: field.ref
+          parse: ( res ) -> res.docs
+          model: Backbone.Model.extend( idAttribute: "_id" )
+
+        field.options = new collection
+        defs.push field.options.fetch()
+
+      @processRefs field.children, defs if typeof field.children is "object"
+
+    defs
+
   render: ( params ) ->
     fields = @parseFields @options.fields
 
-    defs = for own key, field of fields when field.ref
-      class collection extends Backbone.Collection
-        initialize: ->
-        url: field.ref
-        parse: ( res ) -> res.docs
-        model: Backbone.Model.extend( idAttribute: "_id" )
-
-      field.options = new collection
-      field.options.fetch()
-
-    $.when.apply( $, defs ).then =>
+    $.when.apply( $, @processRefs( fields ) ).then =>
       @$el.html @getTemplate()?( _.extend( {}, params, @options, fields: fields ) )
 
     @

@@ -16653,19 +16653,15 @@ exports.rethrow = function rethrow(err, filename, lineno){
       return results;
     };
 
-    CRUDView.prototype.render = function(params) {
-      var collection, defs, field, fields, key,
-        _this = this;
-      fields = this.parseFields(this.options.fields);
-      defs = (function() {
-        var _results;
-        _results = [];
-        for (key in fields) {
-          if (!__hasProp.call(fields, key)) continue;
-          field = fields[key];
-          if (!field.ref) {
-            continue;
-          }
+    CRUDView.prototype.processRefs = function(fields, defs) {
+      var collection, field, key;
+      if (defs == null) {
+        defs = [];
+      }
+      for (key in fields) {
+        if (!__hasProp.call(fields, key)) continue;
+        field = fields[key];
+        if (field.ref) {
           collection = (function(_super1) {
 
             __extends(collection, _super1);
@@ -16690,11 +16686,20 @@ exports.rethrow = function rethrow(err, filename, lineno){
 
           })(Backbone.Collection);
           field.options = new collection;
-          _results.push(field.options.fetch());
+          defs.push(field.options.fetch());
         }
-        return _results;
-      })();
-      $.when.apply($, defs).then(function() {
+        if (typeof field.children === "object") {
+          this.processRefs(field.children, defs);
+        }
+      }
+      return defs;
+    };
+
+    CRUDView.prototype.render = function(params) {
+      var fields,
+        _this = this;
+      fields = this.parseFields(this.options.fields);
+      $.when.apply($, this.processRefs(fields)).then(function() {
         var _base;
         return _this.$el.html(typeof (_base = _this.getTemplate()) === "function" ? _base(_.extend({}, params, _this.options, {
           fields: fields

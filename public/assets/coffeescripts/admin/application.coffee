@@ -149,7 +149,15 @@ class window.AdminApplication extends Backbone.Router
             ref: "/admin/addresses/autocomplete?fields[]=address&limit=100"
             completionField: "address"
           phoneNumber: "Номер телефона:inline:38003332232"
-          items: "Товары:inline"
+          items:
+            name: "Товары"
+            type: "array"
+            children:
+              item:
+                # name: "Товар"
+                type: "autocomplete"
+                placeholder: "Товар"
+                ref: "/admin/products?fields[]=name&limit=100"
           shipmentDate: "Дата доставки:inline:15/1/2012"
           shipmentType:
             name: "Способ доставки"
