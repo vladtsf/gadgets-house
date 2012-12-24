@@ -16541,9 +16541,9 @@ exports.rethrow = function rethrow(err, filename, lineno){
 
     View.prototype.initialize = function() {};
 
-    View.prototype.getTemplate = function() {
+    View.prototype.getTemplate = function(template) {
       var _ref, _ref1;
-      return jade.templates[(_ref = this.template) != null ? _ref : (_ref1 = this.options) != null ? _ref1.template : void 0];
+      return jade.templates[(_ref = template != null ? template : this.template) != null ? _ref : (_ref1 = this.options) != null ? _ref1.template : void 0];
     };
 
     View.prototype.render = function(params) {
@@ -16696,13 +16696,12 @@ exports.rethrow = function rethrow(err, filename, lineno){
     };
 
     CRUDView.prototype.render = function(params) {
-      var fields,
-        _this = this;
-      fields = this.parseFields(this.options.fields);
-      $.when.apply($, this.processRefs(fields)).then(function() {
+      var _this = this;
+      this._fields = this.parseFields(this.options.fields);
+      $.when.apply($, this.processRefs(this._fields)).then(function() {
         var _base;
         return _this.$el.html(typeof (_base = _this.getTemplate()) === "function" ? _base(_.extend({}, params, _this.options, {
-          fields: fields
+          fields: _this._fields
         })) : void 0);
       });
       return this;
@@ -16807,6 +16806,16 @@ exports.rethrow = function rethrow(err, filename, lineno){
       return this;
     };
 
+    CRUDView.prototype.pushToArray = function(e) {
+      var $button, key, _ref;
+      $button = $(e.currentTarget);
+      key = $button.data("key");
+      this.model.set(key, _.union([{}], (_ref = this.model.get(key)) != null ? _ref : []));
+      return this.render({
+        doc: this.model.toJSON()
+      });
+    };
+
     CRUDView.prototype.save = function(e) {
       var $buttons, $save, processing,
         _this = this;
@@ -16860,7 +16869,8 @@ exports.rethrow = function rethrow(err, filename, lineno){
       "click .b-entity__delete": "del",
       "focusout *:not(.b-typeahead)": "validate",
       "change *:not(.b-typeahead)": "validate",
-      "input *:not(.b-typeahead)": "validate"
+      "input *:not(.b-typeahead)": "validate",
+      "click .b-array-push": "pushToArray"
     };
 
     return CRUDView;

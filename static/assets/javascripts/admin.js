@@ -16541,9 +16541,9 @@ exports.rethrow = function rethrow(err, filename, lineno){
 
     View.prototype.initialize = function() {};
 
-    View.prototype.getTemplate = function() {
+    View.prototype.getTemplate = function(template) {
       var _ref, _ref1;
-      return jade.templates[(_ref = this.template) != null ? _ref : (_ref1 = this.options) != null ? _ref1.template : void 0];
+      return jade.templates[(_ref = template != null ? template : this.template) != null ? _ref : (_ref1 = this.options) != null ? _ref1.template : void 0];
     };
 
     View.prototype.render = function(params) {
@@ -16696,13 +16696,12 @@ exports.rethrow = function rethrow(err, filename, lineno){
     };
 
     CRUDView.prototype.render = function(params) {
-      var fields,
-        _this = this;
-      fields = this.parseFields(this.options.fields);
-      $.when.apply($, this.processRefs(fields)).then(function() {
+      var _this = this;
+      this._fields = this.parseFields(this.options.fields);
+      $.when.apply($, this.processRefs(this._fields)).then(function() {
         var _base;
         return _this.$el.html(typeof (_base = _this.getTemplate()) === "function" ? _base(_.extend({}, params, _this.options, {
-          fields: fields
+          fields: _this._fields
         })) : void 0);
       });
       return this;
@@ -16807,6 +16806,16 @@ exports.rethrow = function rethrow(err, filename, lineno){
       return this;
     };
 
+    CRUDView.prototype.pushToArray = function(e) {
+      var $button, key, _ref;
+      $button = $(e.currentTarget);
+      key = $button.data("key");
+      this.model.set(key, _.union([{}], (_ref = this.model.get(key)) != null ? _ref : []));
+      return this.render({
+        doc: this.model.toJSON()
+      });
+    };
+
     CRUDView.prototype.save = function(e) {
       var $buttons, $save, processing,
         _this = this;
@@ -16860,7 +16869,8 @@ exports.rethrow = function rethrow(err, filename, lineno){
       "click .b-entity__delete": "del",
       "focusout *:not(.b-typeahead)": "validate",
       "change *:not(.b-typeahead)": "validate",
-      "input *:not(.b-typeahead)": "validate"
+      "input *:not(.b-typeahead)": "validate",
+      "click .b-array-push": "pushToArray"
     };
 
     return CRUDView;
@@ -21517,6 +21527,7 @@ with (locals || {}) {
 var interp;
 var crud_field_mixin = function( key, field, doc, prefix ){
 var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
+var doc = (doc || {});
 var formKey = (( prefix || "" ) + key);
 buf.push('<div class="control-group"><label class="control-label">');
 var __val__ = field.name
@@ -21578,17 +21589,17 @@ buf.push(attrs({ 'type':("text"), 'name':(formKey), 'placeholder':(field.placeho
 buf.push('/>');
   break;
 case "array":
-buf.push('<div class="row-fluid"><div class="span3 b-array-content">');
-if ( doc[key])
+buf.push('<div class="row-fluid b-array"><div class="span3 b-array__content">');
+if ( doc[ key ])
 {
-// iterate doc[key]
+// iterate doc[ key ]
 ;(function(){
-  if ('number' == typeof doc[key].length) {
+  if ('number' == typeof doc[ key ].length) {
 
-    for (var $index = 0, $$l = doc[key].length; $index < $$l; $index++) {
-      var childDoc = doc[key][$index];
+    for (var $index = 0, $$l = doc[ key ].length; $index < $$l; $index++) {
+      var childDoc = doc[ key ][$index];
 
-buf.push('<div class="control-group well well-small">');
+buf.push('<div class="well well-small">');
 // iterate field.children
 ;(function(){
   if ('number' == typeof field.children.length) {
@@ -21596,9 +21607,10 @@ buf.push('<div class="control-group well well-small">');
     for (var childKey = 0, $$l = field.children.length; childKey < $$l; childKey++) {
       var child = field.children[childKey];
 
-crud_field_mixin( childKey, child, childDoc, key + "[]" );
+var childDoc = (childDoc || {});
+crud_field_mixin( childKey, child, childDoc[ childKey ], key + "[]" );
 buf.push('<button');
-buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push(attrs({ 'type':("button"), 'data-key':(key), 'data-prefix':(key + "[]"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-key":true,"data-prefix":true,"data-field":true,"data-item-id":true}));
 buf.push('>Удалить</button>');
     }
 
@@ -21607,9 +21619,10 @@ buf.push('>Удалить</button>');
     for (var childKey in field.children) {
       $$l++;      var child = field.children[childKey];
 
-crud_field_mixin( childKey, child, childDoc, key + "[]" );
+var childDoc = (childDoc || {});
+crud_field_mixin( childKey, child, childDoc[ childKey ], key + "[]" );
 buf.push('<button');
-buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push(attrs({ 'type':("button"), 'data-key':(key), 'data-prefix':(key + "[]"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-key":true,"data-prefix":true,"data-field":true,"data-item-id":true}));
 buf.push('>Удалить</button>');
     }
 
@@ -21621,10 +21634,10 @@ buf.push('</div>');
 
   } else {
     var $$l = 0;
-    for (var $index in doc[key]) {
-      $$l++;      var childDoc = doc[key][$index];
+    for (var $index in doc[ key ]) {
+      $$l++;      var childDoc = doc[ key ][$index];
 
-buf.push('<div class="control-group well well-small">');
+buf.push('<div class="well well-small">');
 // iterate field.children
 ;(function(){
   if ('number' == typeof field.children.length) {
@@ -21632,9 +21645,10 @@ buf.push('<div class="control-group well well-small">');
     for (var childKey = 0, $$l = field.children.length; childKey < $$l; childKey++) {
       var child = field.children[childKey];
 
-crud_field_mixin( childKey, child, childDoc, key + "[]" );
+var childDoc = (childDoc || {});
+crud_field_mixin( childKey, child, childDoc[ childKey ], key + "[]" );
 buf.push('<button');
-buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push(attrs({ 'type':("button"), 'data-key':(key), 'data-prefix':(key + "[]"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-key":true,"data-prefix":true,"data-field":true,"data-item-id":true}));
 buf.push('>Удалить</button>');
     }
 
@@ -21643,9 +21657,10 @@ buf.push('>Удалить</button>');
     for (var childKey in field.children) {
       $$l++;      var child = field.children[childKey];
 
-crud_field_mixin( childKey, child, childDoc, key + "[]" );
+var childDoc = (childDoc || {});
+crud_field_mixin( childKey, child, childDoc[ childKey ], key + "[]" );
 buf.push('<button');
-buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push(attrs({ 'type':("button"), 'data-key':(key), 'data-prefix':(key + "[]"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-key":true,"data-prefix":true,"data-field":true,"data-item-id":true}));
 buf.push('>Удалить</button>');
     }
 
@@ -21659,9 +21674,13 @@ buf.push('</div>');
 }).call(this);
 
 }
-buf.push('</div></div><div class="row-fluid"><div class="span3"><button');
-buf.push(attrs({ 'type':("button"), 'data-field':(field.name), "class": ('b-array-push') + ' ' + ('btn') + ' ' + ('btn-primary') + ' ' + ('pull-left') }, {"type":true,"data-field":true}));
-buf.push('>Добавить</button></div></div>');
+buf.push('</div></div>');
+if (!( locals.render))
+{
+buf.push('<div class="row-fluid"><div class="span3"><button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-key':(key), 'data-prefix':(key + "[]"), "class": ('b-array-push') + ' ' + ('btn') + ' ' + ('btn-success') + ' ' + ('pull-left') }, {"type":true,"data-field":true,"data-key":true,"data-prefix":true}));
+buf.push('><i class="icon-plus"></i></button></div></div>');
+}
   break;
 default:
 buf.push('<input');
@@ -21735,6 +21754,7 @@ with (locals || {}) {
 var interp;
 var crud_field_mixin = function( key, field, doc, prefix ){
 var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
+var doc = (doc || {});
 var formKey = (( prefix || "" ) + key);
 buf.push('<div class="control-group"><label class="control-label">');
 var __val__ = field.name
@@ -21796,17 +21816,17 @@ buf.push(attrs({ 'type':("text"), 'name':(formKey), 'placeholder':(field.placeho
 buf.push('/>');
   break;
 case "array":
-buf.push('<div class="row-fluid"><div class="span3 b-array-content">');
-if ( doc[key])
+buf.push('<div class="row-fluid b-array"><div class="span3 b-array__content">');
+if ( doc[ key ])
 {
-// iterate doc[key]
+// iterate doc[ key ]
 ;(function(){
-  if ('number' == typeof doc[key].length) {
+  if ('number' == typeof doc[ key ].length) {
 
-    for (var $index = 0, $$l = doc[key].length; $index < $$l; $index++) {
-      var childDoc = doc[key][$index];
+    for (var $index = 0, $$l = doc[ key ].length; $index < $$l; $index++) {
+      var childDoc = doc[ key ][$index];
 
-buf.push('<div class="control-group well well-small">');
+buf.push('<div class="well well-small">');
 // iterate field.children
 ;(function(){
   if ('number' == typeof field.children.length) {
@@ -21814,9 +21834,10 @@ buf.push('<div class="control-group well well-small">');
     for (var childKey = 0, $$l = field.children.length; childKey < $$l; childKey++) {
       var child = field.children[childKey];
 
-crud_field_mixin( childKey, child, childDoc, key + "[]" );
+var childDoc = (childDoc || {});
+crud_field_mixin( childKey, child, childDoc[ childKey ], key + "[]" );
 buf.push('<button');
-buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push(attrs({ 'type':("button"), 'data-key':(key), 'data-prefix':(key + "[]"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-key":true,"data-prefix":true,"data-field":true,"data-item-id":true}));
 buf.push('>Удалить</button>');
     }
 
@@ -21825,9 +21846,10 @@ buf.push('>Удалить</button>');
     for (var childKey in field.children) {
       $$l++;      var child = field.children[childKey];
 
-crud_field_mixin( childKey, child, childDoc, key + "[]" );
+var childDoc = (childDoc || {});
+crud_field_mixin( childKey, child, childDoc[ childKey ], key + "[]" );
 buf.push('<button');
-buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push(attrs({ 'type':("button"), 'data-key':(key), 'data-prefix':(key + "[]"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-key":true,"data-prefix":true,"data-field":true,"data-item-id":true}));
 buf.push('>Удалить</button>');
     }
 
@@ -21839,10 +21861,10 @@ buf.push('</div>');
 
   } else {
     var $$l = 0;
-    for (var $index in doc[key]) {
-      $$l++;      var childDoc = doc[key][$index];
+    for (var $index in doc[ key ]) {
+      $$l++;      var childDoc = doc[ key ][$index];
 
-buf.push('<div class="control-group well well-small">');
+buf.push('<div class="well well-small">');
 // iterate field.children
 ;(function(){
   if ('number' == typeof field.children.length) {
@@ -21850,9 +21872,10 @@ buf.push('<div class="control-group well well-small">');
     for (var childKey = 0, $$l = field.children.length; childKey < $$l; childKey++) {
       var child = field.children[childKey];
 
-crud_field_mixin( childKey, child, childDoc, key + "[]" );
+var childDoc = (childDoc || {});
+crud_field_mixin( childKey, child, childDoc[ childKey ], key + "[]" );
 buf.push('<button');
-buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push(attrs({ 'type':("button"), 'data-key':(key), 'data-prefix':(key + "[]"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-key":true,"data-prefix":true,"data-field":true,"data-item-id":true}));
 buf.push('>Удалить</button>');
     }
 
@@ -21861,9 +21884,10 @@ buf.push('>Удалить</button>');
     for (var childKey in field.children) {
       $$l++;      var child = field.children[childKey];
 
-crud_field_mixin( childKey, child, childDoc, key + "[]" );
+var childDoc = (childDoc || {});
+crud_field_mixin( childKey, child, childDoc[ childKey ], key + "[]" );
 buf.push('<button');
-buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-field":true,"data-item-id":true}));
+buf.push(attrs({ 'type':("button"), 'data-key':(key), 'data-prefix':(key + "[]"), 'data-field':(field.name), 'data-item-id':(( doc[ key ] || {} )._id), "class": ('b-array-splice') + ' ' + ('btn') + ' ' + ('btn-danger') }, {"type":true,"data-key":true,"data-prefix":true,"data-field":true,"data-item-id":true}));
 buf.push('>Удалить</button>');
     }
 
@@ -21877,9 +21901,13 @@ buf.push('</div>');
 }).call(this);
 
 }
-buf.push('</div></div><div class="row-fluid"><div class="span3"><button');
-buf.push(attrs({ 'type':("button"), 'data-field':(field.name), "class": ('b-array-push') + ' ' + ('btn') + ' ' + ('btn-primary') + ' ' + ('pull-left') }, {"type":true,"data-field":true}));
-buf.push('>Добавить</button></div></div>');
+buf.push('</div></div>');
+if (!( locals.render))
+{
+buf.push('<div class="row-fluid"><div class="span3"><button');
+buf.push(attrs({ 'type':("button"), 'data-field':(field.name), 'data-key':(key), 'data-prefix':(key + "[]"), "class": ('b-array-push') + ' ' + ('btn') + ' ' + ('btn-success') + ' ' + ('pull-left') }, {"type":true,"data-field":true,"data-key":true,"data-prefix":true}));
+buf.push('><i class="icon-plus"></i></button></div></div>');
+}
   break;
 default:
 buf.push('<input');

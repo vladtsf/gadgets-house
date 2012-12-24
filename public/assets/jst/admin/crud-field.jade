@@ -1,4 +1,5 @@
 mixin crud-field( key, field, doc, prefix )
+  doc = doc || {}
   formKey = ( prefix || "" ) + key
   .control-group
     label.control-label= field.name
@@ -17,17 +18,20 @@ mixin crud-field( key, field, doc, prefix )
 
         input.b-typeahead( type="text", name=formKey, placeholder=field.placeholder, value=cache.byId[ doc[ key ] ], data-provide="typeahead", data-items="4", data-cache=cache, data-source=_.pluck(field.options.toJSON(), field.completionField) )
       when "array"
-        .row-fluid
-          .span3.b-array-content
-            if doc[key]
-              each childDoc in doc[key]
-                .control-group.well.well-small
+        .row-fluid.b-array
+          .span3.b-array__content
+            if doc[ key ]
+              each childDoc in doc[ key ]
+                .well.well-small
                   each child, childKey in field.children
-                    mixin crud-field( childKey, child, childDoc, key + "[]" )
-                    button.b-array-splice.btn.btn-danger(type="button", data-field=field.name, data-item-id=( doc[ key ] || {} )._id ) Удалить
-        .row-fluid
-          .span3
-            button.b-array-push.btn.btn-primary.pull-left(type="button", data-field=field.name) Добавить
+                    childDoc = childDoc || {}
+                    mixin crud-field( childKey, child, childDoc[ childKey ], key + "[]" )
+                    button.b-array-splice.btn.btn-danger(type="button", data-key=key,  data-prefix=key + "[]", data-field=field.name, data-item-id=( doc[ key ] || {} )._id ) Удалить
+        unless locals.render
+          .row-fluid
+            .span3
+              button.b-array-push.btn.btn-success.pull-left(type="button", data-field=field.name, data-key=key, data-prefix=key + "[]")
+                i.icon-plus
 
       default
         input( type="text", name=key, placeholder=field.placeholder, value=doc[ key ] )

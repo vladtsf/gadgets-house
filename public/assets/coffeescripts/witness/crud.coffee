@@ -72,10 +72,10 @@ class Witness.CRUDView extends Witness.View
     defs
 
   render: ( params ) ->
-    fields = @parseFields @options.fields
+    @_fields = @parseFields @options.fields
 
-    $.when.apply( $, @processRefs( fields ) ).then =>
-      @$el.html @getTemplate()?( _.extend( {}, params, @options, fields: fields ) )
+    $.when.apply( $, @processRefs( @_fields ) ).then =>
+      @$el.html @getTemplate()?( _.extend( {}, params, @options, fields: @_fields ) )
 
     @
 
@@ -157,6 +157,15 @@ class Witness.CRUDView extends Witness.View
 
     @
 
+  pushToArray: ( e ) ->
+    $button = $ e.currentTarget
+    key = $button.data( "key" )
+
+    @model.set key, _.union [ {} ], @model.get( key ) ? []
+
+    @render
+      doc: @model.toJSON()
+
   save: ( e ) ->
     @validate()
 
@@ -203,3 +212,4 @@ class Witness.CRUDView extends Witness.View
     "focusout *:not(.b-typeahead)": "validate"
     "change *:not(.b-typeahead)": "validate"
     "input *:not(.b-typeahead)": "validate"
+    "click .b-array-push": "pushToArray"
