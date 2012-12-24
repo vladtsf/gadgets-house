@@ -5,8 +5,14 @@ class AdminOrders extends AdminController
   initialize: ->
 
   model: require "../models/order"
+  populate: [
+    "items"
+    "customer"
+    "address"
+  ]
   fields: [
     "name"
+    "customer"
     "address"
     "phoneNumber"
     "shipmentType"
