@@ -13,7 +13,7 @@ schema = new mongoose.Schema
     type: mongoose.Schema.Types.ObjectId
     ref: "Address"
   phoneNumber:
-    type String
+    type: String
     required: on
   shipmentType:
     required: on

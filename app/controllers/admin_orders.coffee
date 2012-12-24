@@ -33,16 +33,16 @@ class AdminOrders extends AdminController
     phoneNumber:
       required: on
       msg: "Не указан номер телефона"
-    shipmentType
+    shipmentType:
       required: on
       msg: "Не указан способ доставки"
-    shipmentDate
+    shipmentDate:
       required: on
       msg: "Не указана дата доставки"
     items:
       required: on
       msg: "Не перечислены товары"
-    paymentType
+    paymentType:
       required: on
       msg: "Не указан способ оплаты"
 

@@ -34,6 +34,13 @@ module.exports = (app, route) ->
       route "put", "/:id", "admin_products#update"
       route "delete", "/:id", "admin_products#del"
 
+    app.namespace "/orders", ->
+      route "get", "/", "admin_orders#list"
+      route "post", "/", "admin_orders#create"
+      route "get", "/:id", "admin_orders#show"
+      route "put", "/:id", "admin_orders#update"
+      route "delete", "/:id", "admin_orders#del"
+
     app.namespace "/shipment", ->
       route "get", "/", "admin_shipment#list"
       route "post", "/", "admin_shipment#create"
