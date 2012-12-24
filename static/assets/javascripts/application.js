@@ -16818,6 +16818,17 @@ exports.rethrow = function rethrow(err, filename, lineno){
       });
     };
 
+    CRUDView.prototype.spliceArray = function(e) {
+      var $button, $item, arr, key;
+      $button = $(e.currentTarget);
+      $item = $button.closest(".b-array__item");
+      key = $button.data("key");
+      arr = this.model.get(key);
+      delete arr[$item.index()];
+      this.model.set(key, _.union([], arr));
+      return $item.remove();
+    };
+
     CRUDView.prototype.save = function(e) {
       var $buttons, $save, processing,
         _this = this;
@@ -16872,7 +16883,8 @@ exports.rethrow = function rethrow(err, filename, lineno){
       "focusout *:not(.b-typeahead)": "validate",
       "change *:not(.b-typeahead)": "validate",
       "input *:not(.b-typeahead)": "validate",
-      "click .b-array-push": "pushToArray"
+      "click .b-array-push": "pushToArray",
+      "click .b-array-splice": "spliceArray"
     };
 
     return CRUDView;

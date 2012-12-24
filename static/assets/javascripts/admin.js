@@ -16818,6 +16818,17 @@ exports.rethrow = function rethrow(err, filename, lineno){
       });
     };
 
+    CRUDView.prototype.spliceArray = function(e) {
+      var $button, $item, arr, key;
+      $button = $(e.currentTarget);
+      $item = $button.closest(".b-array__item");
+      key = $button.data("key");
+      arr = this.model.get(key);
+      delete arr[$item.index()];
+      this.model.set(key, _.union([], arr));
+      return $item.remove();
+    };
+
     CRUDView.prototype.save = function(e) {
       var $buttons, $save, processing,
         _this = this;
@@ -16872,7 +16883,8 @@ exports.rethrow = function rethrow(err, filename, lineno){
       "focusout *:not(.b-typeahead)": "validate",
       "change *:not(.b-typeahead)": "validate",
       "input *:not(.b-typeahead)": "validate",
-      "click .b-array-push": "pushToArray"
+      "click .b-array-push": "pushToArray",
+      "click .b-array-splice": "spliceArray"
     };
 
     return CRUDView;
@@ -21601,7 +21613,7 @@ if ( doc[ key ])
     for (var $index = 0, $$l = doc[ key ].length; $index < $$l; $index++) {
       var childDoc = doc[ key ][$index];
 
-buf.push('<div class="well well-small">');
+buf.push('<div class="well well-small b-array__item">');
 // iterate field.children
 ;(function(){
   if ('number' == typeof field.children.length) {
@@ -21639,7 +21651,7 @@ buf.push('</div>');
     for (var $index in doc[ key ]) {
       $$l++;      var childDoc = doc[ key ][$index];
 
-buf.push('<div class="well well-small">');
+buf.push('<div class="well well-small b-array__item">');
 // iterate field.children
 ;(function(){
   if ('number' == typeof field.children.length) {
@@ -21828,7 +21840,7 @@ if ( doc[ key ])
     for (var $index = 0, $$l = doc[ key ].length; $index < $$l; $index++) {
       var childDoc = doc[ key ][$index];
 
-buf.push('<div class="well well-small">');
+buf.push('<div class="well well-small b-array__item">');
 // iterate field.children
 ;(function(){
   if ('number' == typeof field.children.length) {
@@ -21866,7 +21878,7 @@ buf.push('</div>');
     for (var $index in doc[ key ]) {
       $$l++;      var childDoc = doc[ key ][$index];
 
-buf.push('<div class="well well-small">');
+buf.push('<div class="well well-small b-array__item">');
 // iterate field.children
 ;(function(){
   if ('number' == typeof field.children.length) {

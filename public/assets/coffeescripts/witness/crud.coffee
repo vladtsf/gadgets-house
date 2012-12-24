@@ -166,6 +166,18 @@ class Witness.CRUDView extends Witness.View
     @render
       doc: @model.toJSON()
 
+  spliceArray: ( e ) ->
+    $button = $ e.currentTarget
+    $item = $button.closest( ".b-array__item" )
+    key = $button.data( "key" )
+    arr = @model.get( key )
+
+    delete arr[ $item.index() ]
+    @model.set key, _.union [], arr
+
+    $item.remove()
+
+
   save: ( e ) ->
     @validate()
 
@@ -213,3 +225,4 @@ class Witness.CRUDView extends Witness.View
     "change *:not(.b-typeahead)": "validate"
     "input *:not(.b-typeahead)": "validate"
     "click .b-array-push": "pushToArray"
+    "click .b-array-splice": "spliceArray"

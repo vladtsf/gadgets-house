@@ -22,7 +22,7 @@ mixin crud-field( key, field, doc, prefix )
           .span3.b-array__content
             if doc[ key ]
               each childDoc in doc[ key ]
-                .well.well-small
+                .well.well-small.b-array__item
                   each child, childKey in field.children
                     childDoc = childDoc || {}
                     mixin crud-field( childKey, child, childDoc[ childKey ], key + "[]" )
