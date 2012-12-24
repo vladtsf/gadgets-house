@@ -16810,7 +16810,9 @@ exports.rethrow = function rethrow(err, filename, lineno){
       var $button, key, _ref;
       $button = $(e.currentTarget);
       key = $button.data("key");
-      this.model.set(key, _.union([{}], (_ref = this.model.get(key)) != null ? _ref : []));
+      this.model.set(key, _.union([{}], (_ref = this.model.get(key)) != null ? _ref : []), {
+        silent: true
+      });
       return this.render({
         doc: this.model.toJSON()
       });

@@ -161,7 +161,7 @@ class Witness.CRUDView extends Witness.View
     $button = $ e.currentTarget
     key = $button.data( "key" )
 
-    @model.set key, _.union [ {} ], @model.get( key ) ? []
+    @model.set key, ( _.union [ {} ], @model.get( key ) ? [] ), silent: on
 
     @render
       doc: @model.toJSON()
