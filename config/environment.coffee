@@ -8,7 +8,7 @@ module.exports = (app) ->
 
   app.configure "development", ->
     app.use express.errorHandler()
-    app.set 'mongodb', "mongodb://vovan:123@alex.mongohq.com:10058/gadgets-test"
+    app.set 'mongodb', "mongodb://localhost/#{ pkg.name }"
     app.set "amazonS3",
         key: "AKIAJ4FKRGWTKJAH5GYA"
         secret: "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"
