@@ -76,20 +76,25 @@ class Witness.CRUDView extends Witness.View
 
     $.when.apply( $, @processRefs( @_fields ) ).then =>
       @$el.html @getTemplate()?( _.extend( {}, params, @options, fields: @_fields ) )
+      # js2form $( ".b-entity-form" ).get( 0 ), @model.toJSON() # fill the form
 
     @
 
   serialize: ->
-    result = {}
-
-    for own field in @$( ".b-entity-form" ).serializeArray()
-      result[ field.name ] = field.value
+    queryString = ( @$ ".b-entity-form" ).formSerialize()
+    pairs = queryString.split "&"
 
     for own typeahead in @$ ".b-typeahead"
       $tah = $( typeahead )
-      result[ $tah.attr "name" ] = $tah.data( "cache" ).byName[ $tah.val() ]
+      name = $tah.attr "name"
+      value = $tah.data( "cache" ).byName[ $tah.val() ]
 
-    result
+      for own item, key in pairs
+        pair = item.split( "=" )
+        pair[1] = value if ( decodeURIComponent pair[ 0 ] ) is name
+        pairs[ key ] = pair.join "="
+
+    jQuery.deparam pairs.join "&"
 
   destroy: Witness.View::remove
 

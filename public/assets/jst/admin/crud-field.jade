@@ -1,6 +1,10 @@
+mixin console-log( key, field, doc, prefix )
+  - console.log(key, field, doc, prefix)
+
 mixin crud-field( key, field, doc, prefix )
   doc = doc || {}
-  formKey = ( prefix || "" ) + key
+  //- formKey = ( prefix || "" ) + key
+  formKey = ( prefix || "" ) + ( prefix ? "[" + key + "]" : key )
   .control-group
     label.control-label= field.name
     case field.type
@@ -21,12 +25,11 @@ mixin crud-field( key, field, doc, prefix )
         .row-fluid.b-array
           .span3.b-array__content
             if doc[ key ]
-              each childDoc in doc[ key ]
+              each childDoc, idx in doc[ key ]
                 .well.well-small.b-array__item
                   each child, childKey in field.children
-                    childDoc = childDoc || {}
-                    mixin crud-field( childKey, child, childDoc[ childKey ], key + "[]" )
-                    button.b-array-splice.btn.btn-danger(type="button", data-key=key,  data-prefix=key + "[]", data-field=field.name, data-item-id=( doc[ key ] || {} )._id ) Удалить
+                    mixin crud-field( childKey, child, childDoc, key + "[" + idx + "]" )
+                  button.b-array-splice.btn.btn-danger(type="button", data-key=key,  data-prefix=key + "[]", data-field=field.name, data-item-id=( doc[ key ] || {} )._id ) Удалить
         unless locals.render
           .row-fluid
             .span3
@@ -34,7 +37,7 @@ mixin crud-field( key, field, doc, prefix )
                 i.icon-plus
 
       default
-        input( type="text", name=key, placeholder=field.placeholder, value=doc[ key ] )
+        input( type="text", name=formKey, placeholder=field.placeholder, value=doc[ key ] )
 
 if locals.render
   mixin crud-field( locals.key, locals.field, locals.doc, locals.prefix )

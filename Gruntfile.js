@@ -91,6 +91,10 @@ module.exports = function(grunt) {
           "vendor/assets/javascripts/underscore.string.js",
           "vendor/assets/javascripts/backbone.js",
           "vendor/assets/javascripts/backbone-validation.js",
+          // "vendor/assets/form2js/src/form2js.js",
+          // "vendor/assets/form2js/src/jquery.toObject.js",
+          "vendor/assets/form2js/src/js2form.js",
+          "vendor/assets/javascripts/jquery.deparam.js",
           "vendor/assets/javascripts/jade-runtime.js",
 
           "tmp/javascripts/witness/intro.js",

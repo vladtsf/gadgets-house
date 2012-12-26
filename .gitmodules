@@ -7,3 +7,6 @@
 [submodule "vendor/assets/bootstrap-toggle-buttons"]
 	path = vendor/assets/bootstrap-toggle-buttons
 	url = git://github.com/nostalgiaz/bootstrap-toggle-buttons.git
+[submodule "vendor/assets/form2js"]
+	path = vendor/assets/form2js
+	url = git://github.com/maxatwork/form2js.git

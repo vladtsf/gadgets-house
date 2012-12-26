@@ -155,9 +155,13 @@ class window.AdminApplication extends Backbone.Router
             children:
               item:
                 # name: "Товар"
-                type: "autocomplete"
-                placeholder: "Товар"
-                ref: "/admin/products?fields[]=name&limit=100"
+                  type: "autocomplete"
+                  placeholder: "Товар"
+                  ref: "/admin/products?fields[]=name&limit=100"
+                  completionField: "name"
+              quantity:
+                  type: "inline"
+                  placeholder: "Количество"
           shipmentDate: "Дата доставки:inline:15/1/2012"
           shipmentType:
             name: "Способ доставки"
