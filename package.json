@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "precompile": "node ./node_modules/grunt-cli/bin/grunt",
     "deploy": "git push heroku `git rev-parse --abbrev-ref HEAD`:master"
   },
   "dependencies": {
@@ -27,7 +26,7 @@
     "gm-buffer": "*"
   },
   "devDependencies": {
-    "grunt-cli": "*",
+    "grunt": "*",
     "grunt-jade": "git://github.com/phated/grunt-jade.git#grunt0.4",
     "grunt-contrib-coffee": "*",
     "grunt-contrib-concat": "0.1.0",
